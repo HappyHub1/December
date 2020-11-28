@@ -11,20 +11,16 @@
   --socket-color: #444;
   --socket-top: calc((var(--socket-height) - var(--bulb-hidden-in-socket)) * -1);
 
-  --background-color-1: rgba(0, 255, 255, 1);
-  --box-shadow-color-1: rgba(0, 255, 255, 0.5);
-  --background-color-1-off: rgba(0, 255, 255, 0.4);
-  --box-shadow-color-1-off: rgba(0, 255, 255, 0.3);
+  --light-color-blue: 42, 236, 241;
+  --light-color-green: 29, 189, 59;
+  --light-color-red: 236, 18, 53;
+  --light-color-orange: 240, 157, 41;
 
-  --background-color-2: rgba(0, 247, 165, 1);
-  --box-shadow-color-2: rgba(0, 247, 165, 0.5);
-  --background-color-2-off: rgba(0, 247, 165, 0.4);
-  --box-shadow-color-2-off: rgba(0, 247, 165, 0.3);
+  --light-alpha: 1;
+  --light-box-shadow-alpha: 0.5;
 
-  --background-color-3: rgba(247, 0, 148, 1);
-  --box-shadow-color-3: rgba(247, 0, 148, 0.5);
-  --background-color-3-off: rgba(247, 0, 148, 0.4);
-  --box-shadow-color-3-off: rgba(247, 0, 148, 0.3);
+  --light-off-alpha: 0.4;
+  --light-off-box-shadow-alpha: 0.3;
 
   --candy-cane-width: 14px;
   --navbar-height: 56px;
@@ -84,19 +80,24 @@ body {
   margin: 0 calc(var(--bulb-spacing) / 2);
   margin-top: calc(var(--socket-height) - var(--bulb-hidden-in-socket));
 
-  background: var(--background-color-1);
-  box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px var(--box-shadow-color-1);
-  animation: flash-1 both infinite 2s ease-in-out;
+  background: rgba(var(--light-color-blue), var(--light-alpha));
+  box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-blue), var(--light-box-shadow-alpha));
+  animation: light-flash-green both infinite 2s ease-in-out;
 }
-.c-effect__lightrope li:nth-child(2n + 1) {
-  background: var(--background-color-2);
-  box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px var(--box-shadow-color-2);
-  animation-name: flash-2;
+.c-effect__lightrope li:nth-child(2n) {
+  background: rgba(var(--light-color-green), var(--light-alpha));
+  box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-green), var(--light-box-shadow-alpha));
+  animation-name: light-flash-blue;
 }
-.c-effect__lightrope li:nth-child(4n + 2) {
-  background: var(--background-color-3);
-  box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px var(--box-shadow-color-3);
-  animation-name: flash-3;
+.c-effect__lightrope li:nth-child(4n) {
+  background: rgba(var(--light-color-red), var(--light-alpha));
+  box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-red), var(--light-box-shadow-alpha));
+  animation-name: light-flash-red;
+}
+.c-effect__lightrope li:nth-child(8n) {
+  background: rgba(var(--light-color-orange), var(--light-alpha));
+  box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-orange), var(--light-box-shadow-alpha));
+  animation-name: light-flash-orange;
 }
 
 /* Timings */
@@ -148,34 +149,44 @@ body {
   display: none;
 }
 
-@keyframes flash-1 {
+@keyframes light-flash-green {
   0%, 100% {
-    background: var(--background-color-1-off);
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px var(--box-shadow-color-1-off);
+    background: rgba(var(--light-color-green), var(--light-off-alpha));
+    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-green), var(--light-off-box-shadow-alpha));
   }
   50% {
-    background: var(--background-color-1);
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px var(--box-shadow-color-1);
+    background: rgba(var(--light-color-green), var(--light-alpha));
+    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-green), var(--light-box-shadow-alpha));
   }
 }
-@keyframes flash-2 {
+@keyframes light-flash-blue {
   0%, 100% {
-    background: var(--background-color-2-off);
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px var(--box-shadow-color-2-off);
+    background: rgba(var(--light-color-blue), var(--light-off-alpha));
+    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-blue), var(--light-off-box-shadow-alpha));
   }
   50% {
-    background: var(--background-color-2);
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px var(--box-shadow-color-2);
+    background: rgba(var(--light-color-blue), var(--light-alpha));
+    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-blue), var(--light-box-shadow-alpha));
   }
 }
-@keyframes flash-3 {
+@keyframes light-flash-red {
   0%, 100% {
-    background: var(--background-color-3-off);
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px var(--box-shadow-color-3-off);
+    background: rgba(var(--light-color-red), var(--light-off-alpha));
+    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-red), var(--light-off-box-shadow-alpha));
   }
   50% {
-    background: var(--background-color-3);
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px var(--box-shadow-color-3);
+    background: rgba(var(--light-color-red), var(--light-alpha));
+    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-red), var(--light-box-shadow-alpha));
+  }
+}
+@keyframes light-flash-orange {
+  0%, 100% {
+    background: rgba(var(--light-color-orange), var(--light-off-alpha));
+    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-orange), var(--light-off-box-shadow-alpha));
+  }
+  50% {
+    background: rgba(var(--light-color-orange), var(--light-alpha));
+    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-orange), var(--light-box-shadow-alpha));
   }
 }
 
@@ -261,11 +272,17 @@ body {
   --christmas-tree-light-color: var(--christmas-tree-light-color-3);
 }
 
+.c-christmas-tree__light {
+  animation-duration: 3s;
+}
 .c-christmas-tree__light:nth-child(2n) {
-  animation-duration: 2;
+  animation-duration: 2s;
 }
 .c-christmas-tree__light:nth-child(3n) {
-  animation-duration: 1.8s;
+  animation-duration: 2.5s;
+}
+.c-christmas-tree__light:nth-child(4n) {
+  animation-duration: 1.5s;
 }
 
 @keyframes c-christmas-tree-lights-glow {
