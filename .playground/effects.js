@@ -1,3 +1,10 @@
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+function getRandomFloat(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
 class ChristmasWonderland {
   constructor() {
   }
@@ -40,17 +47,27 @@ class ChristmasWonderland {
     this._root_element = null;
   }
 
-  getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  }
-
   buildLightrope() {
-    const container = document.createElement('ul');
+    const container = document.createElement('div');
     container.classList.add('c-effect__lightrope');
 
     // TODO: Change css to set display: none on many of the unused lights
     for (let i = 0; i < 50; i++) {
-      const light = document.createElement('li');
+      const light = document.createElement('div');
+      light.classList.add('c-effect__lightrope-light');
+
+      const bulb = document.createElement('div');
+      bulb.classList.add('c-effect__lightrope-bulb');
+      light.appendChild(bulb);
+
+      const socket = document.createElement('div');
+      socket.classList.add('c-effect__lightrope-socket');
+      light.appendChild(socket);
+
+      const rope = document.createElement('div');
+      rope.classList.add('c-effect__lightrope-rope');
+      light.appendChild(rope);
+
       container.appendChild(light);
     }
 
@@ -113,7 +130,7 @@ class ChristmasWonderland {
       light.style.top = light_config.top;
       light.style.width = light_config.width;
 
-      const type = this.getRandomInt(1, 3);
+      const type = getRandomInt(1, 3);
       light.classList.add(`c-christmas-tree__light--${type}`);
 
       lights_container.appendChild(light);
@@ -176,5 +193,164 @@ ChristmasWonderland.tree_type_2 = {
 ChristmasWonderland.kfc_bucket_image = './kfc.png';
 
 
+class SnowEffect {
+  static pixels_per_flake_min = 500;
+  static pixels_per_flake_max = 5000;
+
+  static snow_levels = {
+    // The rate at which snow falls. High numbers means less snow
+    low: {min: 1000, max: 10000},
+    medium: {min: 500, max: 5000},
+    high: {min: 250, max: 4000},
+    blizzard: {min: 100, max: 1000},
+  };
+
+  static max_size = 12;
+  static min_size = 3;
+
+  static min_x_speed = 0.5;
+  static max_x_speed = 4;
+
+  static min_y_speed = 1;
+  static max_y_speed = 3;
+
+  constructor() {
+    this.state = {
+      enabled: false,
+      snow_level: SnowEffect.snow_levels.medium,
+    };
+  }
+
+  activate(snow_level = 'medium') {
+    snow_level = snow_level.toLowerCase();
+    if (SnowEffect.snow_levels[snow_level]) {
+      this.state.snow_level = SnowEffect.snow_levels[snow_level];
+    }
+
+    if (this._canvas || this.state.enabled) {
+      return;
+    }
+
+    this.state.enabled = true;
+
+    this._canvas = document.createElement('canvas');
+    this._canvas.classList.add('c-effect__snow-canvas');
+    document.body.appendChild(this._canvas);
+
+    this._context = this._canvas.getContext('2d');
+
+    // 0 timeout to allow the CSSOM to update the size of the canvas appropriately
+    setTimeout(() => this.initAndReset(), 0);
+
+    // If the window resizes, just start all over again for simplicity
+    this._resizeHandler = () => this.initAndReset();
+    window.addEventListener('resize', this._resizeHandler);
+  }
+
+  deactivate() {
+    if (!this._canvas || !this.state.enabled) {
+      return;
+    }
+
+    this.state.enabled = false;
+    window.removeEventListener('resize', this._resizeHandler);
+
+    if (this._requested_animation_frame) {
+      this._requested_animation_frame = null;
+      cancelAnimationFrame(this._requested_animation_frame);
+    }
+
+    this._context = null;
+    this._canvas.parentElement.removeChild(this._canvas);
+    this._canvas = null;
+  }
+
+  initAndReset() {
+    this._width = this._canvas.width = window.innerWidth;
+    this._height = this._canvas.height = window.innerHeight;
+    this._snowflakes = [];
+
+    if (!this._requested_animation_frame) {
+      this._requested_animation_frame = requestAnimationFrame(() => this.handleFrame());
+    }
+  }
+
+  handleFrame() {
+    this._context.clearRect(0, 0, this._width, this._height);
+
+    // Add new snowflakes
+    const min_new = this._width / this.state.snow_level.max;
+    const max_new = this._width / this.state.snow_level.min;
+    const number_of_new_flakes = getRandomInt(min_new, max_new);
+    for (let i = 0; i < number_of_new_flakes; i++) {
+      this._snowflakes.push(this.createSnowflake());
+    }
+
+    // Move all the flakes
+    for (const snowflake of this._snowflakes) {
+      snowflake.x += snowflake.velocity.x;
+      snowflake.y += snowflake.velocity.y;
+
+      this._context.fillStyle = '#fff';
+      this._context.beginPath();
+      this._context.arc(snowflake.x, snowflake.y, snowflake.size, 0, 2 * Math.PI, false);
+      this._context.fill();
+    }
+
+    // Remove particles below the screen
+    this._snowflakes = this._snowflakes.filter((snowflake) => {
+      const top_y = snowflake.y + (snowflake.size / 2);
+      if (top_y > this._height) {
+        return false;
+      }
+
+      const top_x = snowflake.x - (snowflake.size / 2);
+      if (top_x > this._width) {
+        return false;
+      }
+
+      return true;
+    });
+
+    this._requested_animation_frame = requestAnimationFrame(() => this.handleFrame());
+  }
+
+  createSnowflake() {
+    const x = Math.random() * this._width;
+    const size = getRandomFloat(SnowEffect.min_size / 2, SnowEffect.max_size / 2);
+
+    let x_vel = getRandomFloat(SnowEffect.min_x_speed, SnowEffect.max_x_speed);
+    if (Math.random() > 0.5) {
+      x_vel = -x_vel;
+    }
+
+    return {
+      x,
+      y: -size,
+      size,
+      velocity: {
+        x: x_vel,
+        y: getRandomFloat(SnowEffect.min_y_speed, SnowEffect.max_y_speed),
+      }
+    };
+  }
+
+  isSnowflakeOffscreen(snowflake) {
+    const top_y = snowflake.y + (snowflake.size / 2);
+    if (top_y > this._height) {
+      return false;
+    }
+
+    const top_x = snowflake.x - (snowflake.size / 2);
+    if (top_x > this._width) {
+      return false;
+    }
+  }
+}
+
+
 const ef = new ChristmasWonderland();
 ef.activate();
+
+// const snow = new SnowEffect();
+// snow.activate();

@@ -1,4 +1,7 @@
 .c-effect__christmas-wonderland {
+  --navbar-height: 56px;
+
+  /* Lightrope */
   --bulb-width: 14px;
   --bulb-height: 32px;
   --bulb-spacing: 40px;
@@ -9,33 +12,34 @@
   --socket-width: 12px;
   --socket-height: 10px;
   --socket-color: #444;
-  --socket-top: calc((var(--socket-height) - var(--bulb-hidden-in-socket)) * -1);
+  --socket-top: 0; /* calc((var(--socket-height) - var(--bulb-hidden-in-socket)) * -1); */
 
   --light-color-blue: 42, 236, 241;
   --light-color-green: 29, 189, 59;
   --light-color-red: 236, 18, 53;
   --light-color-orange: 240, 157, 41;
 
-  --light-alpha: 1;
+  /* --light-alpha: 1; */
   --light-box-shadow-alpha: 0.5;
+  --light-off-opacity: 0.5;
 
-  --light-off-alpha: 0.4;
-  --light-off-box-shadow-alpha: 0.3;
 
+  /* Candy cane */
   --candy-cane-width: 14px;
-  --navbar-height: 56px;
 
   --lightrope-zindex: 1002;
   --candy-cane-zindex: 1001;
 
+
+  /* Christmas tree */
   --christmas-tree-light-color-1: 248, 178, 41;
   --christmas-tree-light-color-2: 187, 37, 40;
   --christmas-tree-light-color-3: 250, 250, 250;
 
-  --left-tree-z-index: 300;
-  --middle-tree-z-index: 100;
-  --right-tree-z-index: 300;
-  --kfc-z-index: 200;
+  --left-tree-z-index: 1300;
+  --middle-tree-z-index: 1100;
+  --right-tree-z-index: 1300;
+  --kfc-z-index: 1200;
 
   --left-tree-x: 290px;
   --middle-tree-x: 130px;
@@ -63,60 +67,60 @@ body {
   overflow: hidden;
   width: calc(100% + (var(--bulb-spacing) / 0.5));
 }
-.c-effect__lightrope li:first-child {
-  margin-left: 4px;
-}
-.c-effect__lightrope li {
+
+.c-effect__lightrope-light {
   position: relative;
-  list-style: none;
-  margin: 0;
-  padding: 0;
   flex: 0 0 auto;
 
+  margin: 0 calc(var(--bulb-spacing) / 2);
+  /* margin-top: calc(var(--socket-height) - var(--bulb-hidden-in-socket)); */
+}
+.c-effect__lightrope-light:first-child {
+  margin-left: 4px;
+}
+
+.c-effect__lightrope-bulb {
   width: var(--bulb-width);
   height: var(--bulb-height);
   border-radius: 50%;
 
-  margin: 0 calc(var(--bulb-spacing) / 2);
-  margin-top: calc(var(--socket-height) - var(--bulb-hidden-in-socket));
-
-  background: rgba(var(--light-color-blue), var(--light-alpha));
+  background: rgb(var(--light-color-blue));
   box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-blue), var(--light-box-shadow-alpha));
-  animation: light-flash-green both infinite 2s ease-in-out;
+  opacity: 1;
+
+  will-change: opacity;
+  animation: light-flash both infinite 3s ease-in-out;
 }
-.c-effect__lightrope li:nth-child(2n) {
-  background: rgba(var(--light-color-green), var(--light-alpha));
+
+.c-effect__lightrope-light:nth-child(2n) .c-effect__lightrope-bulb {
+  background: rgb(var(--light-color-green));
   box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-green), var(--light-box-shadow-alpha));
-  animation-name: light-flash-blue;
 }
-.c-effect__lightrope li:nth-child(4n) {
-  background: rgba(var(--light-color-red), var(--light-alpha));
+.c-effect__lightrope-light:nth-child(4n) .c-effect__lightrope-bulb {
+  background: rgb(var(--light-color-red));
   box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-red), var(--light-box-shadow-alpha));
-  animation-name: light-flash-red;
 }
-.c-effect__lightrope li:nth-child(8n) {
-  background: rgba(var(--light-color-orange), var(--light-alpha));
+.c-effect__lightrope-light:nth-child(8n) .c-effect__lightrope-bulb {
+  background: rgb(var(--light-color-orange));
   box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-orange), var(--light-box-shadow-alpha));
-  animation-name: light-flash-orange;
 }
 
 /* Timings */
-.c-effect__lightrope li:nth-child(2n+1) {
-  animation-duration: 0.4s;
+.c-effect__lightrope-light:nth-child(2n+1) .c-effect__lightrope-bulb {
+  animation-duration: 0.6s;
 }
-.c-effect__lightrope li:nth-child(4n+2) {
-  animation-duration: 1.1s;
+.c-effect__lightrope-light:nth-child(4n+2) .c-effect__lightrope-bulb {
+  animation-duration: 1.2s;
 }
-.c-effect__lightrope li:nth-child(odd) {
-  animation-duration: 1.8s;
+.c-effect__lightrope-light:nth-child(odd) .c-effect__lightrope-bulb {
+  animation-duration: 2.3s;
 }
-.c-effect__lightrope li:nth-child(3n+1) {
-  animation-duration: 1.4s;
+.c-effect__lightrope-light:nth-child(3n+1) .c-effect__lightrope-bulb {
+  animation-duration: 1.6s;
 }
 
 /* Bulb socket */
-.c-effect__lightrope li:before {
-  content: "";
+.c-effect__lightrope-socket {
   position: absolute;
   top: var(--socket-top);
   left: calc((var(--bulb-width) - var(--socket-width)) / 2);
@@ -129,10 +133,9 @@ body {
 }
 
 /* Bulb rope */
-.c-effect__lightrope li:after {
-  content: "";
+.c-effect__lightrope-rope {
   position: absolute;
-  top: calc(var(--socket-top) - 2px);
+  top: -2px;
   left: calc(var(--bulb-width) - 4px);
 
   width: calc(var(--bulb-spacing) + 8px);
@@ -141,52 +144,17 @@ body {
   border-radius: 50%;
 }
 /* Only show the rope for the first child */
-.c-effect__lightrope li:first-child {
-  background: none !important;
-  box-shadow: none !important;
-}
-.c-effect__lightrope li:first-child:before {
+.c-effect__lightrope-light:first-child .c-effect__lightrope-bulb,
+.c-effect__lightrope-light:first-child .c-effect__lightrope-socket {
   display: none;
 }
 
-@keyframes light-flash-green {
+@keyframes light-flash {
   0%, 100% {
-    background: rgba(var(--light-color-green), var(--light-off-alpha));
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-green), var(--light-off-box-shadow-alpha));
+    opacity: var(--light-off-opacity);
   }
   50% {
-    background: rgba(var(--light-color-green), var(--light-alpha));
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-green), var(--light-box-shadow-alpha));
-  }
-}
-@keyframes light-flash-blue {
-  0%, 100% {
-    background: rgba(var(--light-color-blue), var(--light-off-alpha));
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-blue), var(--light-off-box-shadow-alpha));
-  }
-  50% {
-    background: rgba(var(--light-color-blue), var(--light-alpha));
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-blue), var(--light-box-shadow-alpha));
-  }
-}
-@keyframes light-flash-red {
-  0%, 100% {
-    background: rgba(var(--light-color-red), var(--light-off-alpha));
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-red), var(--light-off-box-shadow-alpha));
-  }
-  50% {
-    background: rgba(var(--light-color-red), var(--light-alpha));
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-red), var(--light-box-shadow-alpha));
-  }
-}
-@keyframes light-flash-orange {
-  0%, 100% {
-    background: rgba(var(--light-color-orange), var(--light-off-alpha));
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-orange), var(--light-off-box-shadow-alpha));
-  }
-  50% {
-    background: rgba(var(--light-color-orange), var(--light-alpha));
-    box-shadow: 0px var(--bulb-hidden-in-socket) calc(var(--bulb-width) / 2) 5px rgba(var(--light-color-orange), var(--light-box-shadow-alpha));
+    opacity: 1;
   }
 }
 
@@ -306,4 +274,16 @@ body {
 }
 .c-kfc-bucket img {
   width: 100%;
+}
+
+
+.c-effect__snow-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  pointer-events: none;
+  z-index: 1000000;
 }
