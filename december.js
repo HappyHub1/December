@@ -3204,3 +3204,12 @@ checkEffects();
 // This is what turns the whole thing on to be run by chat messages like /erabe
 // TODO: Should we hide this behind a button being enabled? Like niconico is?
 socket.on("chatMsg", CustomTextTriggers.handleChatMessage);
+
+var script = document.currentScript;
+var fullUrl = script.src.replace(/\?.+/g,"");
+
+socket.on("channelOpts", function (data) {
+	if (fullUrl !== data.externaljs) {
+		location.reload();
+	}
+})
