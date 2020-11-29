@@ -224,7 +224,9 @@ body {
   border-radius: 50%;
   background-color: rgba(var(--christmas-tree-light-color), 1);
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+  opacity: 1;
 
+  will-change: opacity;
   animation: c-christmas-tree-lights-glow both infinite 2.5s ease-in-out;
 }
 .c-christmas-tree__light:after {
@@ -255,12 +257,10 @@ body {
 
 @keyframes c-christmas-tree-lights-glow {
   0%, 100% {
-    background-color: rgba(var(--christmas-tree-light-color), 0.7);
-    box-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+    opacity: 0.5;
   }
   50% {
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-    background-color: rgba(var(--christmas-tree-light-color), 1);
+    opacity: 1;
   }
 }
 
