@@ -891,6 +891,7 @@ function selectRandomLink(data) {
 
 	function randomizeLink(PLLink) {
 		for (var i = 0; i < LINKS["DropboxURLs"].length; i++) {
+			console.log(PLLink + "\t" + LINKS["DropboxURLs"][i][0] + "\t" + PLLink.indexOf(LINKS["DropboxURLs"][i][0]));
 			if (PLLink.indexOf(LINKS["DropboxURLs"][i][0]) > -1) {
 				rdmIndex = Math.floor(Math.random() * LINKS["DropboxURLs"][i].length);
 				rdmLink = LINKS["DropboxURLs"][i][rdmIndex];
