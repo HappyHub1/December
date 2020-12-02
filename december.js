@@ -899,7 +899,7 @@ function selectRandomLink(data) {
 					rdmLink += "placeholder.mp4";
 				}
 				console.log(i + "\t" + rdmLink);
-				videoElement.src = rdmLink;
+				setTimeout(function() {videoElement.src = rdmLink;}, 250);
 				break;
 			}
 		}
