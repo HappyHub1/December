@@ -891,7 +891,7 @@ function selectRandomLink(data) {
 
 	function randomizeLink(PLLink) {
 		for (var i = 0; i < LINKS["DropboxURLs"].length; i++) {
-			console.log(PLLink + "\t" + LINKS["DropboxURLs"][i][0] + "\t" + PLLink.indexOf(LINKS["DropboxURLs"][i][0]));
+			//console.log(PLLink + "\t" + LINKS["DropboxURLs"][i][0] + "\t" + PLLink.indexOf(LINKS["DropboxURLs"][i][0]));
 			if (PLLink.indexOf(LINKS["DropboxURLs"][i][0]) > -1) {
 				rdmIndex = Math.floor(Math.random() * LINKS["DropboxURLs"][i].length);
 				rdmLink = LINKS["DropboxURLs"][i][rdmIndex];
@@ -899,7 +899,7 @@ function selectRandomLink(data) {
 					rdmLink += "placeholder.mp4";
 				}
 				console.log(i + "\t" + rdmLink);
-				setTimeout(function() {videoElement.src = rdmLink;}, 250);
+				videoElement.src = rdmLink;
 				break;
 			}
 		}
