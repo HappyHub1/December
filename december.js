@@ -875,40 +875,8 @@ function selectRandomLink(data) {
 		iLinkRefreshes = 0;
 	}
 
-	randomizeLink(activeLink);	
+	randomizeLink(activeLink);
 
-<<<<<<< Updated upstream
-			if (iLinkRefreshes > 10 || videoElement.readyState === 4) {
-				clearInterval(rdmLinkInterval);
-				rdmLinkInterval = false;
-				iLinkRefreshes = 0;
-			} else {
-				//if (videoElement) { Will clean this up once this is 100% good.
-					//if (videoElement.readyState !== 4) {
-						for (var i = 0; i < LINKS["DropboxURLs"].length; i++) {
-							if (data.id.indexOf(LINKS["DropboxURLs"][i][0]) > -1) {
-								rdmIndex = Math.floor(Math.random() * LINKS["DropboxURLs"][i].length);
-								rdmLink = LINKS["DropboxURLs"][i][rdmIndex];
-								if (rdmLink.indexOf("dropbox.com") > -1 && rdmLink[rdmLink.length-1] === "/") {
-									rdmLink += "placeholder.mp4";
-								}
-								console.log(i + "\t" + rdmLink);
-								videoElement.src = rdmLink;
-								rdmFound = true;
-								break;
-							}
-						}
-						if (!rdmFound) {
-							$("#mediarefresh").click();	
-						}
-						iLinkRefreshes++;
-					/*} else {
-						clearInterval(rdmLinkInterval);
-						rdmLinkInterval = false;
-						iLinkRefreshes = 0;
-					}
-				}*/
-=======
 	rdmLinkInterval = setInterval(function() {
 		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
 
@@ -932,7 +900,6 @@ function selectRandomLink(data) {
 				console.log(i + "\t" + rdmLink);
 				videoElement.src = rdmLink;
 				break;
->>>>>>> Stashed changes
 			}
 		}
 		iLinkRefreshes++;
