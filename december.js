@@ -1076,6 +1076,7 @@ $("#layout-link li:nth-child(2) a").on("click", function() {
 
 var _chatOnly = chatOnly;
 chatOnly = function () {
+	removeNicoText();
 	$("#currenttitle").css({"display":"inline","border-width":"0px"}).appendTo($("#chatheader"));
 	webmthing = $("<div/>").appendTo($('<div id="webmthing">Toggle webms</div>').appendTo(chatfunc));
 	embedvid.removeClass("btn-sm").addClass("btn-xs").appendTo(webmthing);
@@ -1927,7 +1928,7 @@ var NicoNicoCommentManager = function () {
 	_createClass(NicoNicoCommentManager, [{
 		key: 'cleanup',
 		value: function cleanup() {
-			for (var i = 0; i < this._comments; i++) {
+			for (var i = 0; i < this._comments.length; i++) {
 				var comment = this._comments[i];
 				comment.cleanup();
 			}
