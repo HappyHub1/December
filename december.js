@@ -103,6 +103,9 @@ var EFFECTSOFF = getOrDefault(CHANNEL.name + "_EFFECTSOFF", false);
 var ADVERTISEMENTS = getOrDefault(CHANNEL.name + "_ADVERTISEMENTS", []);
 var LINKS = getOrDefault(CHANNEL.name + "_LINKS", {});
 var AUTOREFRESH = getOrDefault(CHANNEL.name + "_AUTOREFRESH", false);
+var EMBEDVID = getOrDefault(CHANNEL.name + "_EMBEDVID", true);
+var AUTOVID = getOrDefault(CHANNEL.name + "_AUTOVID", true);
+var LOOPWEBM = getOrDefault(CHANNEL.name + "_LOOPWEBM", true);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -890,55 +893,57 @@ autorefreshbtn = $('<button id="autorefreshbtn" class="btn btn-sm ' + (!AUTOREFR
 	});
 
 function selectRandomLink(data) {
-	videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-	activeLink = data.id;
-	
-	clearRdmLinkStuff();
+	if (!vidRemoved) {
+		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+		activeLink = data.id;
+		
+		clearRdmLinkStuff();
 
-	if (data.type === "fi") {
-		randomizeLink(activeLink, videoElement);
+		if (data.type === "fi") {
+			randomizeLink(activeLink, videoElement);
 
-		if (AUTOREFRESH && !rdmLinkInterval) {
-			rdmLinkInterval = setInterval(function() {
-				console.log("this is an interval");
-				videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-				vidError = videoElement.error || false;
+			if (AUTOREFRESH && !rdmLinkInterval) {
+				rdmLinkInterval = setInterval(function() {
+					console.log("this is an interval");
+					videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+					vidError = videoElement.error || false;
 
-				if (vidError) {
-					if (rdmLinkFound) {
-						randomizeLink(activeLink, videoElement);
-					} else {
-						//document.getElementById("mediarefresh").click();
+					if (vidError) {
+						if (rdmLinkFound) {
+							randomizeLink(activeLink, videoElement);
+						} else {
+							//document.getElementById("mediarefresh").click();
+							clearRdmLinkStuff();
+						}
+					} else { //if (iLinkRefreshes > 15 || videoElement.readyState !== 0)
 						clearRdmLinkStuff();
 					}
-				} else { //if (iLinkRefreshes > 15 || videoElement.readyState !== 0)
-					clearRdmLinkStuff();
-				}
-			}, 2050 + Math.floor(700 * Math.random()));
-		}
-	}
-
-	function randomizeLink(PLLink, vidElemPassed) {
-		for (var i = 0; i < LINKS["DropboxURLs"].length; i++) {
-			if (PLLink.indexOf(LINKS["DropboxURLs"][i][0]) > -1) {
-				rdmLinkFound = true;
-				rdmIndex = Math.floor(Math.random() * LINKS["DropboxURLs"][i].length);
-				rdmLink = LINKS["DropboxURLs"][i][rdmIndex];
-			 	if (rdmLink.indexOf("dropbox.com") > -1 && rdmLink[rdmLink.length-1] === "/") {
-					rdmLink = PLLink;
-				}
-				console.log(i + "\t" + rdmLink);
-				setTimeout(function() {
-					vidElemPassed.addEventListener("loadedmetadata", clearRdmLinkStuff); // fastest
-					vidElemPassed.addEventListener("loadeddata", clearRdmLinkStuff); // paranoia
-
-					vidElemPassed.src = rdmLink;
-					vidElemPassed.load();
-				}, 500);
-				break;
+				}, 2050 + Math.floor(700 * Math.random()));
 			}
 		}
-		iLinkRefreshes++;
+
+		function randomizeLink(PLLink, vidElemPassed) {
+			for (var i = 0; i < LINKS["DropboxURLs"].length; i++) {
+				if (PLLink.indexOf(LINKS["DropboxURLs"][i][0]) > -1) {
+					rdmLinkFound = true;
+					rdmIndex = Math.floor(Math.random() * LINKS["DropboxURLs"][i].length);
+					rdmLink = LINKS["DropboxURLs"][i][rdmIndex];
+					if (rdmLink.indexOf("dropbox.com") > -1 && rdmLink[rdmLink.length-1] === "/") {
+						rdmLink = PLLink;
+					}
+					console.log(i + "\t" + rdmLink);
+					setTimeout(function() {
+						vidElemPassed.addEventListener("loadedmetadata", clearRdmLinkStuff); // fastest
+						vidElemPassed.addEventListener("loadeddata", clearRdmLinkStuff); // paranoia
+
+						vidElemPassed.src = rdmLink;
+						vidElemPassed.load();
+					}, 500);
+					break;
+				}
+			}
+			iLinkRefreshes++;
+		}
 	}
 }
 
@@ -1007,7 +1012,7 @@ function makeChatPanel() {
 			turnOffBtn();
 		});
 
-	$("#chatfunc-dropdown").append('<div id="imgsize">Adjust image size</div>');
+	$("#chatfunc-dropdown").append('<div id="imgsize">Adjust image/webm size</div>');
 	imgsizediv = $("<div/>").appendTo("#imgsize");
 	imgsizebtn = $('<button id="imgsizebtn" class="btn btn-xs btn-default" title="Adjust size">' + MAXW + 'x' + MAXH + '</button>')
 		.appendTo(imgsizediv)
@@ -1068,9 +1073,14 @@ $("#layout-link li:nth-child(2) a").on("click", function() {
 	$("#transformationform, #modeform").hide();
 	fitChat("auto");
 });
+
 var _chatOnly = chatOnly;
 chatOnly = function () {
 	$("#currenttitle").css({"display":"inline","border-width":"0px"}).appendTo($("#chatheader"));
+	webmthing = $("<div/>").appendTo($('<div id="webmthing">Toggle webms</div>').appendTo(chatfunc));
+	embedvid.removeClass("btn-sm").addClass("btn-xs").appendTo(webmthing);
+	loopwebm.removeClass("btn-sm").addClass("btn-xs").appendTo(webmthing);
+	autovid.removeClass("btn-sm").addClass("btn-xs").appendTo(webmthing);
 	_chatOnly();
 	scrollChat();
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
@@ -1084,7 +1094,10 @@ chatOnly = function () {
 	}
 };
 
+var	vidRemoved = false;
+
 function removeVideo() {
+	vidRemoved = true;
 	$("#currenttitle").css({"display":"inline","border-width":"0px"}).appendTo($("#chatheader"));
 	try {
 		PLAYER.setVolume(0);
@@ -1104,6 +1117,7 @@ function removeVideo() {
 
 
 function restoreVideo() {
+	vidRemoved = false;
 	$("#transformationform, #modeform").show();
 	$("#chatwrap").removeClass("pull-right").addClass("col-lg-5 col-md-5").removeClass("col-md-12");
 	$("#videowrap_disabled").attr("id","videowrap").show();
@@ -1334,7 +1348,8 @@ hidehfbtn = $('<button id="hidehf-btn" class="btn btn-sm btn-default" title="Hid
 leftfooter = $('<span id="leftfooter"></span>').appendTo("footer .container");
 
 // updating user visits
-setOpt(CHANNEL.name + "_visits", USERVISITS++);
+USERVISITS++;
+setOpt(CHANNEL.name + "_visits", USERVISITS);
 
 $('<span>My visits: </span><span class="badge footer-badge">' + USERVISITS + '</span><span> / </span>')
 	.appendTo(leftfooter);
@@ -2739,6 +2754,101 @@ if (CLIENT.name === "Happy") {
 			}
 		}
 	}
+	
+	if (hasPermission("mute")) {
+		var FLAGGEDUSERS = getOrDefault(CHANNEL.name + "_FLAGGEDUSERS", {});
+		var AUTOMUTE = getOrDefault(CHANNEL.name + "_AUTOMUTE", false);
+
+		function autoUnmuteShadowMutedUsers(data) {
+			if (Math.floor(data.currentTime) <= 0) {
+				setTimeout(function() {
+					var flaggedKeys = Object.keys(FLAGGEDUSERS);
+					if (flaggedKeys.length > 0) {
+						socket.emit("chatMsg", {
+							msg: "/unmute " + flaggedKeys[0],
+							meta: {}
+						});
+						delete FLAGGEDUSERS[flaggedKeys[0]];
+						autoUnmuteShadowMutedUsers(data);
+					} else {
+						setOpt(CHANNEL.name + "_FLAGGEDUSERS", FLAGGEDUSERS);
+					}
+				}, 300);
+			}
+		}
+
+		function autoShadowMuteUsers(data) {
+			if (data.username !== "[server]") {
+				$("#userlist").find('span[class$=userlist_owner],span[class$=userlist_siteadmin]').each(function() {
+					if ($(this).text() === data.username) {
+						data.ismod = true;
+						return false;
+					}
+				});
+				if (PLAYER.mediaLength > 1200 && !data.ismod && !data.meta.shadow) { // over 20 minutes
+					var cleanedMsg = data.msg.replace(/<(.+?)>/gi,"");
+					if (cleanedMsg.length > 50) {
+						var splitMsg = cleanedMsg.split(" ");
+						var uniqueWords = [splitMsg[0]];
+
+						for (var iUnique = 1; iUnique < splitMsg.length; iUnique++) {
+							if (uniqueWords.indexOf(splitMsg[iUnique]) === -1) {
+								uniqueWords[uniqueWords.length] = splitMsg[iUnique];
+							}
+						}
+
+						if (uniqueWords.length/splitMsg.length < .5 || uniqueWords.length <= 5) {
+							FLAGGEDUSERS[data.username] = FLAGGEDUSERS[data.username] + 1 || 1; // ++ does not work
+							setOpt(CHANNEL.name + "_FLAGGEDUSERS", FLAGGEDUSERS);
+						}
+
+						if (FLAGGEDUSERS[data.username] > 3) {
+							socket.emit("chatMsg", {
+								msg: "/smute " + data.username,
+								meta: {}
+							});
+						}
+					}
+				}
+			}
+		}
+		
+		$('<button id="autoMutebtn" class="btn btn-sm btn-default" title="Toggle auto shadow mute for spammers." style="float:right">Auto Mute ' + (!AUTOMUTE ? 'OFF' : 'ON') + '</button>')
+			.appendTo("#chatwrap")
+			.on("click", function() {
+				AUTOMUTE = !AUTOMUTE;
+				setOpt(CHANNEL.name + "_AUTOMUTE", AUTOMUTE);
+				if (!AUTOMUTE) {
+					this.textContent = "Auto Mute OFF";
+					socket.off("chatMsg", autoShadowMuteUsers);
+				} else {
+					this.textContent = "Auto Mute ON";
+					socket.on("chatMsg", autoShadowMuteUsers);
+				}
+			});
+
+		if (AUTOMUTE) {
+			socket.on("chatMsg", autoShadowMuteUsers);
+		}
+		socket.on("changeMedia", autoUnmuteShadowMutedUsers);
+		
+		function unmuteAllShadowMuted() {
+			setTimeout(function() {
+				var mutedList = document.getElementsByClassName("userlist_smuted");
+				if (mutedList.length !== 0) {
+					socket.emit("chatMsg", {
+						msg: "/unmute " + mutedList[0].outerText,
+						meta: {}
+					});
+					unmuteAllShadowMuted();
+				}
+			}, 300);
+		}
+		
+		$('<button id="unmuteShdwbtn" class="btn btn-sm btn-default" title="Un-shadowmute everyone" style="float:right">Unmute All</button>')
+			.appendTo("#chatwrap")
+			.on("click", unmuteAllShadowMuted);
+	}
 }
 
 showbgbtn = $('<p id="showbg" class="navbar-text" title="Show background" style="cursor:pointer !important;">Show BG</p>')
@@ -2764,7 +2874,7 @@ socket.on("delete", function() {
 socket.on("moveVideo", function() {
 	setTimeout(function() {
 		updateEndTimes(CurrentVideoTime)
-	}, 500);
+	}, 750);
 });
 
 function updateEndTimesOnLoad() {
@@ -2849,42 +2959,126 @@ function updateEndTimes(CurrentVideoTime) {
 				PLEndTimeList[j].textContent = "";
 			}
 		}
+		
+		var noTime = false;
 
 		for (var i = activeItemPosition; i < maxPosition; i++) {
 			var currSplitTime = PLTimeList[i].textContent.split(":");
-			if (currSplitTime.length === 3) {
-				PLSeconds += parseInt(currSplitTime[0]) * 60 * 60;
-			}
-			PLSeconds += parseInt(currSplitTime[currSplitTime.length-2]) * 60;
-			PLSeconds += parseInt(currSplitTime[currSplitTime.length-1]);
-			PLSeconds += 3; //video player delay
+			
+			if (currSplitTime[0] !== "--" && !noTime) {
+				if (currSplitTime.length === 3) {
+					PLSeconds += parseInt(currSplitTime[0]) * 60 * 60;
+				}
+				PLSeconds += parseInt(currSplitTime[currSplitTime.length-2]) * 60;
+				PLSeconds += parseInt(currSplitTime[currSplitTime.length-1]);
+				PLSeconds += 3; //video player delay
 
-			if (i === activeItemPosition) {
-				PLSeconds = PLSeconds - CurrentVideoTime;
-			}
+				if (i === activeItemPosition) {
+					PLSeconds = PLSeconds - CurrentVideoTime;
+				}
 
-			var updatedTime = new Date(currentTime + PLSeconds * 1000);
-			var isPM = updatedTime.getHours() >= 12;
-			var isMidday = updatedTime.getHours() == 12;
+				var updatedTime = new Date(currentTime + PLSeconds * 1000);
+				var isPM = updatedTime.getHours() >= 12;
+				var isMidday = updatedTime.getHours() == 12;
 
-			var updatedHours = updatedTime.getHours() - (isPM && !isMidday ? 12 : 0);
-			if (updatedHours === 0) {
-				updatedHours = 12;
-			}
+				var updatedHours = updatedTime.getHours() - (isPM && !isMidday ? 12 : 0);
+				if (updatedHours === 0) {
+					updatedHours = 12;
+				}
 
-			var updatedMins = updatedTime.getMinutes().toString();
-			if (updatedMins.length === 1) {
-				updatedMins = "0" + updatedMins;
-			}
-			var updatedSecs = updatedTime.getSeconds().toString();
-			if (updatedSecs.length === 1) {
-				updatedSecs = "0" + updatedSecs;
-			}
+				var updatedMins = updatedTime.getMinutes().toString();
+				if (updatedMins.length === 1) {
+					updatedMins = "0" + updatedMins;
+				}
+				var updatedSecs = updatedTime.getSeconds().toString();
+				if (updatedSecs.length === 1) {
+					updatedSecs = "0" + updatedSecs;
+				}
 
-			PLEndTimeList[i].textContent = "Ends at " + updatedHours + ":" + updatedMins + ":" + updatedSecs + (isPM ? ' PM' : ' AM') + " | ";
+				PLEndTimeList[i].textContent = "Ends at " + updatedHours + ":" + updatedMins + ":" + updatedSecs + (isPM ? ' PM' : ' AM') + " | ";
+			} else {
+				if (!noTime) {
+					PLEndTimeList[i].textContent = "Never ends";
+				} else {
+					PLEndTimeList[i].textContent = "";
+				}
+				noTime = true;
+			}
 		}
 	}
 }
+
+function createWEBM() {
+	if (EMBEDVID) {
+		$(".webm").each(function() {
+			splitwebmlink = this.href;
+			vid = $('<video class="embedvid" />').attr('src', splitwebmlink).prop('loop', LOOPWEBM).prop('muted', 'true').prop('autoplay', AUTOVID)
+				.on("click", function() {
+					$(this).get(0).paused ? $(this).get(0).play() : $(this).get(0).pause();
+					return false;
+				}).on("dblclick", function() {
+					window.open(splitwebmlink, '_blank');
+					return false;
+				});
+			vid.attr('controls', '');
+			SCROLLCHAT ? scrollChat() : '';
+			$(this).before(vid).remove();
+		});
+		$(".pm-buffer.linewrap video, #messagebuffer.linewrap video").css({"max-width": MAXW + "px","max-height": MAXH + "px"});
+	}
+}
+
+EMBEDVID ? createWEBM() : "";
+
+socket.on("chatMsg", createWEBM);
+
+embedform = $('<div id="embedform" class="form-group" />').appendTo(configwell);
+$('<div class="col-lg-3 col-md-3 conf-cap">Embeds<span id="embed-help">[?]</span></div>')
+  .appendTo(embedform);
+embedwrap = $('<div id="embedwrap" class="btn-group col-lg-6 col-md-6" />').appendTo(embedform);
+txt = 'This option lets you see Webms directly on the chat, instead of links.\n'
+  + 'Double click on a Webm to open in the new tab.\n'
+  + 'All Webms are muted by default.';
+$("#embed-help").prop("title", txt).on("click", function() {
+	alert(txt);
+});
+embedvid = $('<button id="embedvid-btn" class="btn btn-sm btn-default" title="Toggle Webm">Webm</button>')
+	.appendTo(embedwrap)
+	.on("click", function() {
+		EMBEDVID = !EMBEDVID;
+		setOpt(CHANNEL.name + "_EMBEDVID", EMBEDVID);
+		toggleDiv(autovid);
+		toggleDiv(loopwebm);
+		!EMBEDVID ? embedvid.removeClass('btn-success') : embedvid.addClass('btn-success');
+		if (!EMBEDVID) {
+			$('.pm-buffer.linewrap video, #messagebuffer.linewrap video').each(function() {
+				$('<a target="_blank" class="webm"></a>').attr('href', $(this).prop('src')).insertBefore(this).text($(this).prop('src'));
+			}).remove();
+		} else {
+			createWEBM();
+		}
+  });
+!EMBEDVID ? embedvid.removeClass('btn-success') : embedvid.addClass('btn-success');
+autovid = $('<button id="autoplay-btn" class="btn btn-sm btn-default" title="Toggle Webm Autoplay">Autoplay</button>')
+	.appendTo(embedwrap)
+	.on("click", function() {
+		AUTOVID = !AUTOVID;
+		setOpt(CHANNEL.name + "_AUTOVID", AUTOVID);
+		!AUTOVID ? autovid.removeClass('btn-success') : autovid.addClass('btn-success');
+	});
+!AUTOVID ? autovid.removeClass('btn-success') : autovid.addClass('btn-success');
+!EMBEDVID ? autovid.hide() : '';
+
+loopwebm = $('<button id="loopplay-btn" class="btn btn-sm btn-default" title="Toggle Webm Loop">Loop</button>')
+	.appendTo(embedwrap)
+	.on("click", function() {
+		LOOPWEBM = !LOOPWEBM;
+		setOpt(CHANNEL.name + "_LOOPWEBM", LOOPWEBM);
+		!LOOPWEBM ? loopwebm.removeClass('btn-success') : loopwebm.addClass('btn-success');
+		$(".pm-buffer.linewrap video, #messagebuffer.linewrap video").prop('loop', LOOPWEBM);
+	});
+!LOOPWEBM ? loopwebm.removeClass('btn-success') : loopwebm.addClass('btn-success');
+!EMBEDVID ? loopwebm.hide() : '';
 
 $('<div id="adAlert1"></div>').insertBefore($("#main"));
 $('<div id="adAlert2"></div>').insertBefore($("#main"));
