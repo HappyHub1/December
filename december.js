@@ -2743,7 +2743,7 @@ function updateEndTimes(CurrentVideoTime) {
 				PLEndTimeList[i].textContent = "Ends at " + updatedHours + ":" + updatedMins + ":" + updatedSecs + (isPM ? ' PM' : ' AM') + " | ";
 			} else {
 				if (!noTime) {
-					PLEndTimeList[i].textContent = "Never ends";
+					PLEndTimeList[i].textContent = "Never ends | ";
 				} else {
 					PLEndTimeList[i].textContent = "";
 				}
