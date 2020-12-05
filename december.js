@@ -1076,7 +1076,6 @@ $("#layout-link li:nth-child(2) a").on("click", function() {
 
 var _chatOnly = chatOnly;
 chatOnly = function () {
-	removeNicoText();
 	$("#currenttitle").css({"display":"inline","border-width":"0px"}).appendTo($("#chatheader"));
 	webmthing = $("<div/>").appendTo($('<div id="webmthing">Toggle webms</div>').appendTo(chatfunc));
 	embedvid.removeClass("btn-sm").addClass("btn-xs").appendTo(webmthing);
@@ -1098,6 +1097,7 @@ chatOnly = function () {
 var	vidRemoved = false;
 
 function removeVideo() {
+	removeNicoText();
 	vidRemoved = true;
 	$("#currenttitle").css({"display":"inline","border-width":"0px"}).appendTo($("#chatheader"));
 	try {
