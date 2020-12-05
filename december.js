@@ -1097,6 +1097,7 @@ chatOnly = function () {
 var	vidRemoved = false;
 
 function removeVideo() {
+	removeNicoText();
 	vidRemoved = true;
 	$("#currenttitle").css({"display":"inline","border-width":"0px"}).appendTo($("#chatheader"));
 	try {
@@ -1927,7 +1928,7 @@ var NicoNicoCommentManager = function () {
 	_createClass(NicoNicoCommentManager, [{
 		key: 'cleanup',
 		value: function cleanup() {
-			for (var i = 0; i < this._comments; i++) {
+			for (var i = 0; i < this._comments.length; i++) {
 				var comment = this._comments[i];
 				comment.cleanup();
 			}
