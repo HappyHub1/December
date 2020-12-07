@@ -2683,7 +2683,7 @@ function updateEndTimes(CurrentVideoTime) {
     var PLSeconds = 0;
 
 	if (PLTimeList.length !== 0) {
-		if (PLEndTimeList === 0) {
+		if (PLEndTimeList.length === 0) {
 			updateEndTimesOnLoad();
 		}
 
