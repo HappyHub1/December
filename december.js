@@ -2625,12 +2625,12 @@ socket.on("moveVideo", function() {
 function updateEndTimesOnLoad() {
     var PLTimeList = Array.from(document.getElementsByClassName("qe_time")).forEach(function (PLCurrElement) {
         var qeEndTime = document.createElement("span");
-        qeEndTime.setAttribute("class", "qe_endTime");
+        qeEndTime.classList.add('qe_endTime');
 
         PLCurrElement.parentElement.insertBefore(qeEndTime, PLCurrElement.nextSibling);
 
         var qeuser = document.createElement("span");
-        qeuser.setAttribute("class", "qe_user");
+        qeuser.classList.add('qe_user');
         qeuser.textContent = PLCurrElement.parentElement.getAttribute("title").replace("Added by: ", "") + " | ";
 
         PLCurrElement.parentElement.insertBefore(qeuser, PLCurrElement.nextSibling);
@@ -2678,12 +2678,12 @@ function updateEndTimes(CurrentVideoTime) {
     var currentTime = new Date().getTime();
     var activeItemPosition = Array.from(document.getElementById("queue").children).indexOf(document.getElementsByClassName("queue_active")[0]);
 
-    var PLTimeList = document.getElementsByClassName("qe_time");
+    var PLTimeList = document.querySelectorAll("#queue .qe_time");
     var PLEndTimeList = document.getElementsByClassName("qe_endTime") || false;
     var PLSeconds = 0;
 
 	if (PLTimeList.length !== 0) {
-		if (document.getElementsByClassName("qe_endTime").length === 0) {
+		if (PLEndTimeList === 0) {
 			updateEndTimesOnLoad();
 		}
 
