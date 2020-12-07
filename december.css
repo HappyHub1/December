@@ -267,6 +267,9 @@ background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/shiz_icon.
 .chat-msg-tsukarin .username::before {
 background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/wafu_icon.png');
 }
+.chat-msg-tsukat .username::before {
+background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/wafu_icon.png');
+}
 .username::before{
 	content:"AA";
 	background-size:20px 20px !important;
