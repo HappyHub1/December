@@ -16,6 +16,8 @@ var ThemesCSS = [
 var TopUserLogo = [
 ];
 
+var SpamRegex = new RegExp(/(>)*(ami|アミ|a m i|あみ|ＡＭＩ)(.)*(ami|アミ|a m i|あみ|ＡＭＩ)/,"gi");
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* ----- END OF CONFIGURATION, DO NOT CHANGE ANYTHING BELOW ----- */
@@ -106,6 +108,7 @@ var AUTOREFRESH = getOrDefault(CHANNEL.name + "_AUTOREFRESH", false);
 var EMBEDVID = getOrDefault(CHANNEL.name + "_EMBEDVID", true);
 var AUTOVID = getOrDefault(CHANNEL.name + "_AUTOVID", true);
 var LOOPWEBM = getOrDefault(CHANNEL.name + "_LOOPWEBM", true);
+var ANTISPAM = getOrDefault(CHANNEL.name + "_ANTISPAM", false);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -947,6 +950,51 @@ function selectRandomLink(data) {
 	}
 }
 
+const PlaylistDelimiter = "???streamurl???"; // not used yet
+
+function selectRandomLinkNoJSON(data) {
+	if (!vidRemoved && data.type === "fi") {
+		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+		aLinks = data.id.split(PlaylistDelimiter);
+		
+		clearRdmLinkStuff();
+		
+		if (aLinks.length > 1) {
+			randomizeLinkNoJSON(aLinks, videoElement);
+			
+			if (AUTOREFRESH && !rdmLinkInterval) {
+				rdmLinkInterval = setInterval(function() {
+					videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+					vidError = videoElement.error || false;
+
+					if (vidError) {
+						randomizeLinkNoJSON(aLinks, videoElement);
+					} else if (iLinkRefreshes > 15 || videoElement.readyState !== 0) {
+						clearRdmLinkStuff();
+					}
+				}, 2050 + Math.floor(700 * Math.random()));
+			}
+		}
+
+		function randomizeLinkNoJSON(rdmLinks, vidElemPassed) {
+			if (vidElemPassed) {
+				rdmIndex = Math.floor(Math.random() * rdmLinks.length);
+				rdmLink = rdmLinks[rdmIndex];
+				
+				console.log(rdmLink);
+				setTimeout(function() {
+					vidElemPassed.addEventListener("loadedmetadata", clearRdmLinkStuff); // fastest
+					vidElemPassed.addEventListener("loadeddata", clearRdmLinkStuff); // paranoia
+
+					vidElemPassed.src = rdmLink;
+					vidElemPassed.load();
+				}, 500);
+				iLinkRefreshes++;
+			}
+		}
+	}
+}
+
 setTimeout(function() {
 	document.getElementById("mediarefresh").click();
 }, 500);
@@ -1733,16 +1781,16 @@ nicobtn = $('<button id="nicobtn" class="btn btn-sm ' + (!NICORIPOFF ? 'btn-dang
 		if (!NICORIPOFF) {
 			this.className = "btn btn-sm btn-danger";
 			removeNicoText();
-			socket.removeListener("chatMsg", addNicoNicoMessageDataToQueue);
+			//socket.removeListener("chatMsg", addNicoNicoMessageDataToQueue);
 			socket.removeListener("clearchat", removeNicoText);
 		} else {
 			this.className = "btn btn-sm btn-success";
-			socket.on("chatMsg", addNicoNicoMessageDataToQueue);
+			//socket.on("chatMsg", addNicoNicoMessageDataToQueue);
 			socket.on("clearchat", removeNicoText);
 		}
 	});
 if (NICORIPOFF) {
-	socket.on("chatMsg", addNicoNicoMessageDataToQueue);
+	//socket.on("chatMsg", addNicoNicoMessageDataToQueue);
 	socket.on("clearchat", removeNicoText);
 }
 
@@ -2314,7 +2362,10 @@ function formatChatMessage(data, last) {
 		teamClass += ' anon';
 	}
 
-	data.msg = data.msg.replace(/ <span style="display:none" class="teamColorSpan">.+/gi,"")
+	//data.msg = data.msg.replace(/ <span style="display:none" class="teamColorSpan">.+/gi,"")
+	if (ANTISPAM) {
+		data.msg = data.msg.replace(SpamRegex, "");
+	}
 
     // Phase 1: Determine whether to show the username or not
     var skip = data.username === last.name;
@@ -2383,6 +2434,10 @@ function formatChatMessage(data, last) {
     if (data.meta.shadow) {
         div.addClass("chat-shadow");
     }
+	
+	if (NICORIPOFF) {
+		addNicoNicoMessageDataToQueue(data);
+	}
 
     return div;
 }
@@ -2613,7 +2668,9 @@ showbgbtn = $('<p id="showbg" class="navbar-text" title="Show background" style=
 var CurrentVideoTime = 0;
 
 socket.on("delete", function() {
-    updateEndTimes(CurrentVideoTime);
+	setTimeout(function() {
+		updateEndTimes(CurrentVideoTime);
+	}, 750); // hopefully this fixes the issue..
 });
 
 socket.on("moveVideo", function() {
@@ -3757,3 +3814,16 @@ $('<button id="effectsbtn" class="btn btn-sm ' + (EFFECTSOFF ? 'btn-danger' : 'b
 // This is what turns the whole thing on to be run by chat messages like /erabe
 // TODO: Should we hide this behind a button being enabled? Like niconico is?
 socket.on("chatMsg", CustomTextTriggers.handleChatMessage);
+
+
+spambtn = $('<button id="spambtn" class="btn btn-sm ' + (ANTISPAM ? 'btn-danger' : 'btn-success') + '" title="AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI">AMI AMI AMI </button>')
+	.appendTo("#playercontrols")
+	.on("click", function() {
+		ANTISPAM = !ANTISPAM;
+		setOpt(CHANNEL.name + "_ANTISPAM", ANTISPAM);
+		if (ANTISPAM) {
+			this.className = "btn btn-sm btn-danger";
+		} else {
+			this.className = "btn btn-sm btn-success";
+		}
+	});
