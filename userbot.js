@@ -47,8 +47,8 @@ $('<button id="dl-logs" class="btn btn-sm btn-default">DL Logs</button>')
 		}, 3000);
 	});
 
-removeChatSocket();
-socket.on("chatMsg", chatSocket);
+//removeChatSocket();
+//socket.on("chatMsg", chatSocket);
 
 function removeChatSocket() {
 	socket.off("chatMsg", chatSocket);
