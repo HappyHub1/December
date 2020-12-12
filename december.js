@@ -3848,7 +3848,11 @@ class SnowEffect {
   }
 
   static handleFrame() {
-    const state = SnowEffect.state;
+		const state = SnowEffect.state;
+		if (!state.enabled) {
+			return;
+		}
+
     state._context.clearRect(0, 0, state._width, state._height);
 
     // Add new snowflakes
@@ -3941,7 +3945,7 @@ SnowEffect.snow_levels = {
 
 
 /**
- * Usage: /banri <minutes to be on = 10> <infection rate (out of 100) = 50>
+ * Usage: /banri <minutes to be on = 10> <infection rate (out of 100) = 60>
  * Turn off: /banri off
  */
 class GhostBanriEffect {
@@ -4078,7 +4082,7 @@ class GhostBanriEffect {
 }
 GhostBanriEffect.command = '/banri';
 GhostBanriEffect.DEFAULT_LENGTH_MIN = 10 * 60;
-GhostBanriEffect.DEFAULT_INFECTION_RATE = 0.5;
+GhostBanriEffect.DEFAULT_INFECTION_RATE = 0.6;
 GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S = 30;
 GhostBanriEffect.BANRI_IMG = `${SCRIPT_FOLDER_URL}/Images/ghost-banri.png`;
 
