@@ -349,8 +349,118 @@ class SnowEffect {
 }
 
 
-const ef = new ChristmasWonderland();
-ef.activate();
+// const ef = new ChristmasWonderland();
+// ef.activate();
 
 // const snow = new SnowEffect();
 // snow.activate();
+
+class GhostBanriEffect {
+  constructor() {
+    this.state = {
+      enabled: false,
+      length_s: GhostBanriEffect.DEFAULT_LENGTH_S,
+      // The target number of people to be affected by each activation
+      infection_rate: GhostBanriEffect.DEFAULT_INFECTION_RATE,
+    };
+    this.banri_timeout = null;
+    this.deactivate_timeout = null;
+  }
+
+  activate(length_s = 0, infection_rate = 0) {
+    if (length_s > 0) {
+      this.state.length_s = length_s;
+      this.resetDeactivationTimer();
+    }
+    if (infection_rate > 0 && infection_rate <= 1) {
+      this.state.infection_rate = infection_rate;
+    }
+
+    if (this.state.enabled) {
+      return;
+    }
+
+    this.state.enabled = true;
+    this.maybeShowBanri();
+    this.resetDeactivationTimer();
+  }
+
+  deactivate() {
+    if (!this.state.enabled) {
+      return;
+    }
+
+    this.state.enabled = false;
+    if (this.banri_timeout) {
+      clearTimeout(this.banri_timeout);
+      this.banri_timeout = null;
+    }
+
+    this.length_s =GhostBanriEffect.DEFAULT_LENGTH_S;
+    this.infection_rate = GhostBanriEffect.DEFAULT_INFECTION_RATE;
+  }
+
+  maybeShowBanri() {
+    if (this.banri_timeout) {
+      clearTimeout(this.banri_timeout);
+      this.banri_timeout = null;
+    }
+
+    if (!this.state.enabled) {
+      return;
+    }
+
+    if (Math.random() > this.state.infection_rate) {
+      console.log('MISS');
+      this.banri_timeout = setTimeout(() => this.maybeShowBanri(), GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S * 1000);
+      return;
+    }
+
+    console.log('HIT');
+    this.showBanri()
+      .then(() => {
+        clearTimeout(this.banri_timeout);
+        this.banri_timeout = setTimeout(() => this.maybeShowBanri(), GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S * 1000);
+      });
+  }
+
+  showBanri() {
+    const img = document.createElement('img');
+    img.src = GhostBanriEffect.BANRI_IMG;
+    img.classList.add('c-effect__banri');
+    document.body.appendChild(img);
+
+    const window_width = window.innerWidth;
+    const window_height = window.innerHeight;
+
+    const min_left = 0;
+    const max_left = window_width - 40;
+    const min_top = 0;
+    const max_top = window_height - 40;
+
+    img.style.top = getRandomInt(min_left, max_left) + 'px';
+    img.style.left = getRandomInt(min_top, max_top) + 'px';
+    return new Promise((resolve) => {
+      img.addEventListener('animationend', () => {
+        img.parentElement.removeChild(img);
+        resolve();
+      });
+    });
+  }
+
+  resetDeactivationTimer() {
+    if (this.deactivate_timeout) {
+      clearTimeout(this.deactivate_timeout);
+      this.deactivate_timeout = null;
+    }
+
+    this.deactivate_timeout = setTimeout(() => this.deactivate(), this.state.length_s * 1000);
+  }
+}
+GhostBanriEffect.DEFAULT_LENGTH_S = 10 * 60;
+GhostBanriEffect.DEFAULT_INFECTION_RATE = 0.5;
+GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S = 5
+GhostBanriEffect.BANRI_IMG = './ghost-banri.png';
+
+const banri = new GhostBanriEffect();
+banri.activate(10 * 60, 0.9);

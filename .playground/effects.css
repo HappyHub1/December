@@ -287,3 +287,26 @@ body {
   pointer-events: none;
   z-index: 1000000;
 }
+
+
+
+/* --------------------------- Ghost banri effect --------------------------- */
+.c-effect__banri {
+  width: 280px;
+  max-width: 40%;
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  animation: c-effect__banri__fade 5s ease-in-out forwards;
+  will-change: opacity;
+}
+
+@keyframes c-effect__banri__fade {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
