@@ -2,6 +2,11 @@
 
 /* ----- DETAILED BASIC CONFIGURATION ----- */
 
+// Absolute path to the folder this script is running in. Helpful for adding relative paths to images
+let SCRIPT_FOLDER_URL = document.currentScript.src.split('/');
+SCRIPT_FOLDER_URL.pop();
+SCRIPT_FOLDER_URL = SCRIPT_FOLDER_URL.join('/');
+
 var adPercent = 0.1;
 
 var Favicon_URL = 'https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/tiger.png';
@@ -871,6 +876,7 @@ autorefreshbtn = $('<button id="autorefreshbtn" class="btn btn-sm ' + (!AUTOREFR
 function autoRefreshPlayer() {
 	if (AUTOREFRESH && data.type === "fi" && !vidRemoved) {
 		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+<<<<<<< HEAD
 		clearAutoRefresh();
 		
 		if (!rdmLinkInterval) {
@@ -883,6 +889,53 @@ function autoRefreshPlayer() {
 					document.getElementById("mediarefresh").click();
 				} else if (iRefreshes > 15 || videoElement.readyState !== 0) {
 					clearAutoRefresh();
+=======
+		activeLink = data.id;
+
+		clearRdmLinkStuff();
+
+		if (data.type === "fi") {
+			randomizeLink(activeLink, videoElement);
+
+			if (AUTOREFRESH && !rdmLinkInterval) {
+				rdmLinkInterval = setInterval(function() {
+					console.log("this is an interval");
+					videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+					vidError = videoElement.error || false;
+
+					if (vidError) {
+						if (rdmLinkFound) {
+							randomizeLink(activeLink, videoElement);
+						} else {
+							//document.getElementById("mediarefresh").click();
+							clearRdmLinkStuff();
+						}
+					} else { //if (iLinkRefreshes > 15 || videoElement.readyState !== 0)
+						clearRdmLinkStuff();
+					}
+				}, 2050 + Math.floor(700 * Math.random()));
+			}
+		}
+
+		function randomizeLink(PLLink, vidElemPassed) {
+			for (var i = 0; i < LINKS["DropboxURLs"].length; i++) {
+				if (PLLink.indexOf(LINKS["DropboxURLs"][i][0]) > -1) {
+					rdmLinkFound = true;
+					rdmIndex = Math.floor(Math.random() * LINKS["DropboxURLs"][i].length);
+					rdmLink = LINKS["DropboxURLs"][i][rdmIndex];
+					if (rdmLink.indexOf("dropbox.com") > -1 && rdmLink[rdmLink.length-1] === "/") {
+						rdmLink = PLLink;
+					}
+					console.log(i + "\t" + rdmLink);
+					setTimeout(function() {
+						vidElemPassed.addEventListener("loadedmetadata", clearRdmLinkStuff); // fastest
+						vidElemPassed.addEventListener("loadeddata", clearRdmLinkStuff); // paranoia
+
+						vidElemPassed.src = rdmLink;
+						vidElemPassed.load();
+					}, 500);
+					break;
+>>>>>>> d9a7c05 (Move images and add documentation)
 				}
 			}, 2050 + Math.floor(700 * Math.random()));
 		}
@@ -891,6 +944,7 @@ function autoRefreshPlayer() {
 
 const PlaylistDelimiter = "???streamurl???";
 
+<<<<<<< HEAD
 _loadMediaPlayer = loadMediaPlayer
 loadMediaPlayer = function(data) {
 	selectRandomLink(data);
@@ -904,6 +958,41 @@ handleMediaUpdate = function(data) {
     _handleMediaUpdate(data);
 	autoRefreshPlayer();
 }
+=======
+function selectRandomLinkNoJSON(data) {
+	if (!vidRemoved && data.type === "fi") {
+		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+		aLinks = data.id.split(PlaylistDelimiter);
+
+		clearRdmLinkStuff();
+
+		if (aLinks.length > 1) {
+			randomizeLinkNoJSON(aLinks, videoElement);
+
+			if (AUTOREFRESH && !rdmLinkInterval) {
+				rdmLinkInterval = setInterval(function() {
+					videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+					vidError = videoElement.error || false;
+
+					if (vidError) {
+						randomizeLinkNoJSON(aLinks, videoElement);
+					} else if (iLinkRefreshes > 15 || videoElement.readyState !== 0) {
+						clearRdmLinkStuff();
+					}
+				}, 2050 + Math.floor(700 * Math.random()));
+			}
+		}
+
+		function randomizeLinkNoJSON(rdmLinks, vidElemPassed) {
+			if (vidElemPassed) {
+				rdmIndex = Math.floor(Math.random() * rdmLinks.length);
+				rdmLink = rdmLinks[rdmIndex];
+
+				console.log(rdmLink);
+				setTimeout(function() {
+					vidElemPassed.addEventListener("loadedmetadata", clearRdmLinkStuff); // fastest
+					vidElemPassed.addEventListener("loadeddata", clearRdmLinkStuff); // paranoia
+>>>>>>> d9a7c05 (Move images and add documentation)
 
 function selectRandomLink(data) {
 	if (typeof data.id !== "undefined") {
@@ -1540,7 +1629,7 @@ Callbacks.usercount = function(count) {
             text += "s";
         }
         $("#usercount").text(text);
-		
+
 	if (MAXUSERS < count) {
 		MAXUSERS = count;
 		$("#maxusers").text(MAXUSERS + " max autists");
@@ -2229,7 +2318,7 @@ function formatChatMessage(data, last) {
 			var msg_parts = data.msg.trim().replace(/\s\s+/igm, ' ').split(' ');
 			var msg_command = msg_parts[0].substring(1,msg_parts[0].length);
 			var msg_time = 0;
-			
+
 			if (msg_command === "effects_stop" || msg_parts[1] === "off") {
 				effectClasses = "off";
 			} else {
@@ -2247,7 +2336,7 @@ function formatChatMessage(data, last) {
 					});
 				}, msg_time*1000);
 			}
-			
+
 			effectClasses = effectClasses.trim();
 			if (!classElementTester.test(MOTD)) {
 				MOTD = defaultEffectsHTMLFront + effectClasses + defaultEffectsHTMLBack + MOTD;
@@ -2259,7 +2348,7 @@ function formatChatMessage(data, last) {
 			});
 		}*/
 	}
-	
+
 	if (data.msg.length <= prevLength+1 && data.msg.length >= prevLength-1 && data.username !== CLIENT.name) {
 		stop = stop - .1;
 		if (stop < 0) {
@@ -2361,7 +2450,7 @@ function formatChatMessage(data, last) {
     if (data.meta.shadow) {
         div.addClass("chat-shadow");
     }
-	
+
 	if (NICORIPOFF) {
 		addNicoNicoMessageDataToQueue(data);
 	}
@@ -2651,7 +2740,7 @@ function makeQueueEntry(item, addbtns) {
 
     if(addbtns)
         addQueueButtons(li);
-	
+
 	setTimeout(function() {
 		updateEndTimes(PLAYER.player.currentTime());
 	}, 100);
@@ -2679,21 +2768,21 @@ function updateEndTimes(CurrentVideoTime) {
 
 		var maxItems = 50;
 		var maxPosition = 0;
-		
+
 		if (PLTimeList.length < activeItemPosition + maxItems) {
 			maxPosition = PLTimeList.length;
 		} else {
-			maxPosition = activeItemPosition + maxItems;			
+			maxPosition = activeItemPosition + maxItems;
 			for (var j = maxPosition; j < PLTimeList.length; j++) {
 				PLEndTimeList[j].textContent = "";
 			}
 		}
-		
+
 		var noTime = false;
 
 		for (var i = activeItemPosition; i < maxPosition; i++) {
 			var currSplitTime = PLTimeList[i].textContent.split(":");
-			
+
 			if (currSplitTime[0] !== "--" && !noTime) {
 				if (currSplitTime.length === 3) {
 					PLSeconds += parseInt(currSplitTime[0]) * 60 * 60;
@@ -3122,7 +3211,7 @@ static _create_present(is_left){
     const inner = document.createElement('img')
     inner.classList.add(`c-effect__presents-present-fall`);
     inner.classList.add(`c-effect__presents-present-fall-${animation}`);
-    inner.style.left = `${random_location}%`; 
+    inner.style.left = `${random_location}%`;
     inner.src = present_img;
     PresentsEffect.addElement(inner);
 
@@ -3291,147 +3380,11 @@ class PadoruEffect {
 
 }
 
-class SnowEffect {
-    ///////////////////////////////////////////
-    // Static variables
-    ///////////////////////////////////////////
-
-
-    ///////////////////////////////////////////
-        // "Public" Static methods
-        ///////////////////////////////////////////
-        static init() {
-            SnowEffect.command = '/snow';
-            SnowEffect.templates = ['❅', '❆'];
-            SnowEffect.animations = ['type1', 'type2', 'type3', 'type4'];
-            SnowEffect.levels = [
-                { spawn_rate: 250, spawn_limit: 10 },
-                { spawn_rate: 250, spawn_limit: 20 },
-                { spawn_rate: 150, spawn_limit: 20 },
-                { spawn_rate: 75, spawn_limit: 20 },
-            ];
-            SnowEffect.max_time_limit_s = 1200;
-            SnowEffect.state = {
-                is_on: false,
-                enabled: true,
-                level_info: SnowEffect.levels[0],
-                timeout: null,
-            }
-            SnowEffect.container = document.createElement('div');
-            document.documentElement.appendChild(SnowEffect.container);
-        }
-    static stop() {
-        SnowEffect.state.is_on = false;
-    }
-    static disable() {
-        SnowEffect.state.enabled = false;
-    }
-    static enable() {
-        SnowEffect.state.enabled = true;
-    }
-    static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
-        let [level, time_limit_s] = SnowEffect.parseMessage(message_parts);
-
-        // Update the currently used snowing level
-        let level_index = level - 1;
-        if (level_index < 0 || level_index > SnowEffect.levels.length) {
-            level_index = 0;
-        }
-        SnowEffect.state.level_info = SnowEffect.levels[level_index];
-
-        // Disable snow after the timeout. If there is already one, reset the timer
-        if (SnowEffect.state.timeout) {
-            clearTimeout(SnowEffect.state.timeout);
-        }
-        SnowEffect.state.timeout =
-            setTimeout(SnowEffect.stop, time_limit_s * 1000);
-
-        // Only start the snow animation if it is not already started
-        if (SnowEffect.state.is_on) {
-            return;
-        }
-        SnowEffect.state.is_on = true;
-        SnowEffect._runAnimation();
-    }
-    static addElement(element) {
-        SnowEffect.container.appendChild(element);
-    }
-
-    static parseMessage(message_parts) {
-        if (message_parts[0] === 'off') {
-            SnowEffect.stop();
-            return;
-        }
-
-        let level = parseInt(message_parts[0] || '1', 10);
-        if (isNaN(level) || level < 1) {
-            level = 1;
-        }
-
-        let time_limit_s = parseInt(message_parts[1] || '1200', 10);
-        if (isNaN(time_limit_s) || time_limit_s < 1) {
-            time_limit_s = 10;
-        } else if (time_limit_s > SnowEffect.max_time_limit_s) {
-            time_limit_s = SnowEffect.max_time_limit_s;
-        }
-
-        return [level, time_limit_s];
-
-    }
-
-    ///////////////////////////////////////////
-    // "Timer" Static methods
-    ///////////////////////////////////////////
-    static createSnowflake() {
-        if (!SnowEffect.state.is_on || !SnowEffect.state.enabled) {
-            return;
-        }
-
-        const ascii = CustomTextTriggers.randomElement(SnowEffect.templates);
-        const animation_type = CustomTextTriggers.randomElement(SnowEffect.animations);
-        const random_percent = (Math.random() * 100).toFixed(4);
-
-        const outer = document.createElement('div');
-        outer.classList.add('c-effect__snowflake-outer');
-        outer.style.left = `${random_percent}%`;
-
-        const inner = document.createElement('div');
-        inner.classList.add('c-effect__snowflake');
-        inner.classList.add(animation_type);
-        inner.textContent = ascii;
-
-        outer.appendChild(inner);
-        SnowEffect.addElement(outer);
-        const fn = () => {
-            outer.parentElement.removeChild(outer);
-            outer.removeEventListener('animationend', fn);
-        };
-        outer.addEventListener('animationend', fn);
-    }
-
-    static _runAnimation() {
-        const create_fn = () => {
-            if (!SnowEffect.state.is_on) {
-                return;
-            }
-
-            const max_snowflakes = SnowEffect.state.level_info.spawn_limit;
-            const total = Math.floor(1 + Math.random() * (max_snowflakes - 1));
-            for (let i = 0; i < total; i++) {
-                SnowEffect.createSnowflake();
-            }
-
-            setTimeout(create_fn, SnowEffect.state.level_info.spawn_rate);
-        };
-        setTimeout(create_fn, SnowEffect.state.level_info.spawn_rate);
-    }
-}
-
 class ErabeEffect {
 
     ///////////////////////////////////////////
     // Static variables
-    /////////////////////////////////////////// 
+    ///////////////////////////////////////////
 
     ///////////////////////////////////////////
         // "Public" Static methods
@@ -3581,6 +3534,556 @@ class ErabeEffect {
     }
 
 }
+
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+function getRandomFloat(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+
+/**
+ * Usage: /wonderland
+ * Turn off: /wonderland off
+ */
+class ChristmasWonderlandEffect {
+  static init() {
+    ChristmasWonderlandEffect.state = {
+      enabled: false,
+    };
+  }
+
+  static enable() {
+    const state = ChristmasWonderlandEffect.state;
+    if (state.enabled) {
+      return;
+    }
+
+    state.enabled = true;
+
+    state._root_element = document.createElement('div');
+    state._root_element.classList.add('c-effect__christmas-wonderland');
+
+    const lightrope = ChristmasWonderlandEffect.buildLightrope();
+    state._root_element.appendChild(lightrope);
+
+    const left_candy_cane = ChristmasWonderlandEffect.buildCandyCane('l');
+    const right_candy_cane = ChristmasWonderlandEffect.buildCandyCane('r');
+    state._root_element.appendChild(left_candy_cane);
+    state._root_element.appendChild(right_candy_cane);
+
+    const left_tree = ChristmasWonderlandEffect.buildTree(1, 'l');
+    const middle_tree = ChristmasWonderlandEffect.buildTree(1, 'm');
+    const right_tree = ChristmasWonderlandEffect.buildTree(2, 'r');
+    state._root_element.appendChild(left_tree);
+    state._root_element.appendChild(middle_tree);
+    state._root_element.appendChild(right_tree);
+
+    const kfc_bucket = ChristmasWonderlandEffect.buildKfcBucket();
+    state._root_element.appendChild(kfc_bucket);
+
+    document.body.appendChild(state._root_element);
+  }
+
+  static disable() {
+    const state = ChristmasWonderlandEffect.state;
+    if (!state.enabled) {
+      return;
+    }
+
+    state.enabled = false;
+
+    document.body.removeChild(state._root_element);
+    state._root_element = null;
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
+    if (message_parts[0] === 'off') {
+      ChristmasWonderlandEffect.disable();
+      return;
+    }
+
+    ChristmasWonderlandEffect.enable();
+  }
+
+  static buildLightrope() {
+    const container = document.createElement('div');
+    container.classList.add('c-effect__lightrope');
+
+    // TODO: Change css to set display: none on many of the unused lights
+    for (let i = 0; i < 50; i++) {
+      const light = document.createElement('div');
+      light.classList.add('c-effect__lightrope-light');
+
+      const bulb = document.createElement('div');
+      bulb.classList.add('c-effect__lightrope-bulb');
+      light.appendChild(bulb);
+
+      const socket = document.createElement('div');
+      socket.classList.add('c-effect__lightrope-socket');
+      light.appendChild(socket);
+
+      const rope = document.createElement('div');
+      rope.classList.add('c-effect__lightrope-rope');
+      light.appendChild(rope);
+
+      container.appendChild(light);
+    }
+
+    return container;
+  }
+
+  static buildCandyCane(direction = 'l') {
+    const container = document.createElement('div');
+    container.classList.add('c-candy-cane');
+    if (direction === 'r') {
+      container.classList.add('c-candy-cane--right');
+    }
+
+    for (let i = 0; i < 100; i++) {
+      const ring = document.createElement('div');
+      ring.classList.add('c-candy-cane-ring');
+      if (i % 2) {
+        ring.classList.add('c-candy-cane-ring--red');
+      } else {
+        ring.classList.add('c-candy-cane-ring--white');
+      }
+
+      container.appendChild(ring);
+    }
+
+    return container;
+  }
+
+  static buildTree(type_number = 1, location = 'l') {
+    const container = document.createElement('div');
+    container.classList.add('c-christmas-tree');
+
+    let tree_config;
+    if (type_number === 1) {
+      container.classList.add('c-christmas-tree--type-1');
+      tree_config = ChristmasWonderlandEffect.tree_type_1;
+    } else {
+      container.classList.add('c-christmas-tree--type-2');
+      tree_config = ChristmasWonderlandEffect.tree_type_2;
+    }
+
+    if (location === 'l') {
+      container.classList.add('c-christmas-tree--left');
+    } else if (location === 'm') {
+      container.classList.add('c-christmas-tree--middle');
+    } else {
+      container.classList.add('c-christmas-tree--right');
+    }
+
+    container.innerHTML = tree_config.svg;
+
+    const lights_container = document.createElement('div');
+    lights_container.classList.add('c-christmas-tree__lights');
+
+    for (const light_config of tree_config.lights) {
+      const light = document.createElement('div');
+      light.classList.add('c-christmas-tree__light');
+
+      light.style.left = light_config.left;
+      light.style.top = light_config.top;
+      light.style.width = light_config.width;
+
+      const type = getRandomInt(1, 3);
+      light.classList.add(`c-christmas-tree__light--${type}`);
+
+      lights_container.appendChild(light);
+    }
+
+    container.appendChild(lights_container);
+
+    return container;
+  }
+
+  static buildKfcBucket() {
+    const container = document.createElement('div');
+    container.classList.add('c-kfc-bucket');
+
+    const image = document.createElement('img');
+    image.src = ChristmasWonderlandEffect.kfc_bucket_image;
+    container.appendChild(image);
+
+    return container;
+  }
+}
+ChristmasWonderlandEffect.command = '/wonderland';
+ChristmasWonderlandEffect.tree_type_1 = {
+  svg: `<svg class="c-christmas-tree__tree" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 110 154" xml:space="preserve"> <path d="M108.05,132.55c0,0-12.7-10.8-24.8-29c7.3-1.4,11.8-3.3,11.8-5.4c0,0-12.3-10.4-22.3-27.6c7.5-1,12.4-2.7,12.4-4.6 c0,0-12.4-10.5-20.2-27.3c6.2-0.7,10.4-1.9,10.4-3.4c0,0-14.8-12.5-17.3-30.9c-0.4-2.7-5.8-2.9-6.2,0c-2.4,20.2-17.3,30.9-17.3,30.9 c0,1.5,4.4,2.8,10.9,3.4c-7.7,17.9-20.7,27.3-20.7,27.3c0,2,5.3,3.7,13.3,4.8c-10.1,18.1-23.2,27.5-23.2,27.5 c0,2.2,5.1,4.3,13.2,5.7c-12.4,19-26.1,28.8-26.1,28.8c0,5,19.1,9.2,44.2,10v5.2c0,2.1,1.7,3.8,3.8,3.8h10.1c2.1,0,3.8-1.7,3.8-3.8 v-5.2C88.85,141.65,108.05,137.55,108.05,132.55z"/> </svg>`,
+  lights: [
+    {left: '56.122%', top: '16.66%', width: '3.63%',},
+    {left: '82.142%', top: '81.89%', width: '7.27%',},
+    {left: '71.683%', top: '77.08%', width: '5.45%',},
+    {left: '24.489%', top: '56.41%', width: '7.27%',},
+    {left: '34.948%', top: '71.79%', width: '7.27%',},
+    {left: '43.112%', top: '22.11%', width: '5.45%',},
+    {left: '27.806%', top: '82.53%', width: '5.45%',},
+    {left: '46.938%', top: '56.57%', width: '3.63%',},
+    {left: '70.408%', top: '58.49%', width: '3.63%',},
+    {left: '62.755%', top: '42.14%', width: '3.63%',},
+    {left: '59.693%', top: '70.51%', width: '7.27%',},
+    {left: '55.867%', top: '28.52%', width: '7.27%',},
+    {left: '60.204%', top: '50.00%', width: '5.45%',},
+    {left: '37.244%', top: '42.62%', width: '5.45%',},
+  ]
+}
+ChristmasWonderlandEffect.tree_type_2 = {
+  svg: `<svg class="c-christmas-tree__tree" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 98 156" xml:space="preserve"> <path d="M95.7,133.8l-17.2-30.6c4-1.1,6.3-2.4,6.3-3.9L68.6,70.5c5-1,8-2.3,8-3.7l-16-28.7c5.4-0.7,8.9-1.9,8.9-3.2L52.1,4.1 c-1.4-2.4-4.8-2.4-6.2,0L28.6,34.9c0,1.3,3.5,2.5,8.9,3.2L21.4,66.8c0,1.4,3.1,2.8,8,3.7L13.2,99.3c0,1.4,2.3,2.8,6.3,3.9L2.3,133.8 c0,4.2,15.2,7.7,35.7,8.6v7.6c0,2,1.6,3.7,3.7,3.7h14.7c2,0,3.7-1.6,3.7-3.7v-7.6C80.5,141.5,95.7,138,95.7,133.8z"/> </svg>`,
+  lights: [
+    {left: '56.30%', top: '16.88%', width: '3.63%',},
+    {left: '50.90%', top: '57.14%', width: '7.27%',},
+    {left: '68.60%', top: '62.01%', width: '5.45%',},
+    {left: '28.10%', top: '57.14%', width: '7.27%',},
+    {left: '42.70%', top: '19.48%', width: '7.27%',},
+    {left: '39.50%', top: '71.10%', width: '5.45%',},
+    {left: '24.00%', top: '84.74%', width: '5.45%',},
+    {left: '56.30%', top: '48.05%', width: '3.63%',},
+    {left: '80.00%', top: '83.76%', width: '3.63%',},
+    {left: '43.60%', top: '31.16%', width: '3.63%',},
+    {left: '62.70%', top: '39.25%', width: '7.27%',},
+    {left: '42.70%', top: '83.11%', width: '7.27%',},
+    {left: '63.10%', top: '76.94%', width: '5.45%',},
+    {left: '39.50%', top: '43.18%', width: '5.45%',},
+  ],
+};
+ChristmasWonderlandEffect.kfc_bucket_image = `${SCRIPT_FOLDER_URL}/Images/kfc.png`;
+
+
+/**
+ * Usage: /snow <rate: ('low' | 'medium' | 'high' | 'blizzard') = 'medium'>
+ * Turn off: /snow off
+ */
+class SnowEffect {
+  static init() {
+    SnowEffect.state = {
+      enabled: false,
+      snow_level: SnowEffect.snow_levels.medium,
+      _canvas: null,
+      _context: null,
+
+      _width: window.innerWidth,
+      _height: window.innerHeight,
+      _snowflakes: [],
+      _requested_animation_frame: null,
+    };
+  }
+
+  static enable(snow_level = 'medium') {
+    const state = SnowEffect.state;
+
+    snow_level = snow_level.toLowerCase();
+    if (SnowEffect.snow_levels[snow_level]) {
+      state.snow_level = SnowEffect.snow_levels[snow_level];
+    }
+
+    if (state._canvas || state.enabled) {
+      return;
+    }
+
+    state.enabled = true;
+
+    state._canvas = document.createElement('canvas');
+    state._canvas.classList.add('c-effect__snow-canvas');
+    document.body.appendChild(state._canvas);
+
+    state._context = state._canvas.getContext('2d');
+
+    // 0 timeout to allow the CSSOM to update the size of the canvas appropriately
+    setTimeout(() => SnowEffect.initAndReset(), 0);
+
+    // If the window resizes, just start all over again for simplicity
+    SnowEffect._resizeHandler = () => SnowEffect.initAndReset();
+    window.addEventListener('resize', SnowEffect._resizeHandler);
+  }
+
+  static disable() {
+    const state = SnowEffect.state;
+    if (!state._canvas || !state.enabled) {
+      return;
+    }
+
+    state.enabled = false;
+    window.removeEventListener('resize', SnowEffect._resizeHandler);
+
+    if (SnowEffect._requested_animation_frame) {
+      SnowEffect._requested_animation_frame = null;
+      cancelAnimationFrame(SnowEffect._requested_animation_frame);
+    }
+
+    state._context = null;
+    state._canvas.parentElement.removeChild(state._canvas);
+    state._canvas = null;
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
+    if (message_parts[0] === 'off') {
+      SnowEffect.disable();
+      return;
+    }
+
+    let level = message_parts[0] || 'medium';
+    if (!SnowEffect.snow_levels[level]) {
+      level = 'medium';
+    }
+
+    SnowEffect.enable(level);
+  }
+
+  static initAndReset() {
+    const state = SnowEffect.state;
+
+    state._width = state._canvas.width = window.innerWidth;
+    state._height = state._canvas.height = window.innerHeight;
+    state._snowflakes = [];
+
+    if (!state._requested_animation_frame) {
+      state._requested_animation_frame = requestAnimationFrame(() => SnowEffect.handleFrame());
+    }
+  }
+
+  static handleFrame() {
+    const state = SnowEffect.state;
+    state._context.clearRect(0, 0, state._width, state._height);
+
+    // Add new snowflakes
+    const min_new = state._width / state.snow_level.max;
+    const max_new = state._width / state.snow_level.min;
+    const number_of_new_flakes = getRandomInt(min_new, max_new);
+    for (let i = 0; i < number_of_new_flakes; i++) {
+      state._snowflakes.push(SnowEffect.createSnowflake());
+    }
+
+    // Move all the flakes
+    for (const snowflake of state._snowflakes) {
+      snowflake.x += snowflake.velocity.x;
+      snowflake.y += snowflake.velocity.y;
+
+      state._context.fillStyle = '#fff';
+      state._context.beginPath();
+      state._context.arc(snowflake.x, snowflake.y, snowflake.size, 0, 2 * Math.PI, false);
+      state._context.fill();
+    }
+
+    // Remove particles below the screen
+    state._snowflakes = state._snowflakes.filter((snowflake) => {
+      const top_y = snowflake.y + (snowflake.size / 2);
+      if (top_y > state._height) {
+        return false;
+      }
+
+      const top_x = snowflake.x - (snowflake.size / 2);
+      if (top_x > state._width) {
+        return false;
+      }
+
+      return true;
+    });
+
+    state._requested_animation_frame = requestAnimationFrame(() => SnowEffect.handleFrame());
+  }
+
+  static createSnowflake() {
+    const state = SnowEffect.state;
+    const x = Math.random() * state._width;
+    const size = getRandomFloat(SnowEffect.min_size / 2, SnowEffect.max_size / 2);
+
+    let x_vel = getRandomFloat(SnowEffect.min_x_speed, SnowEffect.max_x_speed);
+    if (Math.random() > 0.5) {
+      x_vel = -x_vel;
+    }
+
+    return {
+      x,
+      y: -size,
+      size,
+      velocity: {
+        x: x_vel,
+        y: getRandomFloat(SnowEffect.min_y_speed, SnowEffect.max_y_speed),
+      }
+    };
+  }
+
+  static isSnowflakeOffscreen(snowflake) {
+    const state = SnowEffect.state;
+    const top_y = snowflake.y + (snowflake.size / 2);
+    if (top_y > state._height) {
+      return false;
+    }
+
+    const top_x = snowflake.x - (snowflake.size / 2);
+    if (top_x > state._width) {
+      return false;
+    }
+  }
+}
+SnowEffect.command = '/snow';
+SnowEffect.pixels_per_flake_min = 500
+SnowEffect.pixels_per_flake_max = 5000;
+SnowEffect.max_size = 10;
+SnowEffect.min_size = 3;
+SnowEffect.min_x_speed = 0.5;
+SnowEffect.max_x_speed = 3;
+SnowEffect.min_y_speed = 1;
+SnowEffect.max_y_speed = 4;
+SnowEffect.snow_levels = {
+  // The rate at which snow falls. High numbers means less snow
+  low: {min: 1000, max: 10000},
+  medium: {min: 500, max: 5000},
+  high: {min: 250, max: 2500},
+  blizzard: {min: 75, max: 900},
+};
+
+
+/**
+ * Usage: /banri <minutes to be on = 10> <infection rate (out of 100) = 50>
+ * Turn off: /banri off
+ */
+class GhostBanriEffect {
+  static init() {
+    GhostBanriEffect.state = {
+      enabled: false,
+      // Length of time to keep active in minutes
+      length_minutes: GhostBanriEffect.DEFAULT_LENGTH_MIN,
+      // The target number of people to be affected by each activation
+      infection_rate: GhostBanriEffect.DEFAULT_INFECTION_RATE,
+    };
+    GhostBanriEffect.banri_timeout = null;
+    GhostBanriEffect.deactivate_timeout = null;
+  }
+
+  static enable(length_minutes = 0, infection_rate = 0) {
+    const state = GhostBanriEffect.state;
+    if (length_minutes > 0) {
+      state.length_minutes = length_minutes;
+      GhostBanriEffect.resetDeactivationTimer();
+    }
+    if (infection_rate > 0 && infection_rate <= 1) {
+      state.infection_rate = infection_rate;
+    }
+
+    if (state.enabled) {
+      return;
+    }
+
+    state.enabled = true;
+    GhostBanriEffect.maybeShowBanri();
+    GhostBanriEffect.resetDeactivationTimer();
+  }
+
+  static disable() {
+    const state = GhostBanriEffect.state;
+    if (!state.enabled) {
+      return;
+    }
+
+    state.enabled = false;
+    if (GhostBanriEffect.banri_timeout) {
+      clearTimeout(GhostBanriEffect.banri_timeout);
+      GhostBanriEffect.banri_timeout = null;
+    }
+
+    state.length_minutes =GhostBanriEffect.DEFAULT_LENGTH_MIN;
+    state.infection_rate = GhostBanriEffect.DEFAULT_INFECTION_RATE;
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
+    if (message_parts[0] === 'off') {
+      GhostBanriEffect.disable();
+      return;
+    }
+
+    let length_minutes = parseFloat(message_parts[0] || '0');
+    if (isNaN(length_minutes) || length_minutes <= 0) {
+      length_minutes = GhostBanriEffect.DEFAULT_LENGTH_MIN;
+    }
+
+    let infection_rate = parseFloat(message_parts[1] || '0');
+    if (isNaN(infection_rate) || infection_rate <= 0 || infection_rate > 100) {
+      infection_rate = GhostBanriEffect.DEFAULT_INFECTION_RATE;
+    } else {
+			infection_rate = infection_rate / 100;
+		}
+
+    GhostBanriEffect.enable(length_minutes, infection_rate);
+  }
+
+  static maybeShowBanri() {
+    const state = GhostBanriEffect.state;
+    if (GhostBanriEffect.banri_timeout) {
+      clearTimeout(GhostBanriEffect.banri_timeout);
+      GhostBanriEffect.banri_timeout = null;
+    }
+
+    if (!state.enabled) {
+      return;
+    }
+
+    if (Math.random() > state.infection_rate) {
+      GhostBanriEffect.banri_timeout = setTimeout(() => {
+        GhostBanriEffect.maybeShowBanri();
+      }, GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S * 1000);
+      return;
+    }
+
+    GhostBanriEffect.showBanri()
+      .then(() => {
+        clearTimeout(GhostBanriEffect.banri_timeout);
+        GhostBanriEffect.banri_timeout = setTimeout(() => {
+          GhostBanriEffect.maybeShowBanri();
+        }, GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S * 1000);
+      });
+  }
+
+  static showBanri() {
+    const img = document.createElement('img');
+    img.src = GhostBanriEffect.BANRI_IMG;
+    img.classList.add('c-effect__banri');
+    document.body.appendChild(img);
+
+    const window_width = window.innerWidth;
+    const window_height = window.innerHeight;
+
+    const min_left = 0;
+    const max_left = window_width - 40;
+    const min_top = 0;
+    const max_top = window_height - 40;
+
+    img.style.top = getRandomInt(min_left, max_left) + 'px';
+    img.style.left = getRandomInt(min_top, max_top) + 'px';
+    return new Promise((resolve) => {
+      img.addEventListener('animationend', () => {
+        img.parentElement.removeChild(img);
+        resolve();
+      });
+    });
+  }
+
+  static resetDeactivationTimer() {
+    const state = GhostBanriEffect.state;
+    if (GhostBanriEffect.deactivate_timeout) {
+      clearTimeout(GhostBanriEffect.deactivate_timeout);
+      GhostBanriEffect.deactivate_timeout = null;
+    }
+
+    GhostBanriEffect.deactivate_timeout = setTimeout(() => {
+      GhostBanriEffect.disable();
+    }, state.length_minutes * 60 * 1000);
+  }
+}
+GhostBanriEffect.command = '/banri';
+GhostBanriEffect.DEFAULT_LENGTH_MIN = 10 * 60;
+GhostBanriEffect.DEFAULT_INFECTION_RATE = 0.5;
+GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S = 30;
+GhostBanriEffect.BANRI_IMG = `${SCRIPT_FOLDER_URL}/Images/ghost-banri.png`;
+
+
+
 /**
  * To add a new effect create a class like so:
 
@@ -3599,12 +4102,16 @@ class YourNewEffect {
 Then add it to the `effects` static variable below
 */
 class CustomTextTriggers {
-
-
-
     static init() {
         // Only place you need to add a new effect to make it work
-        CustomTextTriggers.effects = [ErabeEffect, /*SnowEffect, */PadoruEffect, PresentsEffect];
+        CustomTextTriggers.effects = [
+					ErabeEffect,
+					PadoruEffect,
+					PresentsEffect,
+					GhostBanriEffect,
+					SnowEffect,
+					ChristmasWonderlandEffect,
+				];
         if (CustomTextTriggers.has_init) {
             return;
         }
@@ -3614,17 +4121,17 @@ class CustomTextTriggers {
         CustomTextTriggers.effect_lookup = new Map();
         for (let effect_cls of CustomTextTriggers.effects) {
             effect_cls.init();
-            CustomTextTriggers.effect_lookup.set(effect_cls.command, 
+            CustomTextTriggers.effect_lookup.set(effect_cls.command,
                 {effect: effect_cls, handle: effect_cls.handleCommand});
         }
 
         // TODO make this "/effects arg" with some kind of handler?
         // Add non-effect commands here
-        CustomTextTriggers.effect_lookup.set('/effects_disable', 
+        CustomTextTriggers.effect_lookup.set('/effects_disable',
             {effect: null, handle: CustomTextTriggers.disableEffects});
-        CustomTextTriggers.effect_lookup.set('/effects_enable', 
+        CustomTextTriggers.effect_lookup.set('/effects_enable',
             {effect: null, handle: CustomTextTriggers.enableEffects});
-        CustomTextTriggers.effect_lookup.set('/effects_stop', 
+        CustomTextTriggers.effect_lookup.set('/effects_stop',
             {effect: null, handle: CustomTextTriggers.stopEffects});
 
         // testing
