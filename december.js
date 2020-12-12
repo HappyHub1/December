@@ -4061,10 +4061,12 @@ class GhostBanriEffect {
     img.style.top = getRandomInt(min_left, max_left) + 'px';
     img.style.left = getRandomInt(min_top, max_top) + 'px';
     return new Promise((resolve) => {
-      img.addEventListener('animationend', () => {
+			const fun = () => {
         img.parentElement.removeChild(img);
-        resolve();
-      });
+				img.removeEventListener('animationend', fun);
+				resolve();
+      };
+      img.addEventListener('animationend', fun);
     });
   }
 

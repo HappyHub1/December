@@ -1037,15 +1037,35 @@ span.glyphicon.glyphicon-time {
   top: 0;
   left: 0;
 
-  animation: c-effect__banri__fade 10s ease-in-out forwards;
+  animation: c-effect__banri__fade 10s linear forwards;
   will-change: opacity;
 }
 
 @keyframes c-effect__banri__fade {
-  0%, 100% {
+  0% {
     opacity: 0;
   }
-  50% {
+  20% {
+    opacity: 0.2;
+  }
+  22% {
+    opacity: 0.6;
+  }
+  24% {
+    opacity: 0;
+  }
+
+  65% {
+    opacity: 0.1;
+  }
+  67% {
+    opacity: 0.5;
+  }
+  69% {
+    opacity: 0;
+  }
+
+  100% {
     opacity: 0.3;
   }
 }
