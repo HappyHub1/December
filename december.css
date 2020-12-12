@@ -1045,27 +1045,27 @@ span.glyphicon.glyphicon-time {
   0% {
     opacity: 0;
   }
-  20% {
+  15% {
     opacity: 0.2;
   }
-  22% {
+  17% {
     opacity: 0.6;
   }
-  24% {
+  19% {
     opacity: 0;
   }
 
-  65% {
+  55% {
     opacity: 0.1;
   }
-  67% {
+  57% {
     opacity: 0.5;
   }
-  69% {
+  59% {
     opacity: 0;
   }
 
   100% {
-    opacity: 0.3;
+    opacity: 0.4;
   }
 }
