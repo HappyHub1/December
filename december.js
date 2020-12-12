@@ -101,7 +101,6 @@ var CHATMAXSIZE = getOrDefault(CHANNEL.name + "_CHATMAXSIZE", 150);	// Override 
 var NICO_NICO_MESSAGE_QUEUE_TIME = getOrDefault(CHANNEL.name + "_NICO_NICO_MESSAGE_QUEUE_TIME", 100);
 var EFFECTSOFF = getOrDefault(CHANNEL.name + "_EFFECTSOFF", false);
 var ADVERTISEMENTS = getOrDefault(CHANNEL.name + "_ADVERTISEMENTS", []);
-var LINKS = getOrDefault(CHANNEL.name + "_LINKS", {});
 var AUTOREFRESH = getOrDefault(CHANNEL.name + "_AUTOREFRESH", false);
 var EMBEDVID = getOrDefault(CHANNEL.name + "_EMBEDVID", true);
 var AUTOVID = getOrDefault(CHANNEL.name + "_AUTOVID", true);
@@ -841,41 +840,16 @@ $("#useroptions .modal-footer button:nth-child(1)").on("click", function() {
 // changing channel name
 ChannelName_Caption !== "" ? $(".navbar-brand").html(ChannelName_Caption) : '';
 
-var updateInterval;
-
-function updateLinks() {
-	var url = "https://spreadsheets.google.com/feeds/cells/1ae7MafgvgD3br2O4YQqMGBKff40eciKSu_U8rttiS00/oiixqoi/public/basic?alt=json";
-	$.ajax({
-		url:url,
-		dataType:"jsonp",
-		success:function(data) {
-			LINKS = JSON && JSON.parse(data.feed.entry[0].content.$t) || $.parseJSON(data.feed.entry[0].content.$t);
-            ADVERTISEMENTS =  JSON && JSON.parse(data.feed.entry[1].content.$t) || $.parseJSON(data.feed.entry[1].content.$t);
-			setOpt(CHANNEL.name + "_LINKS", LINKS);
-            setOpt(CHANNEL.name + "_ADVERTISEMENTS", ADVERTISEMENTS);
-		}
-	});
-}
-
-if (LINKS.length === 0) {
-	updateLinks();
-} else {
-	setTimeout(updateLinks, 500 + Math.floor(4500 * Math.random()));
-}
-clearInterval(updateInterval);
-updateInterval = setInterval(updateLinks, 150000 + Math.floor(180000 * Math.random()));
+LINKS = setOpt(CHANNEL.name + "_LINKS", {});
 
 var rdmLinkInterval = false;
-var iLinkRefreshes = 0;
-var activeLink = "";
+var iRefreshes = 0;
 var videoElement = false;
-var rdmLinkFound = false;
 
-function clearRdmLinkStuff() {
+function clearAutoRefresh() {
 	clearInterval(rdmLinkInterval);
 	rdmLinkInterval = false;
-	iLinkRefreshes = 0;
-	rdmLinkFound = false;
+	iRefreshes = 0;
 }
 
 autorefreshbtn = $('<button id="autorefreshbtn" class="btn btn-sm ' + (!AUTOREFRESH ? 'btn-danger' : 'btn-default') + '" title="Toggle to auto refresh the player. Please note this is still experimental.">Auto Refresh ' + (!AUTOREFRESH ? 'OFF' : 'ON') + '</button>')
@@ -889,105 +863,58 @@ autorefreshbtn = $('<button id="autorefreshbtn" class="btn btn-sm ' + (!AUTOREFR
 		} else {
 			this.className = "btn btn-sm btn-danger";
 			this.textContent = "Auto Refresh OFF";
-			clearRdmLinkStuff();
+			clearAutoRefresh();
 		}
 	});
 
-function selectRandomLink(data) {
-	if (!vidRemoved) {
+
+function autoRefreshPlayer() {
+	if (AUTOREFRESH && data.type === "fi" && !vidRemoved) {
 		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-		activeLink = data.id;
+		clearAutoRefresh();
 		
-		clearRdmLinkStuff();
+		if (!rdmLinkInterval) {
+			rdmLinkInterval = setInterval(function() {
+				iRefreshes++;
+				videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+				vidError = videoElement.error || false;
 
-		if (data.type === "fi") {
-			randomizeLink(activeLink, videoElement);
-
-			if (AUTOREFRESH && !rdmLinkInterval) {
-				rdmLinkInterval = setInterval(function() {
-					console.log("this is an interval");
-					videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-					vidError = videoElement.error || false;
-
-					if (vidError) {
-						if (rdmLinkFound) {
-							randomizeLink(activeLink, videoElement);
-						} else {
-							//document.getElementById("mediarefresh").click();
-							clearRdmLinkStuff();
-						}
-					} else { //if (iLinkRefreshes > 15 || videoElement.readyState !== 0)
-						clearRdmLinkStuff();
-					}
-				}, 2050 + Math.floor(700 * Math.random()));
-			}
-		}
-
-		function randomizeLink(PLLink, vidElemPassed) {
-			for (var i = 0; i < LINKS["DropboxURLs"].length; i++) {
-				if (PLLink.indexOf(LINKS["DropboxURLs"][i][0]) > -1) {
-					rdmLinkFound = true;
-					rdmIndex = Math.floor(Math.random() * LINKS["DropboxURLs"][i].length);
-					rdmLink = LINKS["DropboxURLs"][i][rdmIndex];
-					if (rdmLink.indexOf("dropbox.com") > -1 && rdmLink[rdmLink.length-1] === "/") {
-						rdmLink = PLLink;
-					}
-					console.log(i + "\t" + rdmLink);
-					setTimeout(function() {
-						vidElemPassed.addEventListener("loadedmetadata", clearRdmLinkStuff); // fastest
-						vidElemPassed.addEventListener("loadeddata", clearRdmLinkStuff); // paranoia
-
-						vidElemPassed.src = rdmLink;
-						vidElemPassed.load();
-					}, 500);
-					break;
+				if (vidError) {
+					document.getElementById("mediarefresh").click();
+				} else if (iRefreshes > 15 || videoElement.readyState !== 0) {
+					clearAutoRefresh();
 				}
-			}
-			iLinkRefreshes++;
+			}, 2050 + Math.floor(700 * Math.random()));
 		}
 	}
 }
 
-const PlaylistDelimiter = "???streamurl???"; // not used yet
+const PlaylistDelimiter = "???streamurl???";
 
-function selectRandomLinkNoJSON(data) {
-	if (!vidRemoved && data.type === "fi") {
-		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-		aLinks = data.id.split(PlaylistDelimiter);
-		
-		clearRdmLinkStuff();
-		
-		if (aLinks.length > 1) {
-			randomizeLinkNoJSON(aLinks, videoElement);
-			
-			if (AUTOREFRESH && !rdmLinkInterval) {
-				rdmLinkInterval = setInterval(function() {
-					videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-					vidError = videoElement.error || false;
+_loadMediaPlayer = loadMediaPlayer
+loadMediaPlayer = function(data) {
+	selectRandomLink(data);
+    _loadMediaPlayer(data);
+	autoRefreshPlayer();
+}
 
-					if (vidError) {
-						randomizeLinkNoJSON(aLinks, videoElement);
-					} else if (iLinkRefreshes > 15 || videoElement.readyState !== 0) {
-						clearRdmLinkStuff();
-					}
-				}, 2050 + Math.floor(700 * Math.random()));
-			}
-		}
+_handleMediaUpdate = handleMediaUpdate
+handleMediaUpdate = function(data) {
+	selectRandomLink(data);
+    _handleMediaUpdate(data);
+	autoRefreshPlayer();
+}
 
-		function randomizeLinkNoJSON(rdmLinks, vidElemPassed) {
-			if (vidElemPassed) {
-				rdmIndex = Math.floor(Math.random() * rdmLinks.length);
-				rdmLink = rdmLinks[rdmIndex];
-				
-				console.log(rdmLink);
-				setTimeout(function() {
-					vidElemPassed.addEventListener("loadedmetadata", clearRdmLinkStuff); // fastest
-					vidElemPassed.addEventListener("loadeddata", clearRdmLinkStuff); // paranoia
-
-					vidElemPassed.src = rdmLink;
-					vidElemPassed.load();
-				}, 500);
-				iLinkRefreshes++;
+function selectRandomLink(data) {
+	if (typeof data.id !== "undefined") {
+		if (data.type === "fi") {
+			if (data.id.indexOf(PlaylistDelimiter) > -1) {
+				LeaderLink = data.id;
+				var rdmLinks = data.id.split(PlaylistDelimiter);
+				data.id = rdmLinks[Math.floor(Math.random() * rdmLinks.length)];
+				setTimeout(function () {
+					PLAYER.mediaId = LeaderLink; // Media ID must match playlist link or else this does not let you set the time.
+				}, 1000);
 			}
 		}
 	}
@@ -1510,7 +1437,6 @@ socket.on("changeMedia", function(data) {
 		TitleBarDescription_Caption.length < 1 ? TitleBarDescription_Caption = 'Currently Playing:' : '';
 		$("#currenttitle").text(TitleBarDescription_Caption + " " + data.title);
 	}
-	selectRandomLink(data);
 });
 socket.on("setUserRank", function() {
 	toggleClearBtn();
@@ -1556,7 +1482,7 @@ if (HIDEHF) {
 	hidehfbtn.attr("title","Show Header and Footer");
 }
 
-function currentVideoTime(data) {
+function getVideoTime(data) {
 	clearInterval(ADDONESECOND);
 	hour = Math.floor(data.currentTime / 3600);
 	minute = Math.floor(data.currentTime / 60 % 60);
@@ -1597,9 +1523,10 @@ currenttimebtn = $('<button id="findtime" class="btn btn-xs btn-default" title="
 		if ($(this).text() !== 'Video Time') {
 			$(this).text('Video Time');
 			clearInterval(ADDONESECOND);
-			socket.removeListener("mediaUpdate", currentVideoTime);
+			socket.removeListener("mediaUpdate", getVideoTime);
 		} else {
-			socket.on("mediaUpdate", currentVideoTime);
+			getVideoTime({currentTime:PLAYER.player.currentTime()});
+			socket.on("mediaUpdate", getVideoTime);
 		}
 });
 
@@ -2669,13 +2596,13 @@ var CurrentVideoTime = 0;
 
 socket.on("delete", function() {
 	setTimeout(function() {
-		updateEndTimes(CurrentVideoTime);
+		updateEndTimes(PLAYER.player.currentTime());
 	}, 750); // hopefully this fixes the issue..
 });
 
 socket.on("moveVideo", function() {
 	setTimeout(function() {
-		updateEndTimes(CurrentVideoTime)
+		updateEndTimes(PLAYER.player.currentTime())
 	}, 750);
 });
 
@@ -2726,7 +2653,7 @@ function makeQueueEntry(item, addbtns) {
         addQueueButtons(li);
 	
 	setTimeout(function() {
-		updateEndTimes(CurrentVideoTime);
+		updateEndTimes(PLAYER.player.currentTime());
 	}, 100);
     return li;
 }
