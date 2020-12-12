@@ -5,49 +5,67 @@ function getRandomFloat(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-class ChristmasWonderland {
-  constructor() {
+class ChristmasWonderlandEffect {
+  static init() {
+    ChristmasWonderlandEffect.state = {
+      enabled: false,
+    };
   }
 
-  activate() {
-    if (this._root_element) {
+  static enable() {
+    const state = ChristmasWonderlandEffect.state;
+    if (state.enabled) {
       return;
     }
 
-    this._root_element = document.createElement('div');
-    this._root_element.classList.add('c-effect__christmas-wonderland');
+    state.enabled = true;
 
-    const lightrope = this.buildLightrope();
-    this._root_element.appendChild(lightrope);
+    state._root_element = document.createElement('div');
+    state._root_element.classList.add('c-effect__christmas-wonderland');
 
-    const left_candy_cane = this.buildCandyCane('l');
-    const right_candy_cane = this.buildCandyCane('r');
-    this._root_element.appendChild(left_candy_cane);
-    this._root_element.appendChild(right_candy_cane);
+    const lightrope = ChristmasWonderlandEffect.buildLightrope();
+    state._root_element.appendChild(lightrope);
 
-    const left_tree = this.buildTree(1, 'l');
-    const middle_tree = this.buildTree(1, 'm');
-    const right_tree = this.buildTree(2, 'r');
-    this._root_element.appendChild(left_tree);
-    this._root_element.appendChild(middle_tree);
-    this._root_element.appendChild(right_tree);
+    const left_candy_cane = ChristmasWonderlandEffect.buildCandyCane('l');
+    const right_candy_cane = ChristmasWonderlandEffect.buildCandyCane('r');
+    state._root_element.appendChild(left_candy_cane);
+    state._root_element.appendChild(right_candy_cane);
 
-    const kfc_bucket = this.buildKfcBucket();
-    this._root_element.appendChild(kfc_bucket);
+    const left_tree = ChristmasWonderlandEffect.buildTree(1, 'l');
+    const middle_tree = ChristmasWonderlandEffect.buildTree(1, 'm');
+    const right_tree = ChristmasWonderlandEffect.buildTree(2, 'r');
+    state._root_element.appendChild(left_tree);
+    state._root_element.appendChild(middle_tree);
+    state._root_element.appendChild(right_tree);
 
-    document.body.appendChild(this._root_element);
+    const kfc_bucket = ChristmasWonderlandEffect.buildKfcBucket();
+    state._root_element.appendChild(kfc_bucket);
+
+    document.body.appendChild(state._root_element);
   }
 
-  deactivate() {
-    if (!this._root_element) {
+  static disable() {
+    const state = ChristmasWonderlandEffect.state;
+    if (!state.enabled) {
       return;
     }
 
-    document.body.removeChild(this._root_element);
-    this._root_element = null;
+    state.enabled = false;
+
+    document.body.removeChild(state._root_element);
+    state._root_element = null;
   }
 
-  buildLightrope() {
+  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
+    if (message_parts[0] === 'off') {
+      ChristmasWonderlandEffect.disable();
+      return;
+    }
+
+    ChristmasWonderlandEffect.enable();
+  }
+
+  static buildLightrope() {
     const container = document.createElement('div');
     container.classList.add('c-effect__lightrope');
 
@@ -74,7 +92,7 @@ class ChristmasWonderland {
     return container;
   }
 
-  buildCandyCane(direction = 'l') {
+  static buildCandyCane(direction = 'l') {
     const container = document.createElement('div');
     container.classList.add('c-candy-cane');
     if (direction === 'r') {
@@ -96,17 +114,17 @@ class ChristmasWonderland {
     return container;
   }
 
-  buildTree(type_number = 1, location = 'l') {
+  static buildTree(type_number = 1, location = 'l') {
     const container = document.createElement('div');
     container.classList.add('c-christmas-tree');
 
     let tree_config;
     if (type_number === 1) {
       container.classList.add('c-christmas-tree--type-1');
-      tree_config = ChristmasWonderland.tree_type_1;
+      tree_config = ChristmasWonderlandEffect.tree_type_1;
     } else {
       container.classList.add('c-christmas-tree--type-2');
-      tree_config = ChristmasWonderland.tree_type_2;
+      tree_config = ChristmasWonderlandEffect.tree_type_2;
     }
 
     if (location === 'l') {
@@ -141,18 +159,19 @@ class ChristmasWonderland {
     return container;
   }
 
-  buildKfcBucket() {
+  static buildKfcBucket() {
     const container = document.createElement('div');
     container.classList.add('c-kfc-bucket');
 
     const image = document.createElement('img');
-    image.src = ChristmasWonderland.kfc_bucket_image;
+    image.src = ChristmasWonderlandEffect.kfc_bucket_image;
     container.appendChild(image);
 
     return container;
   }
 }
-ChristmasWonderland.tree_type_1 = {
+ChristmasWonderlandEffect.command = '/wonderland';
+ChristmasWonderlandEffect.tree_type_1 = {
   svg: `<svg class="c-christmas-tree__tree" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 110 154" xml:space="preserve"> <path d="M108.05,132.55c0,0-12.7-10.8-24.8-29c7.3-1.4,11.8-3.3,11.8-5.4c0,0-12.3-10.4-22.3-27.6c7.5-1,12.4-2.7,12.4-4.6 c0,0-12.4-10.5-20.2-27.3c6.2-0.7,10.4-1.9,10.4-3.4c0,0-14.8-12.5-17.3-30.9c-0.4-2.7-5.8-2.9-6.2,0c-2.4,20.2-17.3,30.9-17.3,30.9 c0,1.5,4.4,2.8,10.9,3.4c-7.7,17.9-20.7,27.3-20.7,27.3c0,2,5.3,3.7,13.3,4.8c-10.1,18.1-23.2,27.5-23.2,27.5 c0,2.2,5.1,4.3,13.2,5.7c-12.4,19-26.1,28.8-26.1,28.8c0,5,19.1,9.2,44.2,10v5.2c0,2.1,1.7,3.8,3.8,3.8h10.1c2.1,0,3.8-1.7,3.8-3.8 v-5.2C88.85,141.65,108.05,137.55,108.05,132.55z"/> </svg>`,
   lights: [
     {left: '56.122%', top: '16.66%', width: '3.63%',},
@@ -171,7 +190,7 @@ ChristmasWonderland.tree_type_1 = {
     {left: '37.244%', top: '42.62%', width: '5.45%',},
   ]
 }
-ChristmasWonderland.tree_type_2 = {
+ChristmasWonderlandEffect.tree_type_2 = {
   svg: `<svg class="c-christmas-tree__tree" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 98 156" xml:space="preserve"> <path d="M95.7,133.8l-17.2-30.6c4-1.1,6.3-2.4,6.3-3.9L68.6,70.5c5-1,8-2.3,8-3.7l-16-28.7c5.4-0.7,8.9-1.9,8.9-3.2L52.1,4.1 c-1.4-2.4-4.8-2.4-6.2,0L28.6,34.9c0,1.3,3.5,2.5,8.9,3.2L21.4,66.8c0,1.4,3.1,2.8,8,3.7L13.2,99.3c0,1.4,2.3,2.8,6.3,3.9L2.3,133.8 c0,4.2,15.2,7.7,35.7,8.6v7.6c0,2,1.6,3.7,3.7,3.7h14.7c2,0,3.7-1.6,3.7-3.7v-7.6C80.5,141.5,95.7,138,95.7,133.8z"/> </svg>`,
   lights: [
     {left: '56.30%', top: '16.88%', width: '3.63%',},
@@ -190,133 +209,141 @@ ChristmasWonderland.tree_type_2 = {
     {left: '39.50%', top: '43.18%', width: '5.45%',},
   ],
 };
-ChristmasWonderland.kfc_bucket_image = './kfc.png';
+ChristmasWonderlandEffect.kfc_bucket_image = './kfc.png';
 
 
 class SnowEffect {
-  static pixels_per_flake_min = 500;
-  static pixels_per_flake_max = 5000;
-
-  static snow_levels = {
-    // The rate at which snow falls. High numbers means less snow
-    low: {min: 1000, max: 10000},
-    medium: {min: 500, max: 5000},
-    high: {min: 250, max: 4000},
-    blizzard: {min: 100, max: 1000},
-  };
-
-  static max_size = 12;
-  static min_size = 3;
-
-  static min_x_speed = 0.5;
-  static max_x_speed = 4;
-
-  static min_y_speed = 1;
-  static max_y_speed = 3;
-
-  constructor() {
-    this.state = {
+  static init() {
+    SnowEffect.state = {
       enabled: false,
       snow_level: SnowEffect.snow_levels.medium,
+      _canvas: null,
+      _context: null,
+
+      _width: window.innerWidth,
+      _height: window.innerHeight,
+      _snowflakes: [],
+      _requested_animation_frame: null,
     };
   }
 
-  activate(snow_level = 'medium') {
+  static enable(snow_level = 'medium') {
+    const state = SnowEffect.state;
+
     snow_level = snow_level.toLowerCase();
     if (SnowEffect.snow_levels[snow_level]) {
-      this.state.snow_level = SnowEffect.snow_levels[snow_level];
+      state.snow_level = SnowEffect.snow_levels[snow_level];
     }
 
-    if (this._canvas || this.state.enabled) {
+    if (state._canvas || state.enabled) {
       return;
     }
 
-    this.state.enabled = true;
+    state.enabled = true;
 
-    this._canvas = document.createElement('canvas');
-    this._canvas.classList.add('c-effect__snow-canvas');
-    document.body.appendChild(this._canvas);
+    state._canvas = document.createElement('canvas');
+    state._canvas.classList.add('c-effect__snow-canvas');
+    document.body.appendChild(state._canvas);
 
-    this._context = this._canvas.getContext('2d');
+    state._context = state._canvas.getContext('2d');
 
     // 0 timeout to allow the CSSOM to update the size of the canvas appropriately
-    setTimeout(() => this.initAndReset(), 0);
+    setTimeout(() => SnowEffect.initAndReset(), 0);
 
     // If the window resizes, just start all over again for simplicity
-    this._resizeHandler = () => this.initAndReset();
-    window.addEventListener('resize', this._resizeHandler);
+    SnowEffect._resizeHandler = () => SnowEffect.initAndReset();
+    window.addEventListener('resize', SnowEffect._resizeHandler);
   }
 
-  deactivate() {
-    if (!this._canvas || !this.state.enabled) {
+  static disable() {
+    const state = SnowEffect.state;
+    if (!state._canvas || !state.enabled) {
       return;
     }
 
-    this.state.enabled = false;
-    window.removeEventListener('resize', this._resizeHandler);
+    state.enabled = false;
+    window.removeEventListener('resize', SnowEffect._resizeHandler);
 
-    if (this._requested_animation_frame) {
-      this._requested_animation_frame = null;
-      cancelAnimationFrame(this._requested_animation_frame);
+    if (SnowEffect._requested_animation_frame) {
+      SnowEffect._requested_animation_frame = null;
+      cancelAnimationFrame(SnowEffect._requested_animation_frame);
     }
 
-    this._context = null;
-    this._canvas.parentElement.removeChild(this._canvas);
-    this._canvas = null;
+    state._context = null;
+    state._canvas.parentElement.removeChild(state._canvas);
+    state._canvas = null;
   }
 
-  initAndReset() {
-    this._width = this._canvas.width = window.innerWidth;
-    this._height = this._canvas.height = window.innerHeight;
-    this._snowflakes = [];
+  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
+    if (message_parts[0] === 'off') {
+      SnowEffect.disable();
+      return;
+    }
 
-    if (!this._requested_animation_frame) {
-      this._requested_animation_frame = requestAnimationFrame(() => this.handleFrame());
+    let level = message_parts[0] || 'medium';
+    if (!SnowEffect.snow_levels[level]) {
+      level = 'medium';
+    }
+
+    SnowEffect.enable(level);
+  }
+
+  static initAndReset() {
+    const state = SnowEffect.state;
+
+    state._width = state._canvas.width = window.innerWidth;
+    state._height = state._canvas.height = window.innerHeight;
+    state._snowflakes = [];
+
+    if (!state._requested_animation_frame) {
+      state._requested_animation_frame = requestAnimationFrame(() => SnowEffect.handleFrame());
     }
   }
 
-  handleFrame() {
-    this._context.clearRect(0, 0, this._width, this._height);
+  static handleFrame() {
+    const state = SnowEffect.state;
+    state._context.clearRect(0, 0, state._width, state._height);
 
     // Add new snowflakes
-    const min_new = this._width / this.state.snow_level.max;
-    const max_new = this._width / this.state.snow_level.min;
+    const min_new = state._width / state.snow_level.max;
+    const max_new = state._width / state.snow_level.min;
     const number_of_new_flakes = getRandomInt(min_new, max_new);
     for (let i = 0; i < number_of_new_flakes; i++) {
-      this._snowflakes.push(this.createSnowflake());
+      state._snowflakes.push(SnowEffect.createSnowflake());
     }
 
     // Move all the flakes
-    for (const snowflake of this._snowflakes) {
+    for (const snowflake of state._snowflakes) {
       snowflake.x += snowflake.velocity.x;
       snowflake.y += snowflake.velocity.y;
 
-      this._context.fillStyle = '#fff';
-      this._context.beginPath();
-      this._context.arc(snowflake.x, snowflake.y, snowflake.size, 0, 2 * Math.PI, false);
-      this._context.fill();
+      state._context.fillStyle = '#fff';
+      state._context.beginPath();
+      state._context.arc(snowflake.x, snowflake.y, snowflake.size, 0, 2 * Math.PI, false);
+      state._context.fill();
     }
 
     // Remove particles below the screen
-    this._snowflakes = this._snowflakes.filter((snowflake) => {
+    state._snowflakes = state._snowflakes.filter((snowflake) => {
       const top_y = snowflake.y + (snowflake.size / 2);
-      if (top_y > this._height) {
+      if (top_y > state._height) {
         return false;
       }
 
       const top_x = snowflake.x - (snowflake.size / 2);
-      if (top_x > this._width) {
+      if (top_x > state._width) {
         return false;
       }
 
       return true;
     });
 
-    this._requested_animation_frame = requestAnimationFrame(() => this.handleFrame());
+    state._requested_animation_frame = requestAnimationFrame(() => SnowEffect.handleFrame());
   }
 
-  createSnowflake() {
-    const x = Math.random() * this._width;
+  static createSnowflake() {
+    const state = SnowEffect.state;
+    const x = Math.random() * state._width;
     const size = getRandomFloat(SnowEffect.min_size / 2, SnowEffect.max_size / 2);
 
     let x_vel = getRandomFloat(SnowEffect.min_x_speed, SnowEffect.max_x_speed);
@@ -335,96 +362,132 @@ class SnowEffect {
     };
   }
 
-  isSnowflakeOffscreen(snowflake) {
+  static isSnowflakeOffscreen(snowflake) {
+    const state = SnowEffect.state;
     const top_y = snowflake.y + (snowflake.size / 2);
-    if (top_y > this._height) {
+    if (top_y > state._height) {
       return false;
     }
 
     const top_x = snowflake.x - (snowflake.size / 2);
-    if (top_x > this._width) {
+    if (top_x > state._width) {
       return false;
     }
   }
 }
+SnowEffect.command = '/snow';
+SnowEffect.pixels_per_flake_min = 500
+SnowEffect.pixels_per_flake_max = 5000;
+SnowEffect.max_size = 10;
+SnowEffect.min_size = 3;
+SnowEffect.min_x_speed = 0.5;
+SnowEffect.max_x_speed = 3;
+SnowEffect.min_y_speed = 1;
+SnowEffect.max_y_speed = 4;
+SnowEffect.snow_levels = {
+  // The rate at which snow falls. High numbers means less snow
+  low: {min: 1000, max: 10000},
+  medium: {min: 500, max: 5000},
+  high: {min: 250, max: 2500},
+  blizzard: {min: 75, max: 900},
+};
 
-
-// const ef = new ChristmasWonderland();
-// ef.activate();
-
-// const snow = new SnowEffect();
-// snow.activate();
 
 class GhostBanriEffect {
-  constructor() {
-    this.state = {
+  static init() {
+    GhostBanriEffect.state = {
       enabled: false,
-      length_s: GhostBanriEffect.DEFAULT_LENGTH_S,
+      // Length of time to keep active in minutes
+      length_minutes: GhostBanriEffect.DEFAULT_LENGTH_MIN,
       // The target number of people to be affected by each activation
       infection_rate: GhostBanriEffect.DEFAULT_INFECTION_RATE,
     };
-    this.banri_timeout = null;
-    this.deactivate_timeout = null;
+    GhostBanriEffect.banri_timeout = null;
+    GhostBanriEffect.deactivate_timeout = null;
   }
 
-  activate(length_s = 0, infection_rate = 0) {
-    if (length_s > 0) {
-      this.state.length_s = length_s;
-      this.resetDeactivationTimer();
+  static enable(length_minutes = 0, infection_rate = 0) {
+    const state = GhostBanriEffect.state;
+    if (length_minutes > 0) {
+      state.length_minutes = length_minutes;
+      GhostBanriEffect.resetDeactivationTimer();
     }
     if (infection_rate > 0 && infection_rate <= 1) {
-      this.state.infection_rate = infection_rate;
+      state.infection_rate = infection_rate;
     }
 
-    if (this.state.enabled) {
+    if (state.enabled) {
       return;
     }
 
-    this.state.enabled = true;
-    this.maybeShowBanri();
-    this.resetDeactivationTimer();
+    state.enabled = true;
+    GhostBanriEffect.maybeShowBanri();
+    GhostBanriEffect.resetDeactivationTimer();
   }
 
-  deactivate() {
-    if (!this.state.enabled) {
+  static disable() {
+    const state = GhostBanriEffect.state;
+    if (!state.enabled) {
       return;
     }
 
-    this.state.enabled = false;
-    if (this.banri_timeout) {
-      clearTimeout(this.banri_timeout);
-      this.banri_timeout = null;
+    state.enabled = false;
+    if (GhostBanriEffect.banri_timeout) {
+      clearTimeout(GhostBanriEffect.banri_timeout);
+      GhostBanriEffect.banri_timeout = null;
     }
 
-    this.length_s =GhostBanriEffect.DEFAULT_LENGTH_S;
-    this.infection_rate = GhostBanriEffect.DEFAULT_INFECTION_RATE;
+    state.length_minutes =GhostBanriEffect.DEFAULT_LENGTH_MIN;
+    state.infection_rate = GhostBanriEffect.DEFAULT_INFECTION_RATE;
   }
 
-  maybeShowBanri() {
-    if (this.banri_timeout) {
-      clearTimeout(this.banri_timeout);
-      this.banri_timeout = null;
-    }
-
-    if (!this.state.enabled) {
+  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
+    if (message_parts[0] === 'off') {
+      GhostBanriEffect.disable();
       return;
     }
 
-    if (Math.random() > this.state.infection_rate) {
-      console.log('MISS');
-      this.banri_timeout = setTimeout(() => this.maybeShowBanri(), GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S * 1000);
+    let length_minutes = parseFloat(message_parts[0] || '0');
+    if (isNaN(length_minutes) || length_minutes <= 0) {
+      length_minutes = GhostBanriEffect.DEFAULT_LENGTH_MIN;
+    }
+
+    let infection_rate = parseFloat(message_parts[1] || '0');
+    if (isNaN(infection_rate) || infection_rate <= 0 || infection_rate > 1) {
+      infection_rate = GhostBanriEffect.DEFAULT_INFECTION_RATE;
+    }
+
+    GhostBanriEffect.enable(length_minutes, infection_rate);
+  }
+
+  static maybeShowBanri() {
+    const state = GhostBanriEffect.state;
+    if (GhostBanriEffect.banri_timeout) {
+      clearTimeout(GhostBanriEffect.banri_timeout);
+      GhostBanriEffect.banri_timeout = null;
+    }
+
+    if (!state.enabled) {
       return;
     }
 
-    console.log('HIT');
-    this.showBanri()
+    if (Math.random() > state.infection_rate) {
+      GhostBanriEffect.banri_timeout = setTimeout(() => {
+        GhostBanriEffect.maybeShowBanri();
+      }, GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S * 1000);
+      return;
+    }
+
+    GhostBanriEffect.showBanri()
       .then(() => {
-        clearTimeout(this.banri_timeout);
-        this.banri_timeout = setTimeout(() => this.maybeShowBanri(), GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S * 1000);
+        clearTimeout(GhostBanriEffect.banri_timeout);
+        GhostBanriEffect.banri_timeout = setTimeout(() => {
+          GhostBanriEffect.maybeShowBanri();
+        }, GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S * 1000);
       });
   }
 
-  showBanri() {
+  static showBanri() {
     const img = document.createElement('img');
     img.src = GhostBanriEffect.BANRI_IMG;
     img.classList.add('c-effect__banri');
@@ -448,19 +511,32 @@ class GhostBanriEffect {
     });
   }
 
-  resetDeactivationTimer() {
-    if (this.deactivate_timeout) {
-      clearTimeout(this.deactivate_timeout);
-      this.deactivate_timeout = null;
+  static resetDeactivationTimer() {
+    const state = GhostBanriEffect.state;
+    if (GhostBanriEffect.deactivate_timeout) {
+      clearTimeout(GhostBanriEffect.deactivate_timeout);
+      GhostBanriEffect.deactivate_timeout = null;
     }
 
-    this.deactivate_timeout = setTimeout(() => this.deactivate(), this.state.length_s * 1000);
+    GhostBanriEffect.deactivate_timeout = setTimeout(() => {
+      GhostBanriEffect.disable();
+    }, state.length_minutes * 60 * 1000);
   }
 }
-GhostBanriEffect.DEFAULT_LENGTH_S = 10 * 60;
+SnowEffect.command = '/banri';
+GhostBanriEffect.DEFAULT_LENGTH_MIN = 10 * 60;
 GhostBanriEffect.DEFAULT_INFECTION_RATE = 0.5;
-GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S = 5
+GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S = 30;
 GhostBanriEffect.BANRI_IMG = './ghost-banri.png';
 
-const banri = new GhostBanriEffect();
-banri.activate(10 * 60, 0.9);
+
+
+GhostBanriEffect.init();
+GhostBanriEffect.handleCommand(['10', '0.9']);
+
+
+SnowEffect.init();
+SnowEffect.handleCommand(['high']);
+
+ChristmasWonderlandEffect.init();
+ChristmasWonderlandEffect.handleCommand(['on']);
