@@ -876,9 +876,8 @@ autorefreshbtn = $('<button id="autorefreshbtn" class="btn btn-sm ' + (!AUTOREFR
 function autoRefreshPlayer() {
 	if (AUTOREFRESH && data.type === "fi" && !vidRemoved) {
 		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-<<<<<<< HEAD
 		clearAutoRefresh();
-		
+
 		if (!rdmLinkInterval) {
 			rdmLinkInterval = setInterval(function() {
 				iRefreshes++;
@@ -889,53 +888,6 @@ function autoRefreshPlayer() {
 					document.getElementById("mediarefresh").click();
 				} else if (iRefreshes > 15 || videoElement.readyState !== 0) {
 					clearAutoRefresh();
-=======
-		activeLink = data.id;
-
-		clearRdmLinkStuff();
-
-		if (data.type === "fi") {
-			randomizeLink(activeLink, videoElement);
-
-			if (AUTOREFRESH && !rdmLinkInterval) {
-				rdmLinkInterval = setInterval(function() {
-					console.log("this is an interval");
-					videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-					vidError = videoElement.error || false;
-
-					if (vidError) {
-						if (rdmLinkFound) {
-							randomizeLink(activeLink, videoElement);
-						} else {
-							//document.getElementById("mediarefresh").click();
-							clearRdmLinkStuff();
-						}
-					} else { //if (iLinkRefreshes > 15 || videoElement.readyState !== 0)
-						clearRdmLinkStuff();
-					}
-				}, 2050 + Math.floor(700 * Math.random()));
-			}
-		}
-
-		function randomizeLink(PLLink, vidElemPassed) {
-			for (var i = 0; i < LINKS["DropboxURLs"].length; i++) {
-				if (PLLink.indexOf(LINKS["DropboxURLs"][i][0]) > -1) {
-					rdmLinkFound = true;
-					rdmIndex = Math.floor(Math.random() * LINKS["DropboxURLs"][i].length);
-					rdmLink = LINKS["DropboxURLs"][i][rdmIndex];
-					if (rdmLink.indexOf("dropbox.com") > -1 && rdmLink[rdmLink.length-1] === "/") {
-						rdmLink = PLLink;
-					}
-					console.log(i + "\t" + rdmLink);
-					setTimeout(function() {
-						vidElemPassed.addEventListener("loadedmetadata", clearRdmLinkStuff); // fastest
-						vidElemPassed.addEventListener("loadeddata", clearRdmLinkStuff); // paranoia
-
-						vidElemPassed.src = rdmLink;
-						vidElemPassed.load();
-					}, 500);
-					break;
->>>>>>> d9a7c05 (Move images and add documentation)
 				}
 			}, 2050 + Math.floor(700 * Math.random()));
 		}
@@ -944,7 +896,6 @@ function autoRefreshPlayer() {
 
 const PlaylistDelimiter = "???streamurl???";
 
-<<<<<<< HEAD
 _loadMediaPlayer = loadMediaPlayer
 loadMediaPlayer = function(data) {
 	selectRandomLink(data);
@@ -958,41 +909,6 @@ handleMediaUpdate = function(data) {
     _handleMediaUpdate(data);
 	autoRefreshPlayer();
 }
-=======
-function selectRandomLinkNoJSON(data) {
-	if (!vidRemoved && data.type === "fi") {
-		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-		aLinks = data.id.split(PlaylistDelimiter);
-
-		clearRdmLinkStuff();
-
-		if (aLinks.length > 1) {
-			randomizeLinkNoJSON(aLinks, videoElement);
-
-			if (AUTOREFRESH && !rdmLinkInterval) {
-				rdmLinkInterval = setInterval(function() {
-					videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-					vidError = videoElement.error || false;
-
-					if (vidError) {
-						randomizeLinkNoJSON(aLinks, videoElement);
-					} else if (iLinkRefreshes > 15 || videoElement.readyState !== 0) {
-						clearRdmLinkStuff();
-					}
-				}, 2050 + Math.floor(700 * Math.random()));
-			}
-		}
-
-		function randomizeLinkNoJSON(rdmLinks, vidElemPassed) {
-			if (vidElemPassed) {
-				rdmIndex = Math.floor(Math.random() * rdmLinks.length);
-				rdmLink = rdmLinks[rdmIndex];
-
-				console.log(rdmLink);
-				setTimeout(function() {
-					vidElemPassed.addEventListener("loadedmetadata", clearRdmLinkStuff); // fastest
-					vidElemPassed.addEventListener("loadeddata", clearRdmLinkStuff); // paranoia
->>>>>>> d9a7c05 (Move images and add documentation)
 
 function selectRandomLink(data) {
 	if (typeof data.id !== "undefined") {
@@ -3848,11 +3764,7 @@ class SnowEffect {
   }
 
   static handleFrame() {
-		const state = SnowEffect.state;
-		if (!state.enabled) {
-			return;
-		}
-
+    const state = SnowEffect.state;
     state._context.clearRect(0, 0, state._width, state._height);
 
     // Add new snowflakes
@@ -3945,7 +3857,7 @@ SnowEffect.snow_levels = {
 
 
 /**
- * Usage: /banri <minutes to be on = 10> <infection rate (out of 100) = 60>
+ * Usage: /banri <minutes to be on = 10> <infection rate (out of 100) = 50>
  * Turn off: /banri off
  */
 class GhostBanriEffect {
@@ -4061,12 +3973,10 @@ class GhostBanriEffect {
     img.style.top = getRandomInt(min_left, max_left) + 'px';
     img.style.left = getRandomInt(min_top, max_top) + 'px';
     return new Promise((resolve) => {
-			const fun = () => {
+      img.addEventListener('animationend', () => {
         img.parentElement.removeChild(img);
-				img.removeEventListener('animationend', fun);
-				resolve();
-      };
-      img.addEventListener('animationend', fun);
+        resolve();
+      });
     });
   }
 
@@ -4084,7 +3994,7 @@ class GhostBanriEffect {
 }
 GhostBanriEffect.command = '/banri';
 GhostBanriEffect.DEFAULT_LENGTH_MIN = 10 * 60;
-GhostBanriEffect.DEFAULT_INFECTION_RATE = 0.6;
+GhostBanriEffect.DEFAULT_INFECTION_RATE = 0.5;
 GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S = 30;
 GhostBanriEffect.BANRI_IMG = `${SCRIPT_FOLDER_URL}/Images/ghost-banri.png`;
 
