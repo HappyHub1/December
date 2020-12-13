@@ -3749,9 +3749,9 @@ class SnowEffect {
     state.enabled = false;
     window.removeEventListener('resize', SnowEffect._resizeHandler);
 
-    if (SnowEffect._requested_animation_frame) {
-      SnowEffect._requested_animation_frame = null;
-      cancelAnimationFrame(SnowEffect._requested_animation_frame);
+    if (state._requested_animation_frame) {
+      state._requested_animation_frame = null;
+      cancelAnimationFrame(state._requested_animation_frame);
     }
 
     state._context = null;
