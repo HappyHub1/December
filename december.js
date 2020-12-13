@@ -873,8 +873,8 @@ autorefreshbtn = $('<button id="autorefreshbtn" class="btn btn-sm ' + (!AUTOREFR
 	});
 
 
-function autoRefreshPlayer() {
-	if (AUTOREFRESH && data.type === "fi" && !vidRemoved) {
+function autoRefreshPlayer(type) {
+	if (AUTOREFRESH && type === "fi" && !vidRemoved) {
 		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
 		clearAutoRefresh();
 
@@ -900,14 +900,18 @@ _loadMediaPlayer = loadMediaPlayer
 loadMediaPlayer = function(data) {
 	selectRandomLink(data);
     _loadMediaPlayer(data);
-	autoRefreshPlayer();
+	if (typeof data.type !== "undefined") {
+		autoRefreshPlayer(data.type);
+	}
 }
 
 _handleMediaUpdate = handleMediaUpdate
 handleMediaUpdate = function(data) {
 	selectRandomLink(data);
     _handleMediaUpdate(data);
-	autoRefreshPlayer();
+	if (typeof data.type !== "undefined") {
+		autoRefreshPlayer(data.type);
+	}
 }
 
 function selectRandomLink(data) {
@@ -1530,7 +1534,7 @@ currenttimebtn = $('<button id="findtime" class="btn btn-xs btn-default" title="
 			clearInterval(ADDONESECOND);
 			socket.removeListener("mediaUpdate", getVideoTime);
 		} else {
-			getVideoTime({currentTime:PLAYER.player.currentTime()});
+			getVideoTime({currentTime:getCurrentPlayerTime()});
 			socket.on("mediaUpdate", getVideoTime);
 		}
 });
@@ -2597,17 +2601,29 @@ showbgbtn = $('<p id="showbg" class="navbar-text" title="Show background" style=
 		}
 });
 
+function getCurrentPlayerTime() {
+	if (typeof PLAYER.player !== "undefined") {
+		return PLAYER.player.currentTime(); // "FilePlayer, Vimeo"
+	} else if (typeof PLAYER.yt !== "undefined") { // "YouTube"
+		return PLAYER.yt.getCurrentTime(); // "YouTube"
+	} else if (typeof PLAYER.dm !== "undefined") {
+		return PLAYER.dm.currentTime; // "Daily Motion"
+	} else {
+		return CurrentVideoTime;
+	}
+}
+
 var CurrentVideoTime = 0;
 
 socket.on("delete", function() {
 	setTimeout(function() {
-		updateEndTimes(PLAYER.player.currentTime());
+		updateEndTimes(getCurrentPlayerTime());
 	}, 750); // hopefully this fixes the issue..
 });
 
 socket.on("moveVideo", function() {
 	setTimeout(function() {
-		updateEndTimes(PLAYER.player.currentTime())
+		updateEndTimes(getCurrentPlayerTime())
 	}, 750);
 });
 
@@ -2658,7 +2674,7 @@ function makeQueueEntry(item, addbtns) {
         addQueueButtons(li);
 
 	setTimeout(function() {
-		updateEndTimes(PLAYER.player.currentTime());
+		updateEndTimes(getCurrentPlayerTime());
 	}, 100);
     return li;
 }
@@ -2666,77 +2682,83 @@ function makeQueueEntry(item, addbtns) {
 function updateEndTimes(CurrentVideoTime) {
     var currentTime = new Date().getTime();
     var activeItemPosition = Array.from(document.getElementById("queue").children).indexOf(document.getElementsByClassName("queue_active")[0]);
-
-    var PLTimeList = document.querySelectorAll("#queue .qe_time");
-    var PLEndTimeList = document.getElementsByClassName("qe_endTime") || false;
-    var PLSeconds = 0;
-
-	if (PLTimeList.length !== 0) {
-		if (PLEndTimeList.length === 0) {
-			updateEndTimesOnLoad();
-		}
-
-		if (activeItemPosition !== 0) {
-			for (var j = 0; j < activeItemPosition; j++) {
-				PLEndTimeList[j].textContent = "";
+	
+	if (activeItemPosition === -1) {
+		setTimeout(function() {
+			updateEndTimes(CurrentVideoTime);
+		}, 250);
+	} else {
+		var PLTimeList = document.querySelectorAll("#queue .qe_time");
+		var PLEndTimeList = document.getElementsByClassName("qe_endTime") || false;
+		var PLSeconds = 0;
+		
+		if (PLTimeList.length !== 0) {
+			if (PLEndTimeList.length === 0) {
+				updateEndTimesOnLoad();
 			}
-		}
 
-		var maxItems = 50;
-		var maxPosition = 0;
-
-		if (PLTimeList.length < activeItemPosition + maxItems) {
-			maxPosition = PLTimeList.length;
-		} else {
-			maxPosition = activeItemPosition + maxItems;
-			for (var j = maxPosition; j < PLTimeList.length; j++) {
-				PLEndTimeList[j].textContent = "";
+			if (activeItemPosition > 0) {
+				for (var j = 0; j < activeItemPosition; j++) {
+					PLEndTimeList[j].textContent = "";
+				}
 			}
-		}
 
-		var noTime = false;
+			var maxItems = 50;
+			var maxPosition = 0;
 
-		for (var i = activeItemPosition; i < maxPosition; i++) {
-			var currSplitTime = PLTimeList[i].textContent.split(":");
-
-			if (currSplitTime[0] !== "--" && !noTime) {
-				if (currSplitTime.length === 3) {
-					PLSeconds += parseInt(currSplitTime[0]) * 60 * 60;
-				}
-				PLSeconds += parseInt(currSplitTime[currSplitTime.length-2]) * 60;
-				PLSeconds += parseInt(currSplitTime[currSplitTime.length-1]);
-				PLSeconds += 3; //video player delay
-
-				if (i === activeItemPosition) {
-					PLSeconds = PLSeconds - CurrentVideoTime;
-				}
-
-				var updatedTime = new Date(currentTime + PLSeconds * 1000);
-				var isPM = updatedTime.getHours() >= 12;
-				var isMidday = updatedTime.getHours() == 12;
-
-				var updatedHours = updatedTime.getHours() - (isPM && !isMidday ? 12 : 0);
-				if (updatedHours === 0) {
-					updatedHours = 12;
-				}
-
-				var updatedMins = updatedTime.getMinutes().toString();
-				if (updatedMins.length === 1) {
-					updatedMins = "0" + updatedMins;
-				}
-				var updatedSecs = updatedTime.getSeconds().toString();
-				if (updatedSecs.length === 1) {
-					updatedSecs = "0" + updatedSecs;
-				}
-
-				PLEndTimeList[i].textContent = "Ends at " + updatedHours + ":" + updatedMins + ":" + updatedSecs + (isPM ? ' PM' : ' AM') + " | ";
+			if (PLTimeList.length < activeItemPosition + maxItems) {
+				maxPosition = PLTimeList.length;
 			} else {
-				if (!noTime) {
-					PLEndTimeList[i].textContent = "Never ends | ";
-				} else {
-					PLEndTimeList[i].textContent = "";
+				maxPosition = activeItemPosition + maxItems;
+				for (var j = maxPosition; j < PLTimeList.length; j++) {
+					PLEndTimeList[j].textContent = "";
 				}
-				noTime = true;
+			}
+
+			var noTime = false;
+
+			for (var i = activeItemPosition; i < maxPosition; i++) {
+				var currSplitTime = PLTimeList[i].textContent.split(":");
+
+				if (currSplitTime[0] !== "--" && !noTime) {
+					if (currSplitTime.length === 3) {
+						PLSeconds += parseInt(currSplitTime[0]) * 60 * 60;
+					}
+					PLSeconds += parseInt(currSplitTime[currSplitTime.length-2]) * 60;
+					PLSeconds += parseInt(currSplitTime[currSplitTime.length-1]);
+					PLSeconds += 3; //video player delay
+
+					if (i === activeItemPosition) {
+						PLSeconds = PLSeconds - CurrentVideoTime;
+					}
+
+					var updatedTime = new Date(currentTime + PLSeconds * 1000);
+					var isPM = updatedTime.getHours() >= 12;
+					var isMidday = updatedTime.getHours() == 12;
+
+					var updatedHours = updatedTime.getHours() - (isPM && !isMidday ? 12 : 0);
+					if (updatedHours === 0) {
+						updatedHours = 12;
+					}
+
+					var updatedMins = updatedTime.getMinutes().toString();
+					if (updatedMins.length === 1) {
+						updatedMins = "0" + updatedMins;
+					}
+					var updatedSecs = updatedTime.getSeconds().toString();
+					if (updatedSecs.length === 1) {
+						updatedSecs = "0" + updatedSecs;
+					}
+
+					PLEndTimeList[i].textContent = "Ends at " + updatedHours + ":" + updatedMins + ":" + updatedSecs + (isPM ? ' PM' : ' AM') + " | ";
+				} else {
+					if (!noTime) {
+						PLEndTimeList[i].textContent = "Never ends | ";
+					} else {
+						PLEndTimeList[i].textContent = "";
+					}
+					noTime = true;
+				}
 			}
 		}
 	}
