@@ -2682,7 +2682,7 @@ function makeQueueEntry(item, addbtns) {
 function updateEndTimes(CurrentVideoTime) {
     var currentTime = new Date().getTime();
     var activeItemPosition = Array.from(document.getElementById("queue").children).indexOf(document.getElementsByClassName("queue_active")[0]);
-	
+
 	if (activeItemPosition === -1) {
 		setTimeout(function() {
 			updateEndTimes(CurrentVideoTime);
@@ -2691,7 +2691,7 @@ function updateEndTimes(CurrentVideoTime) {
 		var PLTimeList = document.querySelectorAll("#queue .qe_time");
 		var PLEndTimeList = document.getElementsByClassName("qe_endTime") || false;
 		var PLSeconds = 0;
-		
+
 		if (PLTimeList.length !== 0) {
 			if (PLEndTimeList.length === 0) {
 				updateEndTimesOnLoad();
@@ -3720,7 +3720,7 @@ class SnowEffect {
       state.snow_level = SnowEffect.snow_levels[snow_level];
     }
 
-    if (state._canvas || state.enabled) {
+    if (state.enabled) {
       return;
     }
 
@@ -3742,7 +3742,7 @@ class SnowEffect {
 
   static disable() {
     const state = SnowEffect.state;
-    if (!state._canvas || !state.enabled) {
+    if (!state.enabled) {
       return;
     }
 
