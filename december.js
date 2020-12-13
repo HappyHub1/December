@@ -873,46 +873,44 @@ autorefreshbtn = $('<button id="autorefreshbtn" class="btn btn-sm ' + (!AUTOREFR
 	});
 
 
-function autoRefreshPlayer(type) {
-	if (AUTOREFRESH && type === "fi" && !vidRemoved) {
-		videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-		clearAutoRefresh();
+function autoRefreshPlayer(data) {
+	if (typeof data.type !== "undefined") {
+		if (AUTOREFRESH && data.type === "fi" && !vidRemoved) {
+			videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+			clearAutoRefresh();
 
-		if (!rdmLinkInterval) {
-			rdmLinkInterval = setInterval(function() {
-				iRefreshes++;
-				videoElement = document.getElementById("ytapiplayer_html5_api") || false;
-				vidError = videoElement.error || false;
+			if (!rdmLinkInterval) {
+				rdmLinkInterval = setInterval(function() {
+					iRefreshes++;
+					videoElement = document.getElementById("ytapiplayer_html5_api") || false;
+					vidError = videoElement.error || false;
 
-				if (vidError) {
-					document.getElementById("mediarefresh").click();
-				} else if (iRefreshes > 15 || videoElement.readyState !== 0) {
-					clearAutoRefresh();
-				}
-			}, 2050 + Math.floor(700 * Math.random()));
+					if (vidError) {
+						document.getElementById("mediarefresh").click();
+					} else if (iRefreshes > 15 || videoElement.readyState !== 0) {
+						clearAutoRefresh();
+					}
+				}, 2050 + Math.floor(700 * Math.random()));
+			}
 		}
 	}
 }
 
-const PlaylistDelimiter = "???streamurl???";
-
-_loadMediaPlayer = loadMediaPlayer
+_loadMediaPlayer = loadMediaPlayer;
 loadMediaPlayer = function(data) {
 	selectRandomLink(data);
     _loadMediaPlayer(data);
-	if (typeof data.type !== "undefined") {
-		autoRefreshPlayer(data.type);
-	}
+	autoRefreshPlayer(data);
 }
 
-_handleMediaUpdate = handleMediaUpdate
+_handleMediaUpdate = handleMediaUpdate;
 handleMediaUpdate = function(data) {
 	selectRandomLink(data);
     _handleMediaUpdate(data);
-	if (typeof data.type !== "undefined") {
-		autoRefreshPlayer(data.type);
-	}
+	autoRefreshPlayer(data);
 }
+
+const PlaylistDelimiter = "???streamurl???";
 
 function selectRandomLink(data) {
 	if (typeof data.id !== "undefined") {
@@ -929,9 +927,7 @@ function selectRandomLink(data) {
 	}
 }
 
-setTimeout(function() {
-	document.getElementById("mediarefresh").click();
-}, 500);
+setTimeout(document.getElementById("mediarefresh").click(), 500);
 
 function setPanelProperties(div) {
 	height = $("#userlist").height();
@@ -2602,13 +2598,15 @@ showbgbtn = $('<p id="showbg" class="navbar-text" title="Show background" style=
 });
 
 function getCurrentPlayerTime() {
-	if (typeof PLAYER.player !== "undefined") {
-		return PLAYER.player.currentTime(); // "FilePlayer, Vimeo"
-	} else if (typeof PLAYER.yt !== "undefined") { // "YouTube"
-		return PLAYER.yt.getCurrentTime(); // "YouTube"
-	} else if (typeof PLAYER.dm !== "undefined") {
-		return PLAYER.dm.currentTime; // "Daily Motion"
-	} else {
+	try {
+		if (typeof PLAYER.player !== "undefined") {
+			return PLAYER.player.currentTime(); // "FilePlayer, Vimeo"
+		} else if (typeof PLAYER.yt !== "undefined") { // "YouTube"
+			return PLAYER.yt.getCurrentTime(); // "YouTube"
+		} else if (typeof PLAYER.dm !== "undefined") {
+			return PLAYER.dm.currentTime; // "Daily Motion"
+		}
+	} catch {
 		return CurrentVideoTime;
 	}
 }
@@ -2623,7 +2621,7 @@ socket.on("delete", function() {
 
 socket.on("moveVideo", function() {
 	setTimeout(function() {
-		updateEndTimes(getCurrentPlayerTime())
+		updateEndTimes(getCurrentPlayerTime());
 	}, 750);
 });
 
