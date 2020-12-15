@@ -21,6 +21,38 @@ var ThemesCSS = [
 var TopUserLogo = [
 ];
 
+var ADVERTISEMENTS = [
+	"আৡঊসঠচঈ1",
+	"আৡঊসঠচঈ2",
+	"আৡঊসঠচঈ3",
+	"আৡঊসঠচঈ4",
+	"আৡঊসঠচঈ5",
+	"আৡঊসঠচঈ6",
+	"আৡঊসঠচঈ7",
+	"আৡঊসঠচঈ8",
+	"আৡঊসঠচঈ9",
+	"আৡঊসঠচঈ10",
+	"আৡঊসঠচঈ11",
+	"আৡঊসঠচঈ12",
+	"আৡঊসঠচঈ13",
+	"আৡঊসঠচঈ14",
+	"আৡঊসঠচঈ15",
+	"আৡঊসঠচঈ16",
+	"আৡঊসঠচঈ17",
+	"আৡঊসঠচঈ18",
+	"আৡঊসঠচঈ19",
+	"আৡঊসঠচঈ20",
+	"আৡঊসঠচঈ21",
+	"আৡঊসঠচঈ22",
+	"আৡঊসঠচঈ23",
+	"আৡঊসঠচঈ24",
+	"আৡঊসঠচঈ25",
+	"আৡঊসঠচঈ26",
+	"আৡঊসঠচঈ27",
+	"আৡঊসঠচঈ28",
+	"আৡঊসঠচঈ29"
+];
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* ----- END OF CONFIGURATION, DO NOT CHANGE ANYTHING BELOW ----- */
@@ -105,7 +137,6 @@ var CHATMAXSIZE = getOrDefault(CHANNEL.name + "_CHATMAXSIZE", 150);	// Override 
 // The interval of time (in ms) to flush messages to the screen
 var NICO_NICO_MESSAGE_QUEUE_TIME = getOrDefault(CHANNEL.name + "_NICO_NICO_MESSAGE_QUEUE_TIME", 100);
 var EFFECTSOFF = getOrDefault(CHANNEL.name + "_EFFECTSOFF", false);
-var ADVERTISEMENTS = getOrDefault(CHANNEL.name + "_ADVERTISEMENTS", []);
 var AUTOREFRESH = getOrDefault(CHANNEL.name + "_AUTOREFRESH", false);
 var EMBEDVID = getOrDefault(CHANNEL.name + "_EMBEDVID", true);
 var AUTOVID = getOrDefault(CHANNEL.name + "_AUTOVID", true);
