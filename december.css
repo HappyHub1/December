@@ -743,7 +743,7 @@ span.glyphicon.glyphicon-time {
 
 
 .c-effect__christmas-wonderland {
-  --navbar-height: 56px;
+  --navbar-height: 0px;
 
   /* Lightrope */
   --bulb-width: 14px;
