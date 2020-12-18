@@ -3094,7 +3094,7 @@ class PresentsEffect {
         PresentsEffect.presents_duration_s = 30;
         PresentsEffect.present_animations = ['type1', 'type2', 'type3', 'type4', 'type5', 'type6']
         PresentsEffect.levels = [
-            { spawn_rate: 1000, spawn_limit: 6 },
+            { spawn_rate: 500, spawn_limit: 6 },
             { spawn_rate: 1000, spawn_limit: 10 },
         ];
 
