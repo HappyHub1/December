@@ -3918,6 +3918,10 @@ class SnowEffect {
 
   static handleFrame() {
     const state = SnowEffect.state;
+		if (!state._context) {
+			return;
+		}
+
     state._context.clearRect(0, 0, state._width, state._height);
 
     // Add new snowflakes
@@ -4002,7 +4006,7 @@ SnowEffect.min_y_speed = 1;
 SnowEffect.max_y_speed = 4;
 SnowEffect.snow_levels = {
   // The rate at which snow falls. High numbers means less snow
-  low: {min: 2000, max: 20000},
+  low: {min: 7500, max: 10000},
   medium: {min: 500, max: 5000},
   high: {min: 250, max: 2500},
   blizzard: {min: 75, max: 900},
