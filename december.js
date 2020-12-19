@@ -4002,7 +4002,7 @@ SnowEffect.min_y_speed = 1;
 SnowEffect.max_y_speed = 4;
 SnowEffect.snow_levels = {
   // The rate at which snow falls. High numbers means less snow
-  low: {min: 1000, max: 10000},
+  low: {min: 2000, max: 20000},
   medium: {min: 500, max: 5000},
   high: {min: 250, max: 2500},
   blizzard: {min: 75, max: 900},
