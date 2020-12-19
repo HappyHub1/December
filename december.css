@@ -769,7 +769,7 @@ span.glyphicon.glyphicon-time {
 
 
   /* Candy cane */
-  --candy-cane-width: 14px;
+  --candy-cane-width: 12px;
 
   --lightrope-zindex: 1002;
   --candy-cane-zindex: 1001;
@@ -785,10 +785,15 @@ span.glyphicon.glyphicon-time {
   --right-tree-z-index: 1300;
   --kfc-z-index: 1200;
 
-  --left-tree-x: 290px;
-  --middle-tree-x: 130px;
-  --right-tree-x: 24px;
-  --kfc-x: 190px;
+  --tree-width: 120px;
+  --tree-big-width: 160px;
+
+  --left-tree-x: 200px;
+  --middle-tree-x: 95px;
+  --right-tree-x: 25px;
+
+  --kfc-x: 135px;
+  --kfc-width: 80px;
 
   pointer-events: none;
 }
@@ -931,7 +936,7 @@ span.glyphicon.glyphicon-time {
   position: fixed;
   bottom: 0;
   right: var(--left-tree-x);
-  width: 180px;
+  width: var(--tree-width);
 }
 .c-christmas-tree__tree {
   fill: #165b33;
@@ -943,7 +948,7 @@ span.glyphicon.glyphicon-time {
   right: var(--left-tree-x);
 }
 .c-christmas-tree--middle {
-  width: 240px;
+  width: var(--tree-big-width);
   z-index: var(--middle-tree-z-index);
   right: var(--middle-tree-x);
 }
@@ -1009,7 +1014,7 @@ span.glyphicon.glyphicon-time {
 
 .c-kfc-bucket {
   position: fixed;
-  width: 120px;
+  width: var(--kfc-width);
   bottom: 0;
   right: var(--kfc-x);
   z-index: var(--kfc-z-index);

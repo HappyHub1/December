@@ -3698,7 +3698,7 @@ class ChristmasWonderlandEffect {
       container.classList.add('c-candy-cane--right');
     }
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 150; i++) {
       const ring = document.createElement('div');
       ring.classList.add('c-candy-cane-ring');
       if (i % 2) {
