@@ -57,10 +57,10 @@ function removeChatSocket() {
 function chatSocket(data) {
 	if (data.meta.addClass !== "server-whisper") {
 		var teamIcon = "None";
-		if (teamIconRegex.test(data.msg)) {
-			teamIcon = data.msg.match(teamIconRegex)[1];
+		if (teamIconRegex.test(data.msg2)) {
+			teamIcon = data.msg2.match(teamIconRegex)[1];
 		}
-		aMessages[aMessages.length] = [data.time, data.username, data.msg.replace(/<a.+href="(.+?)".+<\/a>/gi, "$1").replace(/ <span style="display:none" class="teamColorSpan">.+/gi,""), teamIcon];
+		aMessages[aMessages.length] = [data.time, data.username, data.msg2.replace(/<a.+href="(.+?)".+<\/a>/gi, "$1").replace(/ <span style="display:none" class="teamColorSpan">.+/gi,""), teamIcon];
 		if (aMessages.length > msgLength || downloadMsg) {
 			downloadMsg = false;
 			var filename = CHANNEL.name + "-CHAT-" + new Date() + ".csv";
