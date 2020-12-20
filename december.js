@@ -2350,7 +2350,7 @@ function formatChatMessage(data, last) {
 		}
 		if (data.msg.replace(" ","").length > 25) {
 			var splitMsg = data.msg.split(" ");
-			for (var iChar = 0; iChar < splitMsg.length; i++) {
+			for (var iChar = 0; iChar < splitMsg.length; iChar++) {
 				if (splitMsg[iChar].length > 25) {
 					data.msg = data.msg.substring(0, 25);
 					break;
