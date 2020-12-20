@@ -2252,7 +2252,7 @@ function formatChatMessage(data, last) {
 		(CLIENT.rank > 2 && !RELOADED) ? socket.emit("chatMsg", {msg:'/kick ' + data.username + ' Quit trying to reload and enable javascript.'}) : RELOADED = false;
 	}
 
-	if (CLIENT.rank > 2 && (data.msg.indexOf('/snow') === 0 || data.msg.indexOf('/padoru') === 0 || data.msg.indexOf('/erabe') === 0 || data.msg.indexOf('/effects_stop') === 0 || data.msg.indexOf('/presents') === 0)) {
+	if (CLIENT.rank > 2 && (data.msg.indexOf('/snow') === 0 || data.msg.indexOf('/padoru') === 0 || data.msg.indexOf('/erabe') === 0 || data.msg.indexOf('/effect') === 0 || data.msg.indexOf('/presents') === 0 || data.msg.indexOf("আৡঊসঠচঈ") > -1)) {
 		var FOUNDMOD = false;
 		$("#userlist").find('span[class$=userlist_owner],span[class$=userlist_siteadmin]').each(function() {
 			if ($(this).text() === data.username) {
