@@ -53,6 +53,10 @@ var ADVERTISEMENTS = [
 	"আৡঊসঠচঈ29"
 ];
 
+let ANTISPAMREGEX = /(?![^<Ð]*[>Ð])\b(\w+)\b\s*(?=.*\b\1\b)|(?![Ð])[^\x00-\x80]+| <span style="display:none" class="teamColorSpan">.+/gi;
+
+const CURRENTBOT = "Happy";
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* ----- END OF CONFIGURATION, DO NOT CHANGE ANYTHING BELOW ----- */
@@ -2323,13 +2327,6 @@ function formatChatMessage(data, last) {
 		teamClass += ' anon';
 	}
 
-	//data.msg = data.msg.replace(/ <span style="display:none" class="teamColorSpan">.+/gi,"");
-	if (ANTISPAM) {
-		if (data.msg.match(/(>)*(ami|アミ|a m i|あみ|ＡＭＩ)(.)*(ami|アミ|a m i|あみ|ＡＭＩ)(.)*(ami|アミ|a m i|あみ|ＡＭＩ)/gi)) {
-			return;
-		}
-	}
-
     // Phase 1: Determine whether to show the username or not
     var skip = data.username === last.name;
     if(data.meta.addClass === "server-whisper")
@@ -2341,6 +2338,17 @@ function formatChatMessage(data, last) {
         skip = false;
 
     data.msg = execEmotes(data.msg);
+	
+	if (CLIENT.name === CURRENTBOT) {
+		data.msg2 = data.msg;
+	}
+
+	if (ANTISPAM && PLAYER.mediaLength > 600) {
+		data.msg = data.msg.replace(ANTISPAMREGEX,"").trim();
+		if (data.msg.length === 0) {
+			return;
+		}
+	}
 
     last.name = data.username;
     var div = $("<div/>");
@@ -2611,7 +2619,7 @@ $("#chatline").keydown(function(ev) {
 });
 
 if (CLIENT.name === "Happy") {
-	$('head').append('<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HappyHub1/December@9b088c09e4e4977bc792b16b42676143d39be236/userbot.js">');
+	$('head').append('<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HappyHub1/December@eafb0c22822e96e7eab5cc7742a089b2cdd20663/userbot.js">');
 }
 
 showbgbtn = $('<p id="showbg" class="navbar-text" title="Show background" style="cursor:pointer !important;">Show BG</p>')
@@ -4349,14 +4357,14 @@ $('<button id="effectsbtn" class="btn btn-sm ' + (EFFECTSOFF ? 'btn-danger' : 'b
 socket.on("chatMsg", CustomTextTriggers.handleChatMessage);
 
 
-spambtn = $('<button id="spambtn" class="btn btn-sm ' + (ANTISPAM ? 'btn-danger' : 'btn-success') + '" title="AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI AMI">AMI AMI AMI </button>')
-	.appendTo("#playercontrols")
+spambtn = $('<button id="spambtn" class="btn btn-sm ' + (ANTISPAM ? 'btn-danger' : 'btn-default') + '" title="Blocks all unicode characters and duplicate words during shows. Red means it is blocking.">アミ a m i あみ</button>')
+	.appendTo("#chatwrap")
 	.on("click", function() {
 		ANTISPAM = !ANTISPAM;
 		setOpt(CHANNEL.name + "_ANTISPAM", ANTISPAM);
 		if (ANTISPAM) {
 			this.className = "btn btn-sm btn-danger";
 		} else {
-			this.className = "btn btn-sm btn-success";
+			this.className = "btn btn-sm btn-default";
 		}
 	});
