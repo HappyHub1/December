@@ -53,7 +53,8 @@ var ADVERTISEMENTS = [
 	"আৡঊসঠচঈ29"
 ];
 
-let ANTISPAMREGEX = /(?![^<Ð]*[>Ð])\b(\w+)\b\s*(?=.*\b\1\b)|(?![Ð])[^\x00-\x80]+| <span style="display:none" class="teamColorSpan">.+/gi;
+let ANTISPAMREGEX = /(?![^<Ð]*[>Ð])\b(\w+)\b\s*(?=.*\b\1\b)|(?![Ð])[^\x00-\x80]+/gi;
+let TEAMCOLORREGEX = /( |)<span style="display:none" class="teamColorSpan">.+/gi;
 
 const CURRENTBOT = "Happy";
 
@@ -2323,9 +2324,9 @@ function formatChatMessage(data, last) {
 	} else {
 		teamClass = '';
 	}
-	if ($('#btn_anon').hasClass('label-success')){
+	/*if ($('#btn_anon').hasClass('label-success')){
 		teamClass += ' anon';
-	}
+	}*/
 
     // Phase 1: Determine whether to show the username or not
     var skip = data.username === last.name;
@@ -2337,6 +2338,7 @@ function formatChatMessage(data, last) {
     if (data.meta.forceShowName)
         skip = false;
 
+	data.msg = stripImages(data.msg);
     data.msg = execEmotes(data.msg);
 	
 	if (CLIENT.name === CURRENTBOT) {
@@ -2344,7 +2346,7 @@ function formatChatMessage(data, last) {
 	}
 
 	if (ANTISPAM && PLAYER.mediaLength > 600) {
-		data.msg = data.msg.replace(ANTISPAMREGEX,"").trim();
+		data.msg = data.msg.replace(TEAMCOLORREGEX,"").replace(ANTISPAMREGEX,"").trim();
 		if (data.msg.length === 0) {
 			return;
 		}
@@ -2380,24 +2382,24 @@ function formatChatMessage(data, last) {
 
     // Add username
     var name = $("<span/>");
-    if (!skip) {
+    if (!skip || UCONF.showname === "yes") {
         name.appendTo(div);
-    }
-    $("<strong/>").addClass("username " + teamClass).text(data.username + ": ").appendTo(name);
-    if (data.meta.modflair) {
-        name.addClass(getNameColor(data.meta.modflair));
-    }
-    if (data.meta.addClass && data.meta.addClassToNameAndTimestamp) {
-        name.addClass(data.meta.addClass);
-    }
-    if (data.meta.superadminflair) {
-        name.addClass("label")
-            .addClass(data.meta.superadminflair.labelclass);
-        $("<span/>").addClass(data.meta.superadminflair.icon)
-            .addClass("glyphicon")
-            .css("margin-right", "3px")
-            .prependTo(name);
-    }
+		$("<strong/>").addClass("username " + teamClass).text(data.username + ": ").appendTo(name);
+		if (data.meta.modflair) {
+			name.addClass(getNameColor(data.meta.modflair));
+		}
+		if (data.meta.addClass && data.meta.addClassToNameAndTimestamp) {
+			name.addClass(data.meta.addClass);
+		}
+		if (data.meta.superadminflair) {
+			name.addClass("label")
+				.addClass(data.meta.superadminflair.labelclass);
+			$("<span/>").addClass(data.meta.superadminflair.icon)
+				.addClass("glyphicon")
+				.css("margin-right", "3px")
+				.prependTo(name);
+		}
+	}
 
     // Add the message itself
     var message = $("<span/>").appendTo(div);
@@ -2581,8 +2583,8 @@ $("#chatline").keydown(function(ev) {
 				});
 			} else {
 				var t = msg.trim();
-				if ($('#teamcolor').val() && t.indexOf("/") !== 0) {
-					t = t + ' Ð' + $('#teamcolor').val() + 'Ð';
+				if (TEAMCOLOR && t.indexOf("/") !== 0) {
+					t = t + ' Ð' + TEAMCOLOR + 'Ð';
 				}
 				socket.emit("chatMsg", {
 					msg: t,
