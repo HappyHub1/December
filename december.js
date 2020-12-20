@@ -2329,10 +2329,10 @@ function formatChatMessage(data, last) {
 
     // Phase 1: Determine whether to show the username or not
     var skip = data.username === last.name;
-    if(data.meta.addClass === "server-whisper")
+    if (data.meta.addClass === "server-whisper")
         skip = true;
     // Prevent impersonation by abuse of the bold filter
-    if(data.msg.match(/^\s*<strong>\w+\s*:\s*<\/strong>\s*/))
+    if (data.msg.match(/^\s*<strong>\w+\s*:\s*<\/strong>\s*/))
         skip = false;
     if (data.meta.forceShowName)
         skip = false;
@@ -2347,6 +2347,15 @@ function formatChatMessage(data, last) {
 		data.msg = data.msg.replace(ANTISPAMREGEX,"").trim();
 		if (data.msg.length === 0) {
 			return;
+		}
+		if (data.msg.replace(" ","").length > 25) {
+			var splitMsg = data.msg.split(" ");
+			for (var iChar = 0; iChar < splitMsg.length; iChar++) {
+				if (splitMsg[iChar].length > 25) {
+					data.msg = data.msg.substring(0, 25);
+					break;
+				}
+			}
 		}
 	}
 
