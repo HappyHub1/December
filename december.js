@@ -53,7 +53,7 @@ var ADVERTISEMENTS = [
 	"আৡঊসঠচঈ29"
 ];
 
-let ANTISPAMREGEX = /(?![^<Ð]*[>Ð])\b(\w+)\b\s*(?=.*\b\1\b)|(?![Ð])[^\x00-\x80]+/gi;
+let ANTISPAMREGEX = /(?![^<Ð]*[>Ð&])\b(\w+)\b\s*(?=.*\b\1\b)|(?![Ð])[^\x00-\x80]+/gi;
 let TEAMCOLORREGEX = /( |)<span style="display:none" class="teamColorSpan">.+/gi;
 
 const CURRENTBOT = "Happy";
@@ -2350,11 +2350,17 @@ function formatChatMessage(data, last) {
 		if (data.msg.length === 0) {
 			return;
 		}
-		if (data.msg.replace(" ","").length > 25) {
-			var splitMsg = data.msg.split(" ");
+		if (data.msg.replace(/<.+?>| /gi,"").length > 25) {
+			var greaterThanSign = 0;
+			if (data.msg[0] === "<") {
+				greaterThanSign = data.msg.indexOf(">");
+			}
+			
+			var noHTMLMsg = data.msg.replace(/<.+?>/gi," ");
+			var splitMsg = noHTMLMsg.split(" ");
 			for (var iChar = 0; iChar < splitMsg.length; iChar++) {
 				if (splitMsg[iChar].length > 25) {
-					data.msg = data.msg.substring(0, 25);
+					data.msg = data.msg.substring(0, 25 + greaterThanSign);
 					break;
 				}
 			}
