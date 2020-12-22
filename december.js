@@ -2345,7 +2345,7 @@ function formatChatMessage(data, last) {
 		data.msg2 = data.msg;
 	}
 
-	if (ANTISPAM && PLAYER.mediaLength > 600) {
+	if (ANTISPAM && PLAYER.mediaLength > 600 && data.meta.addClass !== "server-whisper") {
 		data.msg = data.msg.replace(TEAMCOLORREGEX,"").replace(ANTISPAMREGEX,"").trim();
 		if (data.msg.length === 0) {
 			return;
@@ -2906,7 +2906,7 @@ $("#mediaurl").on("paste", function() {
 	}, 1);
 	setTimeout(function() {
 		if ($("#addfromurl-title-val").length !== 0) {
-			var mediaUrl = decodeURI($("#mediaurl")[0].value).split("/");
+			var mediaUrl = decodeURIComponent($("#mediaurl")[0].value).split("/");
 			mediaUrl = mediaUrl[mediaUrl.length-1].split("?")[0].split(".");
 			var mediaTitle = "";
 			for (i = 0; i < mediaUrl.length-1; i++) {
