@@ -1312,6 +1312,14 @@ html.is-arcade-theme #motdrow {
 html.has-loopy-effect {
   filter: url('#loopywave');
 }
+
+/* Disable the svg effect for firefox */
+@-moz-document url-prefix() {
+  html.has-loopy-effect {
+    filter: none;
+  }
+}
+
 html.has-loopy-effect body {
   animation: loopyEffect 4s forwards infinite linear;
 }
