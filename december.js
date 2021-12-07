@@ -4623,7 +4623,7 @@ ArcadeTheme.command = '/arcade_theme';
 
 		const svg_holder = document.createElement('div');
 		svg_holder.innerHTML = `
-			<svg width="100%" height="100%" style="display:none;">
+			<svg width="100%" height="100%" style="position: absolute; height: 0;">
 				<defs>
 					<filter id="loopywave" filterUnits="userSpaceOnUse" x="0" y="0">
 						<feTurbulence id="loopywave-animation" numOctaves="1" seed="1" baseFrequency="0 0.0645034"></feTurbulence>
