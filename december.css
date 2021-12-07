@@ -1304,3 +1304,23 @@ html.is-arcade-theme #motdrow {
   right: auto;
   left: 0;
 }
+
+
+/* -------------------------------------------------------------------------- */
+/*                                Loopy effect                                */
+/* -------------------------------------------------------------------------- */
+html.has-loopy-effect {
+  filter: url('#loopywave');
+}
+html.has-loopy-effect body {
+  animation: loopyEffect 4s forwards infinite linear;
+}
+
+@keyframes loopyEffect {
+  0%, 100% {
+    filter: hue-rotate(0) blur(0px) saturate(0);
+  }
+  50% {
+    filter: hue-rotate(360deg) blur(1px) saturate(1);
+  }
+}

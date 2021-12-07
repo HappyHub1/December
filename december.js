@@ -3042,11 +3042,11 @@ class PresentsEffect {
 
         const label = PresentsEffect.versions['normal'].label;
         if (label !== "None") {
-            
+
             const labelText = document.createElement('P');
             labelText.classList.add(`c-effect__presents-label`);
             labelText.innerText = label;
-            
+
             PresentsEffect.addElement(labelText);
 
             const fn = () => {
@@ -3096,7 +3096,7 @@ class PresentsEffect {
             face_effect.parentElement.removeChild(fling2);
             face_effect.parentElement.removeChild(fling3);
             face_effect.parentElement.removeChild(face_effect);
-	        
+
             face_effect.removeEventListener('animationend', fn);
             //TODO: PresentsEffect.removeElement(outer)
         }
@@ -4230,6 +4230,7 @@ class CustomTextTriggers {
 					SnowEffect,
 					ChristmasWonderlandEffect,
 					ArcadeTheme,
+					LoopyEffect,
 				];
         if (CustomTextTriggers.has_init) {
             return;
@@ -4608,6 +4609,78 @@ spambtn = $('<button id="spambtn" class="btn btn-sm ' + (ANTISPAM ? 'btn-danger'
 	}
 }
 ArcadeTheme.command = '/arcade_theme';
+
+/**
+ * Usage: /arcade_theme
+ * Turn off: /arcade_theme off
+ */
+ class LoopyEffect {
+  static init() {
+    LoopyEffect.state = {
+      is_running: false,
+			user_enabled: true,
+    };
+
+		const svg_holder = document.createElement('div');
+		svg_holder.innerHTML = `
+			<svg width="100%" height="100%" style="display:none;">
+				<defs>
+					<filter id="loopywave" filterUnits="userSpaceOnUse" x="0" y="0">
+						<feTurbulence id="loopywave-animation" numOctaves="1" seed="1" baseFrequency="0 0.0645034"></feTurbulence>
+						<feDisplacementMap scale="10" in="SourceGraphic"></feDisplacementMap>
+					</filter>
+					<animate xlink:href="#loopywave-animation"
+						attributeName="baseFrequency"
+						dur="3s"
+						keyTimes="0;0.5;1"
+						values="0.0 0.04;0.0 0.07;0.0 0.04"
+						repeatCount="indefinite"></animate>
+				</defs>
+			</svg>
+		`;
+
+		document.documentElement.appendChild(svg_holder);
+  }
+
+	static start() {
+		const state = LoopyEffect.state;
+    if (state.is_running || !state.user_enabled) {
+      return;
+    }
+    state.is_running = true;
+
+		document.documentElement.classList.add('has-loopy-effect');
+	}
+
+	static stop() {
+		const state = LoopyEffect.state;
+    if (!state.is_running) {
+      return;
+    }
+
+		document.documentElement.classList.remove('has-loopy-effect');
+    state.is_running = false;
+	}
+
+  static enable() {
+		LoopyEffect.state.user_enabled = true;
+  }
+
+  static disable() {
+		LoopyEffect.state.user_enabled = false;
+		LoopyEffect.stop();
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
+    if (message_parts[0] === 'off') {
+      LoopyEffect.stop();
+      return;
+    }
+
+    LoopyEffect.start();
+  }
+}
+LoopyEffect.command = '/loopy';
 
 
 function decodeEntities(string) {
