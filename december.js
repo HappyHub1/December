@@ -4230,6 +4230,7 @@ class CustomTextTriggers {
 					SnowEffect,
 					ChristmasWonderlandEffect,
 					ArcadeTheme,
+					LoopyEffect,
 				];
         if (CustomTextTriggers.has_init) {
             return;
