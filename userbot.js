@@ -64,12 +64,12 @@ $('<button id="dl-logs" class="btn btn-sm btn-default">DL Logs</button>')
 		}, 3000);
 	});
 
-removeChatSocket();
+removePollSocket();
 socket.on("newPoll", newPollData);
 socket.on("updatePoll", updatePollData);
 socket.on("closePoll", closePollDownload);
 
-function removeChatSocket() {
+function removePollSocket() {
 	socket.off("newPoll", newPollData);
 	socket.off("updatePoll", updatePollData);
 	socket.off("closePoll", closePollDownload);
