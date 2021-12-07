@@ -1,0 +1,140 @@
+/*Wallpaper*/
+/*normal" http://i.imgur.com/GPqzHLR.jpg*/
+body {background-image:url(https://files.catbox.moe/bt3zbg.jpg);
+            background-position: bottom right;
+            background-attachment: fixed;
+            /*background-size: 100% auto;*/
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+}
+
+/*Changes the color of the text*/
+body, header, p, #mainpage, .userlist_owner,.userlist_op,.userlist_guest, a, .navbar-brand, .navbar-text, .navbar-link{color:#A1C5FF !important;}
+body, header, p {color:#ffa500;}
+
+/*Alternate message backgrounds*/
+/*Alternate message backgrounds*/
+#messagebuffer {background-color: #272B30;}
+#messagebuffer div:nth-child(even) {background-color: #444444;}
+#messagebuffer div:nth-child(odd) {background-color: #272B30;}
+#messagebuffer div.nick-hover{ background-color: #111122;}
+#messagebuffer div.nick-highlight, #messagebuffer div.nick-highlight > a{ color: #FFFFFF;}
+
+/*Adds image to the user list window original: http://i.imgur.com/0urVgux.png*/
+#userlist {
+	background-color: #1C1E22;
+	background-image: url(https://files.catbox.moe/nvsngq.png);
+	background-position: bottom center;
+	background-size: 125px;
+	background-repeat: no-repeat;}
+
+/*Background for easier reading of some shit*/
+DIV#plmeta, DIV#chatheader, P#currenttitle, DIV#plmeta, #videowrap-header {background-color: #272B30;}
+#currenttitle, #chatheader, #messagebuffer, #userlist, #guestlogin, #plmeta {border-color:#444444;}
+
+SPAN#usercount.pointer:before {content: "  キラメキラリ(Ｕ 'ᴗ' )⊃━━*.☆ﾟ| ";}
+SPAN#usercount.pointer {    
+    -webkit-transform: rotate(36000deg) /* rotateX(36000deg) */;
+    -moz-transform: rotate(36000deg) /* rotateX(36000deg) */;
+    transform: rotate(36000deg) /* rotateX(36000deg) */;
+    -webkit-transition: -webkit-transform 50.25s;
+    -moz-transition: -moz-transform 50.25s;
+    transition: transform 50.25s;
+}
+
+/*https://dl.dropbox.com/s/enbb6b5ezdfkx0q/ami%20face.png
+#messagebuffer{background-image:url("https://upload.wikimedia.org/wikipedia/commons/6/6d/Shinz%C5%8D_Abe_Official.jpg");background-size:cover;}
+#messagebuffer div{opacity:0.9;}*/
+
+/*marquee, #messagebuffer {
+	font-family: "Comic Sans MS";
+	font-size: 12pt !important;
+	font-weight: 800 !important;
+	text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black !important;
+	color: yellow !important;
+}*/
+/*marquee, #messagebuffer {
+	color:#FFFFFF !important;
+	font-family: sans-serif !important;
+	padding-top:20px !important;
+	text-shadow:0px 0px 4px #000000, 0px -5px 4px #FFFF33, 2px -8px 6px #FFDD33, -2px -15px 10px #FF8800, 2px -20px 18px #FF2200 !important;
+	letter-spacing:2px !important;
+}*/
+
+/*#messagebuffer  {                                                                                                                                                                           
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: -webkit-gradient(linear,  left top,  left bottom, 
+        color-stop(0.00, red), 
+        color-stop(16%, orange),
+        color-stop(32%, yellow),
+        color-stop(48%, green),
+        color-stop(60%, blue),
+        color-stop(76%, indigo),
+        color-stop(1.00, violet));
+  }
+*/
+/*#messagebuffer {  -webkit-transform:rotate(180deg);
+  -moz-transform:rotate(180deg);
+  -o-transform:rotate(180deg);
+  -ms-transform:rotate(180deg);}*/
+
+/*[class*="chat-msg"], .poll-notify {
+    -webkit-transform: translateX(0%);
+        -ms-transform: translateX(0%);
+            transform: translateX(0%);
+    -webkit-animation: 1s forwards linear left-right;
+            animation: 1s forwards linear left-right;
+}
+
+@-webkit-keyframes left-right {
+    0% {
+        -webkit-transform: rotate(0deg) translateX(0%);
+                transform: rotate(0deg) translateX(0%);
+    }
+    25% {
+        -webkit-transform: rotate(-90deg) translateX(50%);
+                transform: rotate(-90deg) translateX(50%);
+    }
+    50% {
+        -webkit-transform: rotate(180deg) translateX(-75%);
+                transform: rotate(180deg) translateX(-75%);
+    }
+    75% {
+        -webkit-transform: rotate(-270deg) translateX(75%);
+                transform: rotate(-270deg) translateX(75%);
+    }
+    100% {
+        -webkit-transform: rotate(180deg) translateX(0%);
+                transform: rotate(180deg) translateX(0%);
+    }
+}
+
+@keyframes left-right {
+    0% {
+        -webkit-transform: rotate(0deg) translateX(0%);
+                transform: rotate(0deg) translateX(0%);
+    }
+    25% {
+        -webkit-transform: rotate(-90deg) translateX(25%);
+                transform: rotate(-90deg) translateX(25%);
+    }
+    50% {
+        -webkit-transform: rotate(180deg) translateX(-50%);
+                transform: rotate(180deg) translateX(-50%);
+    }
+    75% {
+        -webkit-transform: rotate(-270deg) translateX(75%);
+                transform: rotate(-270deg) translateX(75%);
+    }
+    100% {
+        -webkit-transform: rotate(180deg) translateX(0%);
+                transform: rotate(180deg) translateX(0%);
+    }
+}*/
+
+/*#adChat {background-image:url("https://res.cloudinary.com/sfp/image/upload/q_80/cste/fedb41df-0986-484f-aa77-7e2c7dea3a8c.jpeg"); width:531px; height: 499px;}*/
+
+/*.username::before{background:url('https://files.catbox.moe/aaal7u.png')!important;}*/
