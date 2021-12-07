@@ -224,41 +224,38 @@ footer {padding-bottom:5px}
 }
 
 /*Reddit flair*/
-.username::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/tiger.png');}
-.teamtaiga::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/taiga.png');}
-.teamami::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/ami.png');}
-.teamminori::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/minori.png');}
-.teaminko::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/inko.png');}
-.teamkitamura::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/kitamura.png');}
-.teamkihara::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/kihara.png');}
-.teamharuta::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/haruta.png');}
-.teamsensei::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/sensei.png');}
-.teammom::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/mom.png');}
-.teamryuuji::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/ryuuji.png');}
-.teamhidaka::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/Hidaka.png');}
-.teamono::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/Ono.png');}
-.teamshiina::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/shiina.png');}
-.teamaoyama::before{background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/aoyama.png');}
+.username::before{background:url('./Images/tiger.png');}
+.teamtaiga::before{background:url('./Images/taiga.png');}
+.teamami::before{background:url('./Images/ami.png');}
+.teamminori::before{background:url('./Images/minori.png');}
+.teaminko::before{background:url('./Images/inko.png');}
+.teamkitamura::before{background:url('./Images/kitamura.png');}
+.teamkihara::before{background:url('./Images/kihara.png');}
+.teamharuta::before{background:url('./Images/haruta.png');}
+.teamsensei::before{background:url('./Images/sensei.png');}
+.teammom::before{background:url('./Images/mom.png');}
+.teamryuuji::before{background:url('./Images/ryuuji.png');}
+.teamhidaka::before{background:url('./Images/Hidaka.png');}
+.teamono::before{background:url('./Images/Ono.png');}
+.teamshiina::before{background:url('./Images/shiina.png');}
+.teamaoyama::before{background:url('./Images/aoyama.png');}
 .chat-msg-_North .username::before {
-background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/kagami.ico');
+background:url('./Images/kagami.ico');
 }
 .chat-msg-ShizuruAnon .username::before {
-background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/shiz_icon.png');
+background:url('./Images/shiz_icon.png');
 }
-.chat-msg-tsukarin .username::before {
-background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/wafu_icon.png');
+.chat-msg-tsukarin .username::before, .chat-msg-tsukat .username::before {
+background:url('./Images/wafu_icon.png');
 }
-.chat-msg-tsukat .username::before {
-background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/wafu_icon.png');
-}
-.chat-msg-Happy .username::before {
-background:url('https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/miku-padoru.png');
+.chat-msg-Happy .username:not([class*="team"])::before {
+background:url('./Images/miku-padoru.png');
 }
 .username::before{
 	content:"AA";
 	background-size:20px 20px !important;
-background-repeat:no-repeat !important;
-color:rgba(0,0,0,0);
+	background-repeat:no-repeat !important;
+	color:rgba(0,0,0,0);
 }
 #messagebuffer>div{font-size:18px;}
 
@@ -272,7 +269,7 @@ color:rgba(0,0,0,0);
 
 span.glyphicon.glyphicon-time {
 	color: rgba(255,0,0,0);
-	background: url("https://cdn.jsdelivr.net/gh/HappyHub1/December/Images/zzz.png");}
+	background: url("./Images/zzz.png");}
 
 /* Snow and ERABE effect below */
 
