@@ -3156,7 +3156,7 @@ class PadoruEffect {
 							'yue.png',
             ];
 						// Add the folder url to each of the images
-						PadoruEffect.images = PadoruEffect.images.map(img => `${SCRIPT_FOLDER_URL}/Images/padoru/${img}.png`);
+						PadoruEffect.images = PadoruEffect.images.map(img => `${SCRIPT_FOLDER_URL}/Images/padoru/${img}`);
 
             PadoruEffect.state = {
                 is_on: false,
