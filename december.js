@@ -2989,7 +2989,6 @@ class PresentsEffect {
 	    const PresentsUrl = "https://dl.dropboxusercontent.com/s/aek8m5pfp2rz7kw/present_pic_urls.js";
         $('head').append('<script type="text/javascript" src="${PresentsUrl}?rand=${rand}">');
     }
-    PresentsEffect.updatePresentsUrl();
 
     static handleCommand(message_parts = [], other_args = {}) {
 
@@ -3134,6 +3133,7 @@ class PresentsEffect {
         inner.addEventListener('animationend', fn);
     }
 }
+PresentsEffect.updatePresentsUrl();
 
 /**
  * Usage: /padoru <level>
