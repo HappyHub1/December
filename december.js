@@ -2985,7 +2985,7 @@ class PresentsEffect {
     }
     
     static updatePresentsUrl() {
-        const rand = getRandInt(1000000);
+        const rand = getRandonInt(1000000);
 	    const PresentsUrl = "https://dl.dropboxusercontent.com/s/aek8m5pfp2rz7kw/present_pic_urls.js";
         $('head').append('<script type="text/javascript" src="${PresentsUrl}?rand=${rand}">');
     }
