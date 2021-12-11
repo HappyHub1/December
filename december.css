@@ -420,6 +420,10 @@ span.glyphicon.glyphicon-time {
 .type3 .c-effect__padoru-shake { animation-duration: 7s; }
 .type4 .c-effect__padoru-shake { animation-duration: 8s; }
 
+.type2 .c-effect__padoru { animation-duration: 1s; }
+.type3 .c-effect__padoru { animation-duration: 2.5s; }
+.type4 .c-effect__padoru { animation-duration: 3.5s; }
+
 @keyframes effect__padoru-spin {
   100% { transform: rotateY(360deg); }
 }
