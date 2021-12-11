@@ -3122,6 +3122,10 @@ class PresentsEffect {
         inner.addEventListener('animationend', fn);
     }
 }
+
+/**
+ * Usage: /padoru <level>
+ */
 class PadoruEffect {
     ///////////////////////////////////////////
     // Static variables
@@ -3134,25 +3138,25 @@ class PadoruEffect {
         static init() {
             PadoruEffect.command = '/padoru';
             PadoruEffect.animations = ['type1', 'type2', 'type3', 'type4'];
-            PadoruEffect.max_padoru_time_limit_s = 1200;
             PadoruEffect.levels = [
                 { spawn_rate: 1000, spawn_limit: 6 },
                 { spawn_rate: 1000, spawn_limit: 10 },
+                { spawn_rate: 1000, spawn_limit: 20 },
             ];
             PadoruEffect.images = [
-                // Yue
-                'https://cdn.discordapp.com/emojis/655099097237422130.png',
-                // Saber
-                'https://cdn.discordapp.com/emojis/519149153746550785.png',
-                // Chino
-                'https://cdn.discordapp.com/attachments/375406879553093633/659064801217085498/chino-padoru.png',
-                // Taiga
-                'https://cdn.discordapp.com/attachments/466273613092225046/659068018696912906/taiga-padoru.png',
-                // Miku
-                'https://cdn.discordapp.com/attachments/518340427506647042/659073537809711104/miku-padoru.png',
-                // Shizuru
-                'https://cdn.discordapp.com/attachments/375406879553093633/659201454497595402/shiz_padoru2.png',
+							'chino.png',
+							'eris.png',
+							'holo.png',
+							'lys.png',
+							'miku.png',
+							'myuri.png',
+							'saber.png',
+							'shiz_padoru2.png',
+							'taiga-padoru.png',
+							'yue.png',
             ];
+						// Add the folder url to each of the images
+						PadoruEffect.images = PadoruEffect.images.map(img => `${SCRIPT_FOLDER_URL}/Images/padoru/${img}`);
 
             PadoruEffect.state = {
                 is_on: false,
@@ -3181,50 +3185,30 @@ class PadoruEffect {
         PadoruEffect.container.appendChild(element);
     }
 
-    static handleCommand(message_parts = [], other_args = {}) { // for compatibility
+    static handleCommand(message_parts = [], _other_args = {}) { // for compatibility
+			if (message_parts[0] === 'off') {
+				PadoruEffect.stop();
+				return;
+			}
 
-        let [level, time_limit_s] = PadoruEffect.parseMessage(message_parts)
+			let level = parseInt(message_parts[0] || '1', 10);
+			if (isNaN(level) || level < 1) {
+				level = 1;
+			}
 
-        // Update the currently used snowing level
-        let level_index = level - 1;
-        if (level_index < 0 || level_index > PadoruEffect.levels.length) {
-            level_index = 0;
-        }
-        PadoruEffect.state.level_info = PadoruEffect.levels[level_index];
+			// Update the currently used snowing level
+			let level_index = level - 1;
+			if (level_index < 0 || level_index > PadoruEffect.levels.length) {
+				level_index = 0;
+			}
+			PadoruEffect.state.level_info = PadoruEffect.levels[level_index];
 
-        // Disable padoru after the timeout. If there is already one, reset the timer
-        if (PadoruEffect.state.timeout) {
-            clearTimeout(PadoruEffect.state.timeout);
-        }
-        PadoruEffect.state.timeout =
-            setTimeout(PadoruEffect.stop, time_limit_s * 1000);
-
-        // Only start the padoru animation if it is not already started
-        if (PadoruEffect.state.is_on) {
-            return;
-        }
-        PadoruEffect.state.is_on = true;
-        PadoruEffect._runAnimation();
-    }
-
-    static parseMessage (message_parts){
-        if (message_parts[0] === 'off') {
-            PadoruEffect.stop();
-            return;
-        }
-
-        let level = parseInt(message_parts[0] || '1', 10);
-        if (isNaN(level) || level < 1) {
-            level = 1;
-        }
-
-        let time_limit_s = parseInt(message_parts[1] || '1200', 10);
-        if (isNaN(time_limit_s) || time_limit_s < 1) {
-            time_limit_s = 10;
-        } else if (time_limit_s > PadoruEffect.max_time_limit_s) {
-            time_limit_s = PadoruEffect.max_time_limit_s;
-        }
-        return [level, time_limit_s]
+			// Only start the padoru animation if it is not already started
+			if (PadoruEffect.state.is_on) {
+				return;
+			}
+			PadoruEffect.state.is_on = true;
+			PadoruEffect._runAnimation();
     }
 
     ///////////////////////////////////////////
