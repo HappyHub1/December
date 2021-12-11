@@ -2928,6 +2928,11 @@ presentsCallback = function(data){
   PresentsEffect.versions['normal'].label = data.presentsLabel;
   //alert(PresentsEffect.versions['normal'].img_bank);
 };
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 class PresentsEffect {
     ///////////////////////////////////////////
     // "Public" Static methods
@@ -2947,7 +2952,7 @@ class PresentsEffect {
             'normal': {
                 padoru: PresentsEffect.shiz_img,
                 img_bank: [],
-		label: "None"
+		        label: "None"
             },
         }
         PresentsEffect.state = {
@@ -2978,11 +2983,18 @@ class PresentsEffect {
     static addElement(element) {
         PresentsEffect.container.appendChild(element);
     }
+    
+    static updatePresentsUrl() {
+        const rand = getRandomInt(1000000);
+        const presentsUrl = "https://dl.dropboxusercontent.com/s/aek8m5pfp2rz7kw/present_pic_urls.js";
+        const queryUrl = `${presentsUrl}?rand=${rand}`;
+        $('head').append(`<script type="text/javascript" src=${queryUrl}>`);
+    }
 
     static handleCommand(message_parts = [], other_args = {}) {
 
         if ((message_parts.length > 0) && (message_parts[0] === "update")) {
-            $('head').append('<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/aek8m5pfp2rz7kw/present_pic_urls.js">')
+            PresentsEffect.updatePresentsUrl();
         }
         if (message_parts.length == 0) {
             // Disable presents after the timeout. If there is already one, reset the timer
@@ -3122,6 +3134,7 @@ class PresentsEffect {
         inner.addEventListener('animationend', fn);
     }
 }
+PresentsEffect.updatePresentsUrl();
 
 /**
  * Usage: /padoru <level>
@@ -4651,5 +4664,3 @@ function decodeEntities(string) {
 // TODO: Should we hide this behind a button being enabled? Like niconico is?
 CustomTextTriggers.init();
 socket.on("chatMsg", CustomTextTriggers.handleChatMessage);
-
-$('head').append('<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/aek8m5pfp2rz7kw/present_pic_urls.js">')
