@@ -4231,8 +4231,8 @@ class CustomTextTriggers {
     static isMod(username) {
         try {
             let is_mod = false;
-            $("#userlist").find('span[class$=userlist_owner],span[class$=userlist_siteadmin]').each(function() {
-                if ($(this).text() === username) {
+			document.querySelectorAll("#userlist .userlist_owner,#userlist .userlist_siteadmin").forEach(function(currentAdmins) {
+                if (currentAdmins.textContent === username) {
                     is_mod = true;
                     return false;
                 }
@@ -4243,12 +4243,12 @@ class CustomTextTriggers {
     }
 
     static isFirstMod() {
-        const first_mod_element = $("#userlist").find('span[class$=userlist_owner],span[class$=userlist_siteadmin]').first();
+        const first_mod_element = document.querySelector("#userlist .userlist_owner,#userlist .userlist_siteadmin");
         if (!first_mod_element) {
             return false;
         }
 
-        return first_mod_element.text() === CLIENT.name;
+        return first_mod_element.textContent === CLIENT.name;
     }
 
     static randomElement(array) {
