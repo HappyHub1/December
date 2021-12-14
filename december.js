@@ -1720,16 +1720,13 @@ nicobtn = $('<button id="nicobtn" class="btn btn-sm ' + (!NICORIPOFF ? 'btn-dang
 		if (!NICORIPOFF) {
 			this.className = "btn btn-sm btn-danger";
 			removeNicoText();
-			//socket.removeListener("chatMsg", addNicoNicoMessageDataToQueue);
 			socket.removeListener("clearchat", removeNicoText);
 		} else {
 			this.className = "btn btn-sm btn-success";
-			//socket.on("chatMsg", addNicoNicoMessageDataToQueue);
 			socket.on("clearchat", removeNicoText);
 		}
 	});
 if (NICORIPOFF) {
-	//socket.on("chatMsg", addNicoNicoMessageDataToQueue);
 	socket.on("clearchat", removeNicoText);
 }
 
@@ -2214,22 +2211,27 @@ socket.on('setMotd', function (data) {
 });
 
 function formatChatMessage(data, last) {
-	if (data.msg.indexOf('/reload') === 0 && data.msg.indexOf('<') < 10) {
-		$("#userlist").find('span[class$=userlist_owner],span[class$=userlist_siteadmin]').each(function() {
-			if ($(this).text() === data.username) {
-				setTimeout(function() {
+	if (data.msg.indexOf('/reload') === 0) {
+		document.querySelectorAll("#userlist .userlist_owner,#userlist .userlist_siteadmin").forEach(function(currentAdmins) {
+			if (currentAdmins.textContent === data.username) {
+				if (CURRENTBOT === CLIENT.name) {
 					location.reload();
-				}, Math.floor(CHANNEL.usercount * 33 * Math.random()));
+				}
+				setTimeout(function () {
+					setTimeout(function() {
+						location.reload();
+					}, Math.floor(CHANNEL.usercount * 50 * Math.random()));
+				}, 250);
 				RELOADED = true;
 			}
 		});
-		(CLIENT.rank > 2 && !RELOADED) ? socket.emit("chatMsg", {msg:'/kick ' + data.username + ' Quit trying to reload and enable javascript.'}) : RELOADED = false;
+		(CLIENT.rank > 2 && !RELOADED) ? socket.emit("chatMsg", {msg:'/kick ' + data.username + ' Quit trying to reload.'}) : RELOADED = false;
 	}
 
 	if (CLIENT.rank > 2 && (data.msg.indexOf('/snow') === 0 || data.msg.indexOf('/padoru') === 0 || data.msg.indexOf('/erabe') === 0 || data.msg.indexOf('/effect') === 0 || data.msg.indexOf('/presents') === 0 || data.msg.indexOf("আৡঊসঠচঈ") > -1)) {
 		var FOUNDMOD = false;
-		$("#userlist").find('span[class$=userlist_owner],span[class$=userlist_siteadmin]').each(function() {
-			if ($(this).text() === data.username) {
+		document.querySelectorAll("#userlist .userlist_owner,#userlist .userlist_siteadmin").forEach(function(currentAdmins) {
+			if (currentAdmins.textContent === data.username) {
 				FOUNDMOD = true;
 			}
 		});
@@ -2317,6 +2319,8 @@ function formatChatMessage(data, last) {
 	if (CLIENT.name === CURRENTBOT) {
 		data.msg2 = data.msg;
 	}
+
+	CustomTextTriggers.handleChatMessage(data);
 
 	if (ANTISPAM && PLAYER.mediaLength > 600 && data.meta.addClass !== "server-whisper") {
 		data.msg = data.msg.replace(TEAMCOLORREGEX,"").replace(ANTISPAMREGEX,"").trim();
@@ -2521,10 +2525,6 @@ $("#chatline").keydown(function(ev) {
         }
         var msg = $("#chatline").val();
         if(msg.trim()) {
-			/*peakTimePercent = adPercent
-			if (CHANNEL.usercount/2000 > adPercent) {
-				peakTimePercent = CHANNEL.usercount/2000;
-			}*/
 			if (Math.random() < adPercent / 100) {
 				n = Math.floor(Math.random() * ADVERTISEMENTS.length);
 				socket.emit("chatMsg", {msg:ADVERTISEMENTS[n]});
@@ -4231,8 +4231,8 @@ class CustomTextTriggers {
     static isMod(username) {
         try {
             let is_mod = false;
-            $("#userlist").find('span[class$=userlist_owner],span[class$=userlist_siteadmin]').each(function() {
-                if ($(this).text() === username) {
+			document.querySelectorAll("#userlist .userlist_owner,#userlist .userlist_siteadmin").forEach(function(currentAdmins) {
+                if (currentAdmins.textContent === username) {
                     is_mod = true;
                     return false;
                 }
@@ -4243,12 +4243,12 @@ class CustomTextTriggers {
     }
 
     static isFirstMod() {
-        const first_mod_element = $("#userlist").find('span[class$=userlist_owner],span[class$=userlist_siteadmin]').first();
+        const first_mod_element = document.querySelector("#userlist .userlist_owner,#userlist .userlist_siteadmin");
         if (!first_mod_element) {
             return false;
         }
 
-        return first_mod_element.text() === CLIENT.name;
+        return first_mod_element.textContent === CLIENT.name;
     }
 
     static randomElement(array) {
@@ -4663,4 +4663,3 @@ function decodeEntities(string) {
 // This is what turns the whole thing on to be run by chat messages like /erabe
 // TODO: Should we hide this behind a button being enabled? Like niconico is?
 CustomTextTriggers.init();
-socket.on("chatMsg", CustomTextTriggers.handleChatMessage);
