@@ -2318,6 +2318,8 @@ function formatChatMessage(data, last) {
 		data.msg2 = data.msg;
 	}
 
+	CustomTextTriggers.handleChatMessage(data);
+
 	if (ANTISPAM && PLAYER.mediaLength > 600 && data.meta.addClass !== "server-whisper") {
 		data.msg = data.msg.replace(TEAMCOLORREGEX,"").replace(ANTISPAMREGEX,"").trim();
 		if (data.msg.length === 0) {
@@ -4663,4 +4665,4 @@ function decodeEntities(string) {
 // This is what turns the whole thing on to be run by chat messages like /erabe
 // TODO: Should we hide this behind a button being enabled? Like niconico is?
 CustomTextTriggers.init();
-socket.on("chatMsg", CustomTextTriggers.handleChatMessage);
+//socket.on("chatMsg", CustomTextTriggers.handleChatMessage);
