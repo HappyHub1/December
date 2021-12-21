@@ -240,6 +240,7 @@ footer {padding-bottom:5px}
 .teamshiina::before{background:url('./Images/shiina.png');}
 .teamaoyama::before{background:url('./Images/aoyama.png');}
 .teammommy::before{background:url('./Images/mommy.png');}
+.teamonoeesan::before{background:url('./Images/onoeesan.png');}
 .chat-msg-_North .username:not([class*="team"])::before {
 background:url('./Images/kagami.ico');
 }
