@@ -2706,13 +2706,13 @@ function makeQueueEntry(item, addbtns) {
     return li;
 }
 
-function updateEndTimes(CurrentVideoTime) {
+function updateEndTimes(CurrVidTime) {
     var currentTime = new Date().getTime();
     var activeItemPosition = Array.from(document.getElementById("queue").children).indexOf(document.getElementsByClassName("queue_active")[0]);
 
 	if (activeItemPosition === -1) {
 		setTimeout(function() {
-			updateEndTimes(CurrentVideoTime);
+			updateEndTimes(CurrVidTime);
 		}, 250);
 	} else {
 		var PLTimeList = document.querySelectorAll("#queue .qe_time");
@@ -2753,10 +2753,10 @@ function updateEndTimes(CurrentVideoTime) {
 					}
 					PLSeconds += parseInt(currSplitTime[currSplitTime.length-2]) * 60;
 					PLSeconds += parseInt(currSplitTime[currSplitTime.length-1]);
-					PLSeconds += 3; //video player delay
+					PLSeconds += 5; //video player delay
 
 					if (i === activeItemPosition) {
-						PLSeconds = PLSeconds - CurrentVideoTime;
+						PLSeconds = PLSeconds - CurrVidTime;
 					}
 
 					var updatedTime = new Date(currentTime + PLSeconds * 1000);
