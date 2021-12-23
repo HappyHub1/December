@@ -2983,7 +2983,7 @@ class PresentsEffect {
     static addElement(element) {
         PresentsEffect.container.appendChild(element);
     }
-    
+
     static updatePresentsUrl() {
         const rand = getRandomInt(1000000);
         const presentsUrl = "https://dl.dropboxusercontent.com/s/aek8m5pfp2rz7kw/present_pic_urls.js";
@@ -3160,9 +3160,12 @@ class PadoruEffect {
 							'chino.png',
 							'eris.png',
 							'holo.png',
+							'korone.png',
 							'lys.png',
 							'miku.png',
 							'myuri.png',
+							'nano.png',
+							'remi.png',
 							'saber.png',
 							'shiz_padoru2.png',
 							'taiga-padoru.png',
