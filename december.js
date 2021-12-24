@@ -4333,10 +4333,6 @@ $('<button id="effectsbtn" class="btn btn-sm ' + (EFFECTSOFF ? 'btn-danger' : 'b
             CustomTextTriggers.enableEffects();
         }
     });
-	
-if (EFFECTSOFF) {
-	CustomTextTriggers.disableEffects();
-}
 
 //checkEffects();
 
@@ -4672,3 +4668,7 @@ function decodeEntities(string) {
 // This is what turns the whole thing on to be run by chat messages like /erabe
 // TODO: Should we hide this behind a button being enabled? Like niconico is?
 CustomTextTriggers.init();
+
+if (EFFECTSOFF) {
+	CustomTextTriggers.disableEffects();
+}
