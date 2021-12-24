@@ -4333,6 +4333,10 @@ $('<button id="effectsbtn" class="btn btn-sm ' + (EFFECTSOFF ? 'btn-danger' : 'b
             CustomTextTriggers.enableEffects();
         }
     });
+	
+if (EFFECTSOFF) {
+	CustomTextTriggers.disableEffects();
+}
 
 //checkEffects();
 
