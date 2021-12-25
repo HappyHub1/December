@@ -122,7 +122,7 @@ function chatSocket(data) {
 		    parsedMsg2 = parsedMsg2.replace(regex2,"");
 		}
 
-		aMessages[aMessages.length] = [data.time, data.username, parsedMsg2, teamIcon, data.meta.shadow.toString()];
+		aMessages[aMessages.length] = [data.time, data.username, parsedMsg2, teamIcon, data.meta.shadow || false];
 		if (aMessages.length > msgLength || downloadMsg) {
 			downloadMsg = false;
 			var filename = CHANNEL.name + "-CHAT-" + new Date() + ".csv";
