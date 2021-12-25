@@ -2634,7 +2634,9 @@ function getCurrentPlayerTime() {
 			return PLAYER.yt.getCurrentTime(); // "YouTube"
 		} else if (typeof PLAYER.dm !== "undefined") {
 			return PLAYER.dm.currentTime; // "Daily Motion"
-		}
+		} else {
+			return CurrentVideoTime; // default to variable
+		}			
 	} catch {
 		return CurrentVideoTime;
 	}
@@ -4672,3 +4674,41 @@ CustomTextTriggers.init();
 if (EFFECTSOFF) {
 	CustomTextTriggers.disableEffects();
 }
+
+var checkEmbedInterval;
+
+function replaceEmbedWithAudio(data) {
+	if (data.type === "cu") {
+		checkEmbedInterval = setInterval(function () {
+			if (document.querySelector("#ytapiplayer button.btn.btn-default") !== null) {
+				clearInterval(checkEmbedInterval);
+				document.querySelector("#ytapiplayer button.btn.btn-default").onclick = function () {
+					setTimeout(function () {
+						var linkExtension = PLAYER.player[0].src.split(".");
+						linkExtension = linkExtension[linkExtension.length-1];
+						if (linkExtension === "mp3") {
+							var replacementAudio = document.createElement("audio");
+							replacementAudio.autoplay = true;
+							replacementAudio.controls = true;
+							replacementAudio.volume = VOLUME;
+							replacementAudio.id = PLAYER.player[0].id;
+							var replacementAudioSource = document.createElement("source");
+							replacementAudio.append(replacementAudioSource);
+							replacementAudioSource.src = PLAYER.player[0].src;
+
+							PLAYER.player[0].parentNode.replaceChild(replacementAudio, PLAYER.player[0]);
+						}
+					}, 250);
+				}
+			}
+		}, 25);
+	}
+}
+
+socket.on("changeMedia", replaceEmbedWithAudio);
+
+setTimeout(function () { // insurance
+	if (document.querySelector("#ytapiplayer button.btn.btn-default") !== null) {
+		replaceEmbedWithAudio({type:"cu"});
+	}
+}, 250);
