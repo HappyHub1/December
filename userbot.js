@@ -2,7 +2,7 @@ var msgLength = 10000;
 var userLength = 10000;
 var playlistLength = 5000;
 var pollLength = 5000;
-var aMessagesDefault = [["Timestamp", "Username", "Message","Team Icon"]];
+var aMessagesDefault = [["Timestamp", "Username", "Message","Team Icon","Shadowed"]];
 var aMessages = getOrDefault(CHANNEL.name + "_MSGS", aMessagesDefault.slice(0));
 var aUserCountDefault = [["Timestamp", "Usercount"]];
 var aUserCount = getOrDefault(CHANNEL.name + "_USERCOUNT", aUserCountDefault.slice(0));
@@ -122,7 +122,7 @@ function chatSocket(data) {
 		    parsedMsg2 = parsedMsg2.replace(regex2,"");
 		}
 
-		aMessages[aMessages.length] = [data.time, data.username, parsedMsg2, teamIcon];
+		aMessages[aMessages.length] = [data.time, data.username, parsedMsg2, teamIcon, data.meta.shadow];
 		if (aMessages.length > msgLength || downloadMsg) {
 			downloadMsg = false;
 			var filename = CHANNEL.name + "-CHAT-" + new Date() + ".csv";
