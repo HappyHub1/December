@@ -28,39 +28,39 @@ $('<button id="dl-logs" class="btn btn-sm btn-default">DL Logs</button>')
 		downloadPoll = true;
 		setTimeout(function () {
 			if (downloadMsg && aMessages.length > 1) {
-				downloadMsg = false;
 				var filename = CHANNEL.name + "-CHAT-" + new Date() + ".csv";
 				exportToCsv(filename, aMessages);
 				aMessages = aMessagesDefault.slice(0);
 				setOpt(CHANNEL.name + "_MSGS", aMessages);
 			}
+			downloadMsg = false;
 		}, 3000);
 		setTimeout(function () {
 			if (downloadUsers && aUserCount.length > 1) {
-				downloadUsers = false;
 				var filename = CHANNEL.name + "-USERS-" + new Date() + ".csv";
 				exportToCsv(filename, aUserCount);
 				aUserCount = aUserCountDefault.slice(0);
 				setOpt(CHANNEL.name + "_USERCOUNT", aUserCount);
 			}
+			downloadUsers = false;
 		}, 3000);
 		setTimeout(function () {
 			if (downloadPlaylist && aPlaylist.length > 1) {
-				downloadPlaylist = false;
 				var filename = CHANNEL.name + "-PLAYLIST-" + new Date() + ".csv";
 				exportToCsv(filename, aPlaylist);
 				aPlaylist = aPlaylistDefault.slice(0);
 				setOpt(CHANNEL.name + "_PLAYLIST", aPlaylist);
 			}
+			downloadPlaylist = false;
 		}, 3000);
 		setTimeout(function () {
 			if (downloadPoll && aPolls.length > 1) {
-				downloadPoll = false;
 				var filename = CHANNEL.name + "-POLLS-" + new Date() + ".csv";
 				exportToCsv(filename, aPolls);
 				aPolls = aPollsDefault.slice(0);
 				setOpt(CHANNEL.name + "_POLLS", aPolls);
 			}
+			downloadPoll = false;
 		}, 3000);
 	});
 
