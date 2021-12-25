@@ -2634,7 +2634,9 @@ function getCurrentPlayerTime() {
 			return PLAYER.yt.getCurrentTime(); // "YouTube"
 		} else if (typeof PLAYER.dm !== "undefined") {
 			return PLAYER.dm.currentTime; // "Daily Motion"
-		}
+		} else {
+			return CurrentVideoTime; // default to variable
+		}			
 	} catch {
 		return CurrentVideoTime;
 	}
