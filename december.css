@@ -24,6 +24,12 @@
     background-color: #272B30 !important;
 }
 
+audio#ytapiplayer {
+	margin-left: 30%;
+	margin-top: 25%;
+	width: 40%;
+}
+
 /*  ----- Admin Font ----- */
 .userlist_item > .userlist_owner,.userlist_item > .userlist_op {font-weight: normal !important; }
 
