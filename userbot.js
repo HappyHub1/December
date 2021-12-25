@@ -27,7 +27,7 @@ $('<button id="dl-logs" class="btn btn-sm btn-default">DL Logs</button>')
 		downloadPlaylist = true;
 		downloadPoll = true;
 		setTimeout(function () {
-			if (downloadMsg) {
+			if (downloadMsg && aMessages.length > 1) {
 				downloadMsg = false;
 				var filename = CHANNEL.name + "-CHAT-" + new Date() + ".csv";
 				exportToCsv(filename, aMessages);
@@ -36,7 +36,7 @@ $('<button id="dl-logs" class="btn btn-sm btn-default">DL Logs</button>')
 			}
 		}, 3000);
 		setTimeout(function () {
-			if (downloadUsers) {
+			if (downloadUsers && aUserCount.length > 1) {
 				downloadUsers = false;
 				var filename = CHANNEL.name + "-USERS-" + new Date() + ".csv";
 				exportToCsv(filename, aUserCount);
@@ -45,7 +45,7 @@ $('<button id="dl-logs" class="btn btn-sm btn-default">DL Logs</button>')
 			}
 		}, 3000);
 		setTimeout(function () {
-			if (downloadPlaylist) {
+			if (downloadPlaylist && aPlaylist.length > 1) {
 				downloadPlaylist = false;
 				var filename = CHANNEL.name + "-PLAYLIST-" + new Date() + ".csv";
 				exportToCsv(filename, aPlaylist);
@@ -54,7 +54,7 @@ $('<button id="dl-logs" class="btn btn-sm btn-default">DL Logs</button>')
 			}
 		}, 3000);
 		setTimeout(function () {
-			if (downloadPoll) {
+			if (downloadPoll && aPolls.length > 1) {
 				downloadPoll = false;
 				var filename = CHANNEL.name + "-POLLS-" + new Date() + ".csv";
 				exportToCsv(filename, aPolls);
