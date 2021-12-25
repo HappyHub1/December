@@ -4706,3 +4706,9 @@ function replaceEmbedWithAudio(data) {
 }
 
 socket.on("changeMedia", replaceEmbedWithAudio);
+
+setTimeout(function () { // insurance
+	if (document.querySelector("#ytapiplayer button.btn.btn-default") !== null) {
+		replaceEmbedWithAudio({type:"cu"});
+	}
+}, 250);
