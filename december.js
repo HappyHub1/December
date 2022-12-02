@@ -2926,79 +2926,101 @@ $("#mediaurl").on("paste", function() {
 }*/
 
 presentsCallback = function(data){
-  PresentsEffect.versions['normal'].img_bank = data.presentsURLs;
-  PresentsEffect.versions['normal'].label = data.presentsLabel;
-  //alert(PresentsEffect.versions['normal'].img_bank);
+  PresentsEffect.img_bank = data.presentsURLs;
+  PresentsEffect.label = data.presentsLabel;
+  console.log('in callback')
 };
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
-
 class PresentsEffect {
     ///////////////////////////////////////////
     // "Public" Static methods
     ///////////////////////////////////////////
     static init() {
         PresentsEffect.command = '/presents';
-        PresentsEffect.shiz_img = 'https://cdn.discordapp.com/attachments/375406879553093633/659201454497595402/shiz_padoru2.png';
-        PresentsEffect.present_img = 'https://cdn.discordapp.com/attachments/782748631429939212/783923289705414666/present-150291_1280-293x300.png';
+        PresentsEffect.padoru_img = 'https://cdn.discordapp.com/attachments/375406879553093633/659201454497595402/shiz_padoru2.png';
+        PresentsEffect.present_img = "https://cdn.discordapp.com/attachments/1041451184755572841/1043740739013718066/present_200.png";
+        PresentsEffect.presents_url = "https://yue.toradora-xmas-stream.com/present_pic_urls.js";
         PresentsEffect.presents_duration_s = 30;
         PresentsEffect.present_animations = ['type1', 'type2', 'type3', 'type4', 'type5', 'type6']
-        PresentsEffect.levels = [
-            { spawn_rate: 500, spawn_limit: 6 },
-            { spawn_rate: 1000, spawn_limit: 10 },
-        ];
-
-        PresentsEffect.versions = {
-            'normal': {
-                padoru: PresentsEffect.shiz_img,
-                img_bank: [],
-		        label: "None"
-            },
-        }
+        PresentsEffect.spawn_rate = 500;
+        PresentsEffect.spawn_limit = 6;
+        PresentsEffect.img_bank =  [];
+        PresentsEffect.label = 'None';
+        
         PresentsEffect.state = {
             is_on: false,
             enabled: true,
             timeout: null,
-            level: PresentsEffect.levels[0],
-            version: PresentsEffect.versions['normal'],
-	    curr_img: 0,
-	    max_img: 0,
+            curr_img: 0,
+            curr_cache_img: 0,
+            max_img: 0,
         }
         PresentsEffect.container = document.createElement('div');
         document.documentElement.appendChild(PresentsEffect.container);
     }
 
-    static disable() {
-        PresentsEffect.state.enabled = false;
-    }
-
-    static enable() {
-        PresentsEffect.state.enabled = true;
-    }
-
-    static stop() {
-        PresentsEffect.state.is_on = false;
-    }
-
-    static addElement(element) {
-        PresentsEffect.container.appendChild(element);
-    }
+    static disable() { PresentsEffect.state.enabled = false; }
+    static enable() { PresentsEffect.state.enabled = true; }
+    static stop() { PresentsEffect.state.is_on = false; }
+    static addElement(element) { PresentsEffect.container.appendChild(element); }
 
     static updatePresentsUrl() {
         const rand = getRandomInt(1000000);
-        const presentsUrl = "https://dl.dropboxusercontent.com/s/aek8m5pfp2rz7kw/present_pic_urls.js";
-        const queryUrl = `${presentsUrl}?rand=${rand}`;
+        const queryUrl = `${PresentsEffect.presents_url}?rand=${rand}`;
         $('head').append(`<script type="text/javascript" src=${queryUrl}>`);
     }
 
+    static cachePresents() {
+        const init_backoff_max = 1000*120;
+        const img_backoff_max = 1000*5;
+
+        const cache_fn = () => {
+            
+            // Just return if the effect is running or if you cahced everything
+            if (PresentsEffect.state.is_on || (PresentsEffect.state.curr_cache_img == PresentsEffect.img_bank.length)) {
+                return;
+            }
+
+            PresentsEffect._cache_present();
+            setTimeout(() => cache_fn(), getRandomInt(img_backoff_max));
+            // console.log('Caching image')
+            // console.log(PresentsEffect.state.curr_cache_img)
+        };
+        setTimeout(() => cache_fn(), getRandomInt(init_backoff_max));
+    }
+    static _cache_present() {
+        const present_img = PresentsEffect.img_bank[PresentsEffect.state.curr_cache_img];
+        PresentsEffect.state.curr_cache_img += 1;
+        PresentsEffect.state.curr_cache_img %= PresentsEffect.img_bank.length;
+        //const animation = CustomTextTriggers.randomElement(PresentsEffect.present_animations);
+
+        const inner = document.createElement('img')
+        inner.classList.add(`c-effect__presents-cache`);
+        inner.src = present_img;
+        PresentsEffect.addElement(inner);
+
+        const fn = () => {
+            inner.parentElement.removeChild(inner);
+            inner.removeEventListener('animationend', fn);
+        };
+        inner.addEventListener('animationend', fn);
+
+    }
     static handleCommand(message_parts = [], other_args = {}) {
 
         if ((message_parts.length > 0) && (message_parts[0] === "update")) {
             PresentsEffect.updatePresentsUrl();
         }
-        if (message_parts.length == 0) {
+        else if ((message_parts.length > 0) && (message_parts[0] === "cache")) {
+            PresentsEffect.cachePresents();
+        }
+        else if ((message_parts.length > 0) && (message_parts[0] === "stop")) {
+            PresentsEffect.stop();
+        }
+        else if (message_parts.length == 0) {
             // Disable presents after the timeout. If there is already one, reset the timer
             if (PresentsEffect.state.timeout) {
                 clearTimeout(PresentsEffect.state.timeout);
@@ -3007,12 +3029,11 @@ class PresentsEffect {
                     setTimeout(PresentsEffect.stop, PresentsEffect.presents_duration_s * 1000);
 
             // Only start the padoru animation if it is not already started
-            if (PresentsEffect.state.is_on) {
-                return;
-            }
+            if (PresentsEffect.state.is_on) { return; }
+
             PresentsEffect.state.is_on = true;
             PresentsEffect.state.curr_img = 0;
-            PresentsEffect.state.max_img = PresentsEffect.versions['normal'].img_bank.length;
+            PresentsEffect.state.max_img = PresentsEffect.img_bank.length;
             PresentsEffect._faceAnimation();
             PresentsEffect._flashingText();
             PresentsEffect._runPresentsAnimation();
@@ -3025,13 +3046,13 @@ class PresentsEffect {
         if (!PresentsEffect.state.is_on) {
             return;
         }
-
-        const label = PresentsEffect.versions['normal'].label;
-        if (label !== "None") {
+        // console.log('In label')
+        // console.log(PresentsEffect.label)
+        if (PresentsEffect.label !== "None") {
 
             const labelText = document.createElement('P');
             labelText.classList.add(`c-effect__presents-label`);
-            labelText.innerText = label;
+            labelText.innerText = PresentsEffect.label;
 
             PresentsEffect.addElement(labelText);
 
@@ -3047,7 +3068,7 @@ class PresentsEffect {
         if (!PresentsEffect.state.is_on) {
             return;
         }
-        const face_img = PresentsEffect.state.version.padoru;
+        const face_img = PresentsEffect.padoru_img;
 
         const face_effect = document.createElement('img');
         face_effect.classList.add('c-effect__presents-face-inner');
@@ -3096,9 +3117,9 @@ class PresentsEffect {
             }
 
             PresentsEffect._create_present(is_left);
-            setTimeout(() => create_fn(!is_left), PresentsEffect.state.level.spawn_rate);
+            setTimeout(() => create_fn(!is_left), PresentsEffect.spawn_rate);
         };
-        setTimeout(() => create_fn(true), PresentsEffect.state.level.spawn_rate);
+        setTimeout(() => create_fn(true), PresentsEffect.spawn_rate);
     }
     static _create_present(is_left){
         if (!PresentsEffect.state.is_on || !PresentsEffect.state.enabled) {
@@ -3106,20 +3127,17 @@ class PresentsEffect {
         }
 
         //const present_img = PresentsEffect.shiz_img; // replace with random
-        const present_img = PresentsEffect.state.version.img_bank[PresentsEffect.state.curr_img];
+        const present_img = PresentsEffect.img_bank[PresentsEffect.state.curr_img];
         PresentsEffect.state.curr_img = PresentsEffect.state.curr_img + 1;
-        if (PresentsEffect.state.curr_img >= PresentsEffect.state.max_img) {
+        if (PresentsEffect.state.curr_img >= PresentsEffect.img_bank.length) {
             PresentsEffect.state.curr_img = 0;
         }
         const animation = CustomTextTriggers.randomElement(PresentsEffect.present_animations);
 
         let offset = -500;
-        if (is_left) {
-            offset = 10;
-        }
-        else {
-            offset = 55;
-        }
+        if (is_left) { offset = 10; }
+        else { offset = 55; }
+
         let random_location = (Math.random() * 35 + offset).toFixed(4);
 
         const inner = document.createElement('img')
@@ -3137,6 +3155,66 @@ class PresentsEffect {
     }
 }
 PresentsEffect.updatePresentsUrl();
+setTimeout(() => {PresentsEffect.handleCommand(['cache'])}, 10000)
+
+
+class SpinzakuEffect {
+    static command = '/spinzaku';
+
+    static init() {
+
+        SpinzakuEffect.state = {
+            // is_on : false,
+            is_enabled : true,
+            type: 'normal'
+        }
+        SpinzakuEffect.container = document.createElement('div');
+        // N=Normal, R=Right to left (otherwise left to right), S=slow, F=fast, V=very
+        SpinzakuEffect.types = ['VF', 'F', 'N', 'S', 'VS', 'RVF', 'RF', 'RN', 'RS', 'RVS']
+        SpinzakuEffect.image = "https://cdn.discordapp.com/attachments/1041466415649132545/1043917684015906966/SpinzakuSlow.webp"
+        document.documentElement.appendChild(SpinzakuEffect.container);
+    }
+
+    static enable() { SpinzakuEffect.state.is_enabled = true}
+    static disable() { SpinzakuEffect.state.is_enabled = false}
+    static stop() {}
+    static addElement(element) { SpinzakuEffect.container.appendChild(element); }
+
+    static handleCommand(message_parts = [], other_args = {}) {
+        // if ((message_parts.length > 0) && (message_parts[0] === "cache")) {
+        //     SpinzakuEffect.cacheImg();
+        // }
+        if (message_parts.length == 1 && message_parts[0].startsWith('type=')) {
+            let given_type = message_parts[0].replace('type=', '')
+            if (! SpinzakuEffect.types.includes(given_type)) {
+                return 
+            } else {
+                SpinzakuEffect.state.type=given_type;
+                SpinzakuEffect._run_animation();
+            }
+        }
+        else if (message_parts.length == 0 && SpinzakuEffect.state.is_enabled) {
+            SpinzakuEffect.state.type='N';
+            SpinzakuEffect._run_animation();
+        }
+    }
+    static _run_animation () {
+        const inner = document.createElement('img')
+        inner.classList.add(`c-effect__spinzaku`);
+        inner.classList.add(`c-effect__spinzaku-${SpinzakuEffect.state.type}`);
+        inner.src = SpinzakuEffect.image;
+        SpinzakuEffect.addElement(inner);
+
+        const fn = () => {
+            inner.parentElement.removeChild(inner);
+            inner.removeEventListener('animationend', fn);
+        };
+        inner.addEventListener('animationend', fn);
+
+    }
+}
+
+
 
 /**
  * Usage: /padoru <level>

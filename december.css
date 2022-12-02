@@ -1343,3 +1343,42 @@ html.has-loopy-effect body {
     filter: hue-rotate(360deg) blur(1px) saturate(1);
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                Spinzaku effect                             */
+/* -------------------------------------------------------------------------- */
+.c-effect__spinzaku{
+  position: fixed;  
+  height: 400px;
+  z-index:20000;
+  animation-name: effect__spinzaku-RtL;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+  transform-origin: center;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.95;
+
+  top: 40%;
+  right: 0%;
+}
+.c-effect__spinzaku-VF { animation-duration: 0.5s; }
+.c-effect__spinzaku-F { animation-duration: 1s; }
+.c-effect__spinzaku-N { animation-duration: 2s; }
+.c-effect__spinzaku-S { animation-duration: 4s; }
+.c-effect__spinzaku-VS { animation-duration: 8s; }
+
+.c-effect__spinzaku-RVF { animation-duration: 0.5s; animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-RF { animation-duration: 1s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-RN { animation-duration: 2s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-RS { animation-duration: 4s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-RVS { animation-duration: 8s;  animation-name: effect__spinzaku-LtR }
+
+@keyframes effect__spinzaku-RtL {
+  0% { right: -10%;}
+  100% { right: 100%;}
+}
+@keyframes effect__spinzaku-LtR {
+  0% { right: 100%;}
+  100% { right: -10%;}
+}
