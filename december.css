@@ -246,6 +246,7 @@ footer {padding-bottom:5px}
 .teamshiina::before{background:url('./Images/shiina.png');}
 .teamaoyama::before{background:url('./Images/aoyama.png');}
 .teammommy::before{background:url('./Images/mommy.png');}
+.teamonoeesan::before{background:url('./Images/onoeesan.png');}
 .chat-msg-_North .username:not([class*="team"])::before {
 background:url('./Images/kagami.ico');
 }
@@ -1381,3 +1382,56 @@ html.has-loopy-effect body {
   0% { right: 100%;}
   100% { right: -10%;}
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                Pole Chan effect                            */
+/* -------------------------------------------------------------------------- */
+
+@keyframes smallKick {
+ 0% { transform: skewY(-30deg); 
+      transform: skewX(-30deg);}
+ 20% { transform: skewY(30deg); 
+      transform: skewX(30deg); }
+ 40% { transform: skewY(-30deg); 
+       transform: skewX(-30deg)}
+ 60% { transform: skewY(30deg); 
+       transform: skewX(30deg)}
+ 80% { transform: skewY(0deg); 
+       transform: skewX(0deg)}
+ 100% { transform: skewY(0deg); 
+        transform: skewX(0deg)}
+}
+
+@keyframes bigKick {
+ 0% { transform: skewY(-60deg); 
+      transform: skewX(-60deg);}
+ 20% { transform: skewY(60deg); 
+      transform: skewX(60deg); }
+ 40% { transform: skewY(-60deg); 
+       transform: skewX(-60deg)}
+ 60% { transform: skewY(60deg); 
+       transform: skewX(60deg)}
+ 80% { transform: skewY(0deg); 
+       transform: skewX(0deg)}
+ 100% { transform: skewY(0deg); 
+        transform: skewX(0deg)}
+}
+
+.kickedSmall {
+  animation-name: smallKick;
+  animation-duration: .25s;
+  animation-iteration-count: 1;
+}
+
+.kickedBig {
+  animation-name: bigKick;
+  animation-duration: .25s;
+  animation-iteration-count: 1;
+}
+
+.UnlimitedKickWorks {
+  animation-name: smallKick;
+  animation-duration: .25s;
+  animation-iteration-count: infinite;
+}
+
