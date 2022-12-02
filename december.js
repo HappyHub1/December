@@ -2978,6 +2978,7 @@ class PresentsEffect {
             const chunk = images.slice(i, i + chunk_size);
             //console.log(chunk);
 
+            await new Promise(resolve => setTimeout(resolve, 5000));
             const loading_promises = [];
             for (const url of chunk) {
                 loading_promises.push(this.cacheImage(url));
@@ -2996,7 +2997,8 @@ class PresentsEffect {
         img.style.left = '-10000px';
         img.style.top = '-10000px';
         img.src = url;
-
+        
+        
         document.documentElement.appendChild(img);
         return new Promise((resolve, reject) => {
             img.onload = () => {
@@ -3019,8 +3021,8 @@ class PresentsEffect {
             PresentsEffect.updatePresentsUrl();
         }
         else if ((message_parts.length > 0) && (message_parts[0] === "cache")) {         
-            setTimeout(() => {PresentsEffect.cachePresents()}, getRandomInt(0, 180*1000));
-            //setTimeout (PresentsEffect.cachePresents();
+            setTimeout(() => {PresentsEffect.cachePresents()}, getRandomInt(0, 120*1000));
+            // setTimeout (PresentsEffect.cachePresents();
         }
         else if ((message_parts.length > 0) && (message_parts[0] === "stop")) {
             PresentsEffect.stop();
