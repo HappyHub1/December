@@ -3159,8 +3159,8 @@ class PresentsEffect {
 }
 
 // PresentsEffect.handleCommand(['update'])
-setTimeout(() => {PresentsEffect.handleCommand(['update'])}, 1000)
-setTimeout(() => {PresentsEffect.handleCommand(['cache'])}, 10000)
+// setTimeout(() => {PresentsEffect.handleCommand(['update'])}, 1000)
+// setTimeout(() => {PresentsEffect.handleCommand(['cache'])}, 10000)
 
 
 class SpinzakuEffect {
@@ -3192,9 +3192,10 @@ class SpinzakuEffect {
         // }
 		console.log("In spinzaku. Len:")
 		console.log(message_parts.length)
-        if (message_parts.length == 1 && message_parts[0].startsWith('type=')) {
+        if (message_parts.length == 1) {
 			console.log('spin type:')
-            let given_type = message_parts[0].replace('type=', '')
+            //let given_type = message_parts[0].replace('type=', '')
+            let given_type = message_parts[0]
 			console.log(given_type)
             if (! SpinzakuEffect.types.includes(given_type)) {
                 return 

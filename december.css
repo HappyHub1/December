@@ -1374,17 +1374,17 @@ html.has-loopy-effect body {
   top: 40%;
   right: 0%;
 }
-.c-effect__spinzaku-VF { animation-duration: 0.5s; }
-.c-effect__spinzaku-F { animation-duration: 1s; }
-.c-effect__spinzaku-N { animation-duration: 2s; }
-.c-effect__spinzaku-S { animation-duration: 4s; }
-.c-effect__spinzaku-VS { animation-duration: 8s; }
+.c-effect__spinzaku-vf { animation-duration: 0.5s; }
+.c-effect__spinzaku-f { animation-duration: 1s; }
+.c-effect__spinzaku-n { animation-duration: 2s; }
+.c-effect__spinzaku-s { animation-duration: 4s; }
+.c-effect__spinzaku-vs { animation-duration: 8s; }
 
-.c-effect__spinzaku-RVF { animation-duration: 0.5s; animation-name: effect__spinzaku-LtR }
-.c-effect__spinzaku-RF { animation-duration: 1s;  animation-name: effect__spinzaku-LtR }
-.c-effect__spinzaku-RN { animation-duration: 2s;  animation-name: effect__spinzaku-LtR }
-.c-effect__spinzaku-RS { animation-duration: 4s;  animation-name: effect__spinzaku-LtR }
-.c-effect__spinzaku-RVS { animation-duration: 8s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-rvf { animation-duration: 0.5s; animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-rf { animation-duration: 1s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-rn { animation-duration: 2s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-rs { animation-duration: 4s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-rvs { animation-duration: 8s;  animation-name: effect__spinzaku-LtR }
 
 @keyframes effect__spinzaku-RtL {
   0% { right: -10%;}
