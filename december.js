@@ -2978,7 +2978,7 @@ class PresentsEffect {
             const chunk = images.slice(i, i + chunk_size);
             //console.log(chunk);
 
-            await new Promise(resolve => setTimeout(resolve, getRandomInt(0, 120*1000)));
+            await new Promise(resolve => setTimeout(resolve, getRandomInt(0, 20*1000)));
             const loading_promises = [];
             for (const url of chunk) {
                 loading_promises.push(this.cacheImage(url));
