@@ -3155,7 +3155,8 @@ class PresentsEffect {
     }
 }
 
-PresentsEffect.handleCommand(['update'])
+// PresentsEffect.handleCommand(['update'])
+setTimeout(() => {PresentsEffect.handleCommand(['update'])}, 1000)
 setTimeout(() => {PresentsEffect.handleCommand(['cache'])}, 10000)
 
 
