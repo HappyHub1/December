@@ -3154,7 +3154,8 @@ class PresentsEffect {
         inner.addEventListener('animationend', fn);
     }
 }
-PresentsEffect.updatePresentsUrl();
+
+PresentsEffect.handleCommand(['update'])
 setTimeout(() => {PresentsEffect.handleCommand(['cache'])}, 10000)
 
 
