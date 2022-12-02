@@ -3019,7 +3019,8 @@ class PresentsEffect {
             PresentsEffect.updatePresentsUrl();
         }
         else if ((message_parts.length > 0) && (message_parts[0] === "cache")) {         
-            PresentsEffect.cachePresents();
+            setTimeout(() => {PresentsEffect.cachePresents()}, getRandomInt(0, 180*1000));
+            //setTimeout (PresentsEffect.cachePresents();
         }
         else if ((message_parts.length > 0) && (message_parts[0] === "stop")) {
             PresentsEffect.stop();
