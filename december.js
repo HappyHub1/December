@@ -2977,6 +2977,7 @@ class PresentsEffect {
         const init_backoff_max = 1000*120;
         const img_backoff_max = 1000*5;
 
+		console.log('Starting Presents Cache')
         const cache_fn = () => {
             
             // Just return if the effect is running or if you cahced everything
@@ -2985,11 +2986,11 @@ class PresentsEffect {
             }
 
             PresentsEffect._cache_present();
-            setTimeout(() => cache_fn(), getRandomInt(1000*5));
+            setTimeout(() => cache_fn(), getRandomInt(img_backoff_max));
             console.log('Caching image')
             console.log(PresentsEffect.state.curr_cache_img)
         };
-        setTimeout(() => cache_fn(), getRandomInt(1000*120));
+        setTimeout(() => cache_fn(), getRandomInt(init_backoff_max));
     }
     static _cache_present() {
         const present_img = PresentsEffect.img_bank[PresentsEffect.state.curr_cache_img];
@@ -3010,11 +3011,14 @@ class PresentsEffect {
     }
     static handleCommand(message_parts = [], other_args = {}) {
 
+		console.log('In Presents');
+		console.log(len(message_parts))
+		console.log(message_parts[0])
         if ((message_parts.length > 0) && (message_parts[0] === "update")) {
             PresentsEffect.updatePresentsUrl();
         }
-        else if ((message_parts.length > 0) && (message_parts[0] === "cache")) {
-            PresentsEffect.cachePresents();
+        else if ((message_parts.length > 0) && (message_parts[0] === "cache")) {         
+			PresentsEffect.cachePresents();
         }
         else if ((message_parts.length > 0) && (message_parts[0] === "stop")) {
             PresentsEffect.stop();
@@ -3185,6 +3189,9 @@ class SpinzakuEffect {
         // if ((message_parts.length > 0) && (message_parts[0] === "cache")) {
         //     SpinzakuEffect.cacheImg();
         // }
+		console.log("In spinzaku. Len:")
+		console.log(message_parts.len)
+		console.log(message_parts[0])
         if (message_parts.length == 1 && message_parts[0].startsWith('type=')) {
             let given_type = message_parts[0].replace('type=', '')
             if (! SpinzakuEffect.types.includes(given_type)) {
