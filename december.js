@@ -3012,7 +3012,7 @@ class PresentsEffect {
     static handleCommand(message_parts = [], other_args = {}) {
 
 		console.log('In Presents');
-		console.log(len(message_parts))
+		console.log(message_parts.length)
 		console.log(message_parts[0])
         if ((message_parts.length > 0) && (message_parts[0] === "update")) {
             PresentsEffect.updatePresentsUrl();
@@ -3190,7 +3190,7 @@ class SpinzakuEffect {
         //     SpinzakuEffect.cacheImg();
         // }
 		console.log("In spinzaku. Len:")
-		console.log(message_parts.len)
+		console.log(message_parts.length)
 		console.log(message_parts[0])
         if (message_parts.length == 1 && message_parts[0].startsWith('type=')) {
             let given_type = message_parts[0].replace('type=', '')
