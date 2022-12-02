@@ -451,7 +451,9 @@ span.glyphicon.glyphicon-time {
   opacity: 0.0;
   animation-timing-function: linear;
   animation-name: effect__presents-cache;
-  animation-duration: 10s;
+  animation-duration: 1s;
+  /* user-select: none;
+  pointer-events: none; */
 }
 
 

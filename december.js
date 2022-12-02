@@ -3175,7 +3175,8 @@ class SpinzakuEffect {
         }
         SpinzakuEffect.container = document.createElement('div');
         // N=Normal, R=Right to left (otherwise left to right), S=slow, F=fast, V=very
-        SpinzakuEffect.types = ['VF', 'F', 'N', 'S', 'VS', 'RVF', 'RF', 'RN', 'RS', 'RVS']
+        //SpinzakuEffect.types = ['VF', 'F', 'N', 'S', 'VS', 'RVF', 'RF', 'RN', 'RS', 'RVS']
+        SpinzakuEffect.types = ['vf', 'f', 'n', 's', 'vs', 'rvf', 'rf', 'rn', 'rs', 'rvs']
         SpinzakuEffect.image = "https://cdn.discordapp.com/attachments/1041466415649132545/1043917684015906966/SpinzakuSlow.webp"
         document.documentElement.appendChild(SpinzakuEffect.container);
     }
