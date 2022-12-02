@@ -1,5 +1,5 @@
 var PoleChan;
-var PoleChanVariance = .06;
+var PoleChanVariance = .07;
 var PoleSmallKickPositions = [753.5,760.8,761.65,762.55,763.3,765.3,768,769.5,772.75,774.8];
 var PoleBigKickPositions = [780.1,795.5];
 var PoleUnlimitedKickWorksPositions = [789];
