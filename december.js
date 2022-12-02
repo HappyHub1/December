@@ -2972,41 +2972,47 @@ class PresentsEffect {
         const queryUrl = `${PresentsEffect.presents_url}?rand=${rand}`;
         $('head').append(`<script type="text/javascript" src=${queryUrl}>`);
     }
+    static async cachePresents() {
+        const images = PresentsEffect.img_bank;
 
-    static cachePresents() {
-        const init_backoff_max = 1000*120;
-        const img_backoff_max = 1000*5;
+        // Load images in chunks
+        const chunk_size = 5;
+        for (let i = 0; i < images.length; i += chunk_size) {
+            const chunk = images.slice(i, i + chunk_size);
+            console.log(chunk);
 
-        console.log('Starting Presents Cache')
-        const cache_fn = () => {
-            
-            // Just return if the effect is running or if you cahced everything
-            if (PresentsEffect.state.is_on || (PresentsEffect.state.curr_cache_img >= PresentsEffect.img_bank.length)) {
-                return;
+            const loading_promises = [];
+            for (const url of chunk) {
+                loading_promises.push(this.cacheImage(url));
             }
 
-            PresentsEffect._cache_present();
-            // setTimeout(() => cache_fn(), getRandomInt(img_backoff_max));
-            setTimeout(() => cache_fn(), 2000);
-            console.log('Caching image')
-            console.log(PresentsEffect.state.curr_cache_img)
-        };
-        setTimeout(() => cache_fn(), getRandomInt(init_backoff_max));
+            try {
+                await Promise.all(loading_promises);
+            } catch (e) {
+                // One of the images failed to load but we don't really care here
+            }
+        }
     }
-    static _cache_present() {
-        const present_img = PresentsEffect.img_bank[PresentsEffect.state.curr_cache_img];
-        PresentsEffect.state.curr_cache_img += 1;
-        //const animation = CustomTextTriggers.randomElement(PresentsEffect.present_animations);
+    static cacheImage(url) {
+        const img = new Image();
+        img.style.position = 'absolute';
+        img.style.left = '-10000px';
+        img.style.top = '-10000px';
+        img.src = url;
 
-        const inner = document.createElement('img')
-        inner.classList.add(`c-effect__presents-cache`);
-        inner.src = present_img;
-        PresentsEffect.addElement(inner);
-        const fn = () => {
-            inner.parentElement.removeChild(inner);
-        };
-        setTimeout(() => fn(), 500);
+        document.documentElement.appendChild(img);
+        return new Promise((resolve, reject) => {
+            img.onload = () => {
+                img.parentElement.removeChild(img);
+                resolve();
+            }
+            img.onerror = () => {
+                img.parentElement.removeChild(img);
+                reject();
+            }
+        });
     }
+    
     static handleCommand(message_parts = [], other_args = {}) {
 
         console.log('In Presents');

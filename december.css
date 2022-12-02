@@ -444,19 +444,6 @@ span.glyphicon.glyphicon-time {
   100% { transform: translateX(0); }
 }
 
-.c-effect__presents-cache {
-  position: fixed;
-  left: -100%;
-  bottom: -200%;
-  opacity: 0.0;
-  animation-timing-function: linear;
-  animation-name: effect__presents-cache;
-  animation-duration: 1s;
-  /* user-select: none;
-  pointer-events: none; */
-}
-
-
 .c-effect__presents-label {
     position: fixed;
     margin: auto;
