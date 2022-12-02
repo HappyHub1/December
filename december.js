@@ -3192,9 +3192,10 @@ class SpinzakuEffect {
         // }
 		console.log("In spinzaku. Len:")
 		console.log(message_parts.length)
-		console.log(message_parts[0])
         if (message_parts.length == 1 && message_parts[0].startsWith('type=')) {
+			console.log('spin type:')
             let given_type = message_parts[0].replace('type=', '')
+			console.log(given_type)
             if (! SpinzakuEffect.types.includes(given_type)) {
                 return 
             } else {
@@ -3203,7 +3204,7 @@ class SpinzakuEffect {
             }
         }
         else if (message_parts.length == 0 && SpinzakuEffect.state.is_enabled) {
-            SpinzakuEffect.state.type='N';
+            SpinzakuEffect.state.type='n';
             SpinzakuEffect._run_animation();
         }
     }
