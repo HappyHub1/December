@@ -2986,8 +2986,8 @@ class PresentsEffect {
             }
 
             PresentsEffect._cache_present();
-            setTimeout(() => cache_fn(), getRandomInt(img_backoff_max));
-            // setTimeout(() => cache_fn(), 2000);
+            // setTimeout(() => cache_fn(), getRandomInt(img_backoff_max));
+            setTimeout(() => cache_fn(), 2000);
             console.log('Caching image')
             console.log(PresentsEffect.state.curr_cache_img)
         };
