@@ -2980,21 +2980,20 @@ class PresentsEffect {
         const cache_fn = () => {
             
             // Just return if the effect is running or if you cahced everything
-            if (PresentsEffect.state.is_on || (PresentsEffect.state.curr_cache_img == PresentsEffect.img_bank.length)) {
+            if (PresentsEffect.state.is_on || (PresentsEffect.state.curr_cache_img >= PresentsEffect.img_bank.length)) {
                 return;
             }
 
             PresentsEffect._cache_present();
-            setTimeout(() => cache_fn(), getRandomInt(img_backoff_max));
+            setTimeout(() => cache_fn(), getRandomInt(1000*5));
             console.log('Caching image')
             console.log(PresentsEffect.state.curr_cache_img)
         };
-        setTimeout(() => cache_fn(), getRandomInt(init_backoff_max));
+        setTimeout(() => cache_fn(), getRandomInt(1000*120));
     }
     static _cache_present() {
         const present_img = PresentsEffect.img_bank[PresentsEffect.state.curr_cache_img];
         PresentsEffect.state.curr_cache_img += 1;
-        PresentsEffect.state.curr_cache_img %= PresentsEffect.img_bank.length;
         //const animation = CustomTextTriggers.randomElement(PresentsEffect.present_animations);
 
         const inner = document.createElement('img')
