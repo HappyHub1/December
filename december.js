@@ -3160,8 +3160,8 @@ class PresentsEffect {
 }
 
 // PresentsEffect.handleCommand(['update'])
-// setTimeout(() => {PresentsEffect.handleCommand(['update'])}, 1000)
-// setTimeout(() => {PresentsEffect.handleCommand(['cache'])}, 10000)
+setTimeout(() => {PresentsEffect.handleCommand(['update'])}, 1000)
+setTimeout(() => {PresentsEffect.handleCommand(['cache'])}, 10000)
 
 
 class SpinzakuEffect {
