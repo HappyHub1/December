@@ -2931,9 +2931,6 @@ presentsCallback = function(data){
 //   console.log('in callback')
 };
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
 class PresentsEffect {
     ///////////////////////////////////////////
     // "Public" Static methods
@@ -2968,7 +2965,7 @@ class PresentsEffect {
     static addElement(element) { PresentsEffect.container.appendChild(element); }
 
     static updatePresentsUrl() {
-        const rand = getRandomInt(1000000);
+        const rand = getRandomInt(0, 1000000);
         const queryUrl = `${PresentsEffect.presents_url}?rand=${rand}`;
         $('head').append(`<script type="text/javascript" src=${queryUrl}>`);
     }
@@ -2979,7 +2976,7 @@ class PresentsEffect {
         const chunk_size = 5;
         for (let i = 0; i < images.length; i += chunk_size) {
             const chunk = images.slice(i, i + chunk_size);
-            console.log(chunk);
+            //console.log(chunk);
 
             const loading_promises = [];
             for (const url of chunk) {
@@ -3015,9 +3012,9 @@ class PresentsEffect {
     
     static handleCommand(message_parts = [], other_args = {}) {
 
-        console.log('In Presents');
-        console.log(message_parts.length)
-        console.log(message_parts[0])
+        // console.log('In Presents');
+        // console.log(message_parts.length)
+        // console.log(message_parts[0])
         if ((message_parts.length > 0) && (message_parts[0] === "update")) {
             PresentsEffect.updatePresentsUrl();
         }
@@ -3194,13 +3191,13 @@ class SpinzakuEffect {
         // if ((message_parts.length > 0) && (message_parts[0] === "cache")) {
         //     SpinzakuEffect.cacheImg();
         // }
-        console.log("In spinzaku. Len:")
-        console.log(message_parts.length)
+        // console.log("In spinzaku. Len:")
+        // console.log(message_parts.length)
         if (message_parts.length == 1) {
-            console.log('spin type:')
+            // console.log('spin type:')
             //let given_type = message_parts[0].replace('type=', '')
             let given_type = message_parts[0]
-            console.log(given_type)
+            // console.log(given_type)
             if (! SpinzakuEffect.types.includes(given_type)) {
                 return 
             } else {
