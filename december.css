@@ -25,9 +25,9 @@
 }
 
 audio#ytapiplayer {
-	margin-left: 30%;
-	margin-top: 25%;
-	width: 40%;
+    margin-left: 30%;
+    margin-top: 25%;
+    width: 40%;
 }
 
 /*  ----- Admin Font ----- */
@@ -81,8 +81,8 @@ Fuck Firefox */
 /* ----- Playlist User & End Time ----- */
 
 .qe_user, .qe_endTime {
-	float:right;
-	padding-right:3px;
+    float:right;
+    padding-right:3px;
 }
 
 /* ----- Nico chat ----- */
@@ -102,10 +102,10 @@ Fuck Firefox */
 
 .text-marquee {
     text-shadow:
-	-1px -1px 0 #000,
-	1px -1px 0 #000,
-	-1px 1px 0 #000,
-	1px 1px 0 #000;
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
     color: #FFFFFF !important;
     font-size: 20px;
     font-weight: bold;
@@ -186,26 +186,26 @@ body {overflow-x:hidden}
 #attbar {height:22px; background-color:white}
 
 #titlerow {
-	background-position:0px center;
-	background-size:0% 100%; background-repeat:no-repeat;
-	margin:-5px -8px 5px;
-	border-radius:4px;
+    background-position:0px center;
+    background-size:0% 100%; background-repeat:no-repeat;
+    margin:-5px -8px 5px;
+    border-radius:4px;
 }
 
 #titlerow-outer {padding:3px 5px; text-align:center; font-size:16pt; color:black; }
 
 #titlerow #currenttitle {
-	border:none;
+    border:none;
 }
 
 #mediainfo {
-	background-color: #1C1E22; margin-bottom:0px; border-width: 1px 1px 0px; border-style:solid solid none;
-	border-color:black; border-radius:5px 5px 0px 0px;
+    background-color: #1C1E22; margin-bottom:0px; border-width: 1px 1px 0px; border-style:solid solid none;
+    border-color:black; border-radius:5px 5px 0px 0px;
 }
 
 #coverpl {
-	position:absolute; left:5px; top:0px; background-color:white;
-	background-position:center center;
+    position:absolute; left:5px; top:0px; background-color:white;
+    background-position:center center;
 }
 #redirectPlayer {
     position:absolute; left:0px; top:0px; background-color:white;
@@ -226,7 +226,7 @@ footer {padding-bottom:5px}
 
 #chatfunc-dropdown {
     position:absolute; top:22px; display:block; z-index:10000; padding:5px;
-	overflow:auto; margin-right:5px;
+    overflow:auto; margin-right:5px;
 }
 
 /*Reddit flair*/
@@ -260,10 +260,10 @@ background:url('./Images/wafu_icon.png');
 background:url('./Images/miku-padoru.png');
 }
 .username::before{
-	content:"AA";
-	background-size:20px 20px !important;
-	background-repeat:no-repeat !important;
-	color:rgba(0,0,0,0);
+    content:"AA";
+    background-size:20px 20px !important;
+    background-repeat:no-repeat !important;
+    color:rgba(0,0,0,0);
 }
 #messagebuffer>div{font-size:18px;}
 
@@ -276,8 +276,8 @@ background:url('./Images/miku-padoru.png');
 .dist {background-color:gold; color:red; font-size:12pt; padding:3px}
 
 span.glyphicon.glyphicon-time {
-	color: rgba(255,0,0,0);
-	background: url("./Images/zzz.png");}
+    color: rgba(255,0,0,0);
+    background: url("./Images/zzz.png");}
 
 /* Snow and ERABE effect below */
 
@@ -445,21 +445,20 @@ span.glyphicon.glyphicon-time {
   100% { transform: translateX(0); }
 }
 
-
 .c-effect__presents-label {
-	position: fixed;
-	margin: auto;
-	width: 100%;
-	bottom: 50%;
-	animation-timing-function: linear;
-	animation-name: presents-label-blink;
-	animation-duration: 1s;
-	animation-iteration-count: 5;
-	font-size: 64px;
-	font-size: 10vw;
-	font-family: Comic Sans;
+    position: fixed;
+    margin: auto;
+    width: 100%;
+    bottom: 50%;
+    animation-timing-function: linear;
+    animation-name: presents-label-blink;
+    animation-duration: 1s;
+    animation-iteration-count: 5;
+    font-size: 64px;
+    font-size: 10vw;
+    font-family: Comic Sans;
         text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
-	text-align: center;
+    text-align: center;
 }
 
 @keyframes presents-label-blink {
@@ -1343,6 +1342,45 @@ html.has-loopy-effect body {
   50% {
     filter: hue-rotate(360deg) blur(1px) saturate(1);
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                Spinzaku effect                             */
+/* -------------------------------------------------------------------------- */
+.c-effect__spinzaku{
+  position: fixed;  
+  height: 400px;
+  z-index:20000;
+  animation-name: effect__spinzaku-RtL;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+  transform-origin: center;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.95;
+
+  top: 40%;
+  right: 0%;
+}
+.c-effect__spinzaku-vf { animation-duration: 0.5s; }
+.c-effect__spinzaku-f { animation-duration: 1s; }
+.c-effect__spinzaku-n { animation-duration: 2s; }
+.c-effect__spinzaku-s { animation-duration: 4s; }
+.c-effect__spinzaku-vs { animation-duration: 8s; }
+
+.c-effect__spinzaku-rvf { animation-duration: 0.5s; animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-rf { animation-duration: 1s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-rn { animation-duration: 2s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-rs { animation-duration: 4s;  animation-name: effect__spinzaku-LtR }
+.c-effect__spinzaku-rvs { animation-duration: 8s;  animation-name: effect__spinzaku-LtR }
+
+@keyframes effect__spinzaku-RtL {
+  0% { right: -10%;}
+  100% { right: 100%;}
+}
+@keyframes effect__spinzaku-LtR {
+  0% { right: 100%;}
+  100% { right: -10%;}
 }
 
 /* -------------------------------------------------------------------------- */
