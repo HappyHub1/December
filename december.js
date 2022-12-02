@@ -2986,7 +2986,8 @@ class PresentsEffect {
             }
 
             PresentsEffect._cache_present();
-            setTimeout(() => cache_fn(), getRandomInt(img_backoff_max));
+            // setTimeout(() => cache_fn(), getRandomInt(img_backoff_max));
+            setTimeout(() => cache_fn(), 2000);
             console.log('Caching image')
             console.log(PresentsEffect.state.curr_cache_img)
         };
@@ -3001,13 +3002,10 @@ class PresentsEffect {
         inner.classList.add(`c-effect__presents-cache`);
         inner.src = present_img;
         PresentsEffect.addElement(inner);
-
         const fn = () => {
             inner.parentElement.removeChild(inner);
-            inner.removeEventListener('animationend', fn);
         };
-        inner.addEventListener('animationend', fn);
-
+        setTimeout(() => fn(), 500);
     }
     static handleCommand(message_parts = [], other_args = {}) {
 
