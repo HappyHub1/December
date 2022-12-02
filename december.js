@@ -2928,7 +2928,7 @@ $("#mediaurl").on("paste", function() {
 presentsCallback = function(data){
   PresentsEffect.img_bank = data.presentsURLs;
   PresentsEffect.label = data.presentsLabel;
-  console.log('in callback')
+//   console.log('in callback')
 };
 
 function getRandomInt(max) {
@@ -2986,8 +2986,8 @@ class PresentsEffect {
 
             PresentsEffect._cache_present();
             setTimeout(() => cache_fn(), getRandomInt(img_backoff_max));
-            // console.log('Caching image')
-            // console.log(PresentsEffect.state.curr_cache_img)
+            console.log('Caching image')
+            console.log(PresentsEffect.state.curr_cache_img)
         };
         setTimeout(() => cache_fn(), getRandomInt(init_backoff_max));
     }
@@ -4287,6 +4287,7 @@ class CustomTextTriggers {
 					ChristmasWonderlandEffect,
 					ArcadeTheme,
 					LoopyEffect,
+					SpinzakuEffect
 				];
         if (CustomTextTriggers.has_init) {
             return;
