@@ -113,7 +113,7 @@ function chatSocket(data) {
 			teamIcon = data.msg2.match(teamIconRegex)[1];
 		}
 		
-		var parsedMsg2 = data.msg2;
+		var parsedMsg2 = data.msg2 || data.msg;
 		
 		if (parsedMsg2.match(regex1) !== null) {
 		    parsedMsg2 = parsedMsg2.replace(regex1, "$1")
