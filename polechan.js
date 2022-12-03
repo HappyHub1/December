@@ -9,7 +9,7 @@ if (document.getElementById("currenttitle").textContent.indexOf("Toradora! E02: 
 }
 
 socket.on("changeMedia", function(data) {
-    if (data.title.indexOf("Toradora! E02: Ryuuji and Taiga") > -1) {
+    if (data.title.indexOf("[tsukarimasen] Toradora! - 02 (BD 1280x720)") > -1) {
         StartKicking();
     } else {
         clearInterval(PoleChan);
@@ -27,7 +27,6 @@ function PoleChanKick(kicked, startdelay, delaytimer) {
 
 function StartKicking() {
     PoleChan = setInterval(function () {
-        console.log("Active");
         if (PLAYER.player !== null) {
             PlayerTime = PLAYER.player.currentTime();
             for (var iPole = 0; iPole < PoleSmallKickPositions.length; iPole++) {
