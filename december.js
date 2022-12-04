@@ -4748,10 +4748,10 @@ class PunchEffect {
 
     const wrapper = document.createElement('div');
     wrapper.classList.add('c-punch-element');
+    wrapper.style.cursor = `url('${character.cursor}'), auto`;
 
     const image = document.createElement('img');
     image.src = character.image;
-    image.style.cursor = `url('${character.cursor}'), auto`;
     image.style.width = character.width;
 
     const text = document.createElement('div');
