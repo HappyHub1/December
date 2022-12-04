@@ -2894,38 +2894,6 @@ $("#mediaurl").on("paste", function () {
   }, 250);
 });
 
-
-/* I commented this out as I dont think its needed anymore. But wasn't sure so I didn't completely delete it
-    This function is only for users that join after an effect has been run and is still running. Right now, there is no effect if they rejoin.
- function checkEffects() {
-    if (!EFFECTSOFF) {
-        var effectClassList = document.getElementById("effects").className.trim().split(" ");
-        for (var i = 0; i < effectClassList.length; i++) {
-            var effectTime = (parseInt(effectClassList[i].replace("snow","").replace("padoru","").replace("erabe",""),10)- new Date().getTime());
-            if (effectTime > 0) {
-                if (effectClassList[i].indexOf("snow") === 0) {
-                    CustomTextTriggers.handleCommandSnow(1, effectTime/1000);
-                    setTimeout(CustomTextTriggers.disableSnow, effectTime);
-                } else if (effectClassList[i].indexOf("padoru") === 0) {
-                    CustomTextTriggers.handleCommandPadoru(1, effectTime/1000);
-                    setTimeout(CustomTextTriggers.disablePadoru, effectTime);
-                } else if (effectClassList[i].indexOf("erabe") === 0) {
-                    CustomTextTriggers.handleCommandErabe(
-                        false,
-                        2,
-                        effectTime/1000,
-                        2);
-                    setTimeout(CustomTextTriggers.disableErabe, effectTime);
-                }
-            }
-        }
-    } else {
-        CustomTextTriggers.disableSnow();
-        CustomTextTriggers.disablePadoru();
-        CustomTextTriggers.disableErabe();
-    }
-}*/
-
 presentsCallback = function (data) {
   PresentsEffect.img_bank = data.presentsURLs;
   PresentsEffect.label = data.presentsLabel;
@@ -4300,7 +4268,8 @@ class CustomTextTriggers {
       ChristmasWonderlandEffect,
       ArcadeTheme,
       LoopyEffect,
-      SpinzakuEffect
+      SpinzakuEffect,
+      PunchEffect,
     ];
     if (CustomTextTriggers.has_init) {
       return;
@@ -4761,50 +4730,124 @@ LoopyEffect.command = '/loopy';
 class PunchEffect {
   static init() {
     PunchEffect.state = {
-      active_characters: [],
+      active_characters: new Map(),
       user_enabled: true,
     };
   }
 
-  static start() {
-    const state = LoopyEffect.state;
-    if (!state.user_enabled) {
+  static start(character_index) {
+    if (!PunchEffect.state.user_enabled) {
       return;
     }
 
-    document.documentElement.classList.add('has-loopy-effect');
+    const state = PunchEffect.state;
+    const character = PunchEffect.characters[character_index];
+    if (!character || state.active_characters.has(character_index)) {
+      return;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('c-punch-element');
+
+    const image = document.createElement('img');
+    image.src = character.image;
+    image.style.cursor = `url('${character.cursor}'), auto`;
+    image.style.width = character.width;
+
+    const text = document.createElement('div');
+    text.textContent = character.text;
+
+    wrapper.appendChild(image);
+    wrapper.appendChild(text);
+    document.documentElement.appendChild(wrapper);
+
+    // Place the image randomly on the next frame and then move it at a fixed frequency
+    let next_move_timeout = undefined;
+    function move() {
+      clearTimeout(next_move_timeout);
+      if (!wrapper.parentElement) {
+        return;
+      }
+
+      const available_x = window.innerWidth - wrapper.offsetWidth;
+      const available_y = window.innerHeight - wrapper.offsetHeight;
+
+      const x = Math.floor(Math.random() * available_x);
+      const y = Math.floor(Math.random() * available_y);
+      wrapper.style.top = y.toString() + 'px';
+      wrapper.style.left = x.toString() + 'px';
+
+      next_move_timeout = setTimeout(move, character.move_frequency_ms);
+    }
+    image.addEventListener('load', move);
+
+    // Remove the element after 20s
+    let remove = () => {
+      state.active_characters.delete(character.index);
+
+      if (wrapper.parentElement) {
+        wrapper.parentElement.removeChild(wrapper);
+      }
+    };
+    setTimeout(remove, 20_000);
+
+    // Remove the element after being clicked on the specified number of times
+    let click_count = 0;
+    wrapper.addEventListener('click', () => {
+      click_count = click_count + 1;
+      if (click_count >= character.punches_required) {
+        remove();
+        return;
+      }
+
+      move();
+    });
+
+    // Store the removal method so everything can be removed
+    state.active_characters.set(character.index, remove);
   }
 
   static stop() {
-    const state = LoopyEffect.state;
-    if (!state.is_running) {
-      return;
+    const state = PunchEffect.state;
+    for (const remove of state.active_characters.values()) {
+      remove();
     }
-
-    document.documentElement.classList.remove('has-loopy-effect');
-    state.is_running = false;
   }
 
   static enable() {
-    LoopyEffect.state.user_enabled = true;
+    PunchEffect.state.user_enabled = true;
   }
 
   static disable() {
-    LoopyEffect.state.user_enabled = false;
-    LoopyEffect.stop();
+    PunchEffect.state.user_enabled = false;
+    PunchEffect.stop();
   }
 
   static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
-    if (message_parts[0] === 'off') {
-      LoopyEffect.stop();
+    if (!message_parts[0]) {
       return;
     }
 
-    LoopyEffect.start();
+    if (message_parts[0] === 'off') {
+      PunchEffect.stop();
+      return;
+    }
+
+    PunchEffect.start(message_parts[0]);
   }
 }
-LoopyEffect.command = '/loopy';
-
+PunchEffect.command = '/punch';
+PunchEffect.characters = {
+  ami: {
+    index: 'ami',
+    image: `${SCRIPT_FOLDER_URL}/Images/ami-face-hq.png`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-fist.png`,
+    text: 'Punch Ami!!!',
+    width: 480,
+    move_frequency_ms: 2500,
+    punches_required: 3,
+  }
+};
 
 function decodeEntities(string) {
   var textarea = document.createElement('textarea');

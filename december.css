@@ -1348,7 +1348,7 @@ html.has-loopy-effect body {
 /*                                Spinzaku effect                             */
 /* -------------------------------------------------------------------------- */
 .c-effect__spinzaku{
-  position: fixed;  
+  position: fixed;
   height: 400px;
   z-index:20000;
   animation-name: effect__spinzaku-RtL;
@@ -1388,32 +1388,32 @@ html.has-loopy-effect body {
 /* -------------------------------------------------------------------------- */
 
 @keyframes smallKick {
- 0% { transform: skewY(-30deg); 
+ 0% { transform: skewY(-30deg);
       transform: skewX(-30deg);}
- 20% { transform: skewY(30deg); 
+ 20% { transform: skewY(30deg);
       transform: skewX(30deg); }
- 40% { transform: skewY(-30deg); 
+ 40% { transform: skewY(-30deg);
        transform: skewX(-30deg)}
- 60% { transform: skewY(30deg); 
+ 60% { transform: skewY(30deg);
        transform: skewX(30deg)}
- 80% { transform: skewY(0deg); 
+ 80% { transform: skewY(0deg);
        transform: skewX(0deg)}
- 100% { transform: skewY(0deg); 
+ 100% { transform: skewY(0deg);
         transform: skewX(0deg)}
 }
 
 @keyframes bigKick {
- 0% { transform: skewY(-60deg); 
+ 0% { transform: skewY(-60deg);
       transform: skewX(-60deg);}
- 20% { transform: skewY(60deg); 
+ 20% { transform: skewY(60deg);
       transform: skewX(60deg); }
- 40% { transform: skewY(-60deg); 
+ 40% { transform: skewY(-60deg);
        transform: skewX(-60deg)}
- 60% { transform: skewY(60deg); 
+ 60% { transform: skewY(60deg);
        transform: skewX(60deg)}
- 80% { transform: skewY(0deg); 
+ 80% { transform: skewY(0deg);
        transform: skewX(0deg)}
- 100% { transform: skewY(0deg); 
+ 100% { transform: skewY(0deg);
         transform: skewX(0deg)}
 }
 
@@ -1435,3 +1435,28 @@ html.has-loopy-effect body {
   animation-iteration-count: infinite;
 }
 
+
+/* -------------------------------------------------------------------------- */
+/*                                Punch element                               */
+/* -------------------------------------------------------------------------- */
+.c-punch-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.c-punch-element div {
+  font-size: 40px;
+  font-weight: bold;
+  color: white;
+  text-shadow:
+      -2px 2px 0 #000,
+      2px 2px 0 #000,
+      2px -2px 0 #000,
+      -2px -2px 0 #000;
+
+  position: absolute;
+  left: 0;
+  bottom: 16px;
+  width: 100%;
+  text-align: center;
+}
