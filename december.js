@@ -3237,11 +3237,15 @@ class GeassEffect {
         const geass_duration = 2000;
         const total = geass_delay+geass_duration;
         //GeassEffect.element_video.style.boxShadow = '';
-        setTimeout(GeassEffect._run_second_animation(), geass_delay);
-        setTimeout(()=> {
+        const rm_fn = () => {
           GeassEffect.element_video.style.boxShadow = '';
+        }
+        setTimeout(GeassEffect._run_second_animation, geass_delay);
+        setTimeout(rm_fn, total)
+        // setTimeout(()=> {
+        //   GeassEffect.element_video.style.boxShadow = '';
 
-        }, total)
+        // }, total)
         //setTimeout(rm_func(), total);
         //setTimeout(rm_func(), geass_delay+geass_duration);
     }
