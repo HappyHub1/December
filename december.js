@@ -3231,16 +3231,40 @@ class GeassEffect {
         }
     }
     static _run_first_animation () {
+        // Effect
         GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .8)';
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('c-effect__geass-wrapper')
+
+        const staticB = document.createElement('div')
+        staticB.classList.add(`c-effect__geass-static-B`)
+        const staticT = document.createElement('div')
+        staticT.classList.add(`c-effect__geass-static-T`)
+        const staticL = document.createElement('div')
+        staticL.classList.add(`c-effect__geass-static-L`)
+        const staticR = document.createElement('div')
+        staticR.classList.add(`c-effect__geass-static-R`)
+
+        const geass_shizuru = document.createElement('img');
+        geass_shizuru.classList.add(`c-effect__geass_shizuru`);
+        geass_shizuru.src = GeassEffect.shizuru_image;
+
+        wrapper.appendChild(geass_shizuru);
+        GeassEffect.addElement(wrapper);
+        document.documentElement.appendChild(staticB);
+        document.documentElement.appendChild(staticT);
+        document.documentElement.appendChild(staticL);
+        document.documentElement.appendChild(staticR);
         
+        // Second stage and rm
         const geass_delay = 3000;
         const geass_duration = 2000;
         const total = geass_delay+geass_duration;
         const rm_fn = () => {
           GeassEffect.element_video.style.boxShadow = '';
-        }
 
-        setTimeout(GeassEffect._run_second_animation, geass_delay);
+        }
+        setTimeout(() => GeassEffect._run_second_animation(wrapper, geass_shizuru), geass_delay);
         setTimeout(rm_fn, total)
     }
 
