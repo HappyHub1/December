@@ -2,13 +2,6 @@ var AmiFace;
 var AmiFaceVariance = .07;
 var AmiFacePositions = [["[tsukarimasen] Toradora! - 06 (BD 1280x720)", [1287.75,1289.5]],["[tsukarimasen] Toradora! - 07 (BD 1280x720)", [14,15.75]]];
 var iAmi = -1;
-var AmiFaceCSS = this.document.createElement("link");
-AmiFaceCSS.id = "amifacecss";
-AmiFaceCSS.rel = "stylesheet";
-AmiFaceCSS.type = "text/css";
-AmiFaceCSS.disabled = true;
-AmiFaceCSS.href = `${SCRIPT_FOLDER_URL}/amiface.css`;
-document.head.appendChild(AmiFaceCSS);
 
 for (var i = 0; i < AmiFacePositions.length; i++) {
 	if (document.getElementById("currenttitle").textContent.indexOf(AmiFacePositions[i][0]) > -1) {
@@ -33,10 +26,10 @@ socket.on("changeMedia", function(data) {
 
 function AmiFacePopup(startdelay, delaytimer) {
     setTimeout(function() {
-        AmiFaceCSS.disabled = false;
+        document.getElementsByTagName("body")[0].classList.add("amifacebg");
     }, startdelay);
     setTimeout(function() {
-        AmiFaceCSS.disabled = true;
+        document.getElementsByTagName("body")[0].classList.remove("amifacebg");
     }, delaytimer + startdelay);
 }
 
