@@ -1349,25 +1349,25 @@ html.has-loopy-effect body {
 .c-effect__geass-wrapper{
   position: absolute;
   display: inline-block;
-  width: 200px;
-  height: 200px;
+  width: 250px;
+  height: 250px;
   bottom : 0px;
   left: 15%;
   user-select: none;
   pointer-events: none;
 }
 .c-effect__geass_shizuru {
-  z-index:90000;
-  width: 200px;
-  height: 200px;
-  bottom: -200px;
+  z-index:100000;
+  width: 250px;
+  height: 250px;
+  bottom: -250px;
   animation-timing-function: linear;
   animation-name: effect__geass-shizuru;
   animation-duration: 7s;
 }
 @keyframes effect__geass-shizuru {
-    0%,100% { transform: translateY(200px);}
-    1%,99% { transform: translateY(0px);}
+    0%,100% { transform: translateY(250px);}
+    10%,90% { transform: translateY(0px);}
 }
 
 .c-effect__geass{
@@ -1375,7 +1375,7 @@ html.has-loopy-effect body {
   height: 50px;
 
   position: absolute;
-  top: calc(75px);
+  top: calc(80px);
   left: calc(90px);
   transform-origin: center;
   z-index:90001;
@@ -1387,8 +1387,8 @@ html.has-loopy-effect body {
 
 @keyframes effect__geass {
   0% { scale: 100%; transform: translateY(0%)}
-  50% {scale: 500%; transform: translateY(-30%) translateX(10%)}
-  100% { scale: 1000%; transform: translateY(-100%) translateX(40%)}
+  50% {scale: 400%; transform: translateY(-30%) translateX(10%)}
+  100% { scale: 800%; transform: translateY(-100%) translateX(40%)}
 }
 
 .c-effect__geass-static-B{
@@ -1404,8 +1404,6 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
   mask-image: linear-gradient(to top, black 0%, transparent 100%);
-  user-select: none;
-  pointer-events: none;
 } 
 .c-effect__geass-static-T{
   position: fixed;
@@ -1420,8 +1418,6 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-  user-select: none;
-  pointer-events: none;
 } 
 
 .c-effect__geass-static-L{
@@ -1437,8 +1433,6 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to right, black 0%, transparent 100%);
   mask-image: linear-gradient(to right, black 0%, transparent 100%);
-  user-select: none;
-  pointer-events: none;
 } 
 .c-effect__geass-static-R{
   position: fixed;
@@ -1453,18 +1447,12 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to left, black 0%, transparent 100%);
   mask-image: linear-gradient(to left, black 0%, transparent 100%);
-  user-select: none;
-  pointer-events: none;
 } 
 
 @keyframes staticanimation {
   from { background-size: 100% 100%; }
   to {background-size: 200% 200%; }
 }
-
-
-
-
 
 /* -------------------------------------------------------------------------- */
 /*                                Spinzaku effect                             */
