@@ -1404,6 +1404,8 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
   mask-image: linear-gradient(to top, black 0%, transparent 100%);
+  user-select: none;
+  pointer-events: none;
 } 
 .c-effect__geass-static-T{
   position: fixed;
@@ -1418,6 +1420,8 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  user-select: none;
+  pointer-events: none;
 } 
 
 .c-effect__geass-static-L{
@@ -1433,6 +1437,8 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to right, black 0%, transparent 100%);
   mask-image: linear-gradient(to right, black 0%, transparent 100%);
+  user-select: none;
+  pointer-events: none;
 } 
 .c-effect__geass-static-R{
   position: fixed;
@@ -1447,6 +1453,8 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to left, black 0%, transparent 100%);
   mask-image: linear-gradient(to left, black 0%, transparent 100%);
+  user-select: none;
+  pointer-events: none;
 } 
 
 @keyframes staticanimation {
