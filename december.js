@@ -3258,7 +3258,7 @@ class GeassEffect {
         document.documentElement.appendChild(staticR);
         
         // Second stage and rm
-        const geass_delay = 3000;
+        const geass_delay = 2000;
         const geass_duration = 2000;
         const total = geass_delay+geass_duration;
         const rm_fn = () => {
