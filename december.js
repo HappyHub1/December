@@ -3214,7 +3214,8 @@ class GeassEffect {
         GeassEffect.image = "https://cdn.discordapp.com/attachments/1041451184755572841/1049121306655870986/geass_test4.gif";
         document.documentElement.appendChild(GeassEffect.container);
         GeassEffect.element_video = document.getElementById("videowrap");
-
+        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3)';
+        
         //box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3);
 
     }
@@ -3230,7 +3231,7 @@ class GeassEffect {
         }
     }
     static _run_first_animation () {
-        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .2)';
+        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3)';
         
         const geass_delay = 4000;
         const geass_duration = 2000;
