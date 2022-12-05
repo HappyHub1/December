@@ -1343,6 +1343,118 @@ html.has-loopy-effect body {
     filter: hue-rotate(360deg) blur(1px) saturate(1);
   }
 }
+/* -------------------------------------------------------------------------- */
+/*                                Geass effect                             */
+/* -------------------------------------------------------------------------- */
+.c-effect__geass-wrapper{
+  position: absolute;
+  display: inline-block;
+  width: 250px;
+  height: 250px;
+  bottom : 0px;
+  left: 15%;
+  user-select: none;
+  pointer-events: none;
+}
+.c-effect__geass_shizuru {
+  z-index:100000;
+  width: 250px;
+  height: 250px;
+  bottom: -250px;
+  animation-timing-function: linear;
+  animation-name: effect__geass-shizuru;
+  animation-duration: 5s;
+}
+@keyframes effect__geass-shizuru {
+    0%,100% { transform: translateY(250px);}
+    10%,90% { transform: translateY(0px);}
+}
+
+.c-effect__geass{
+  width: 100px;
+  height: 50px;
+
+  position: absolute;
+  top: calc(80px);
+  left: calc(90px);
+  transform-origin: center;
+  z-index:90001;
+  animation-name: effect__geass;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  opacity: 0.9;
+}
+
+@keyframes effect__geass {
+  0% { scale: 100%; transform: translateY(0%)}
+  50% {scale: 400%; transform: translateY(-30%) translateX(10%)}
+  100% { scale: 800%; transform: translateY(-100%) translateX(40%)}
+}
+
+.c-effect__geass-static-B{
+  position: fixed;
+  z-index: 89999;
+  width: 100%;
+  height: 5%;
+  left: 0%;
+  bottom: 0%;
+  margin: auto;
+  background-image: repeating-radial-gradient(circle at 50% 100%, black, red 0.00085px);
+  background-position: center;
+  animation: staticanimation 5s linear infinite;
+  -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
+  mask-image: linear-gradient(to top, black 0%, transparent 100%);
+} 
+.c-effect__geass-static-T{
+  position: fixed;
+  z-index: 89999;
+  width: 100%;
+  height: 5%;
+  left: 0%;
+  bottom: 95%;
+  margin: auto;
+  background-image: repeating-radial-gradient(circle at 50% 0%, black, red 0.00085px);
+  background-position: center;
+  animation: staticanimation 5s linear infinite;
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+} 
+
+.c-effect__geass-static-L{
+  position: fixed;
+  z-index: 89999;
+  width: 5%;
+  height: 100%;
+  left: 0%;
+  bottom: 0%;
+  margin: auto;
+  background-image: repeating-radial-gradient(circle at 0% 50%, black, red 0.00085px);
+  background-position: center;
+  animation: staticanimation 5s linear infinite;
+  -webkit-mask-image: linear-gradient(to right, black 0%, transparent 100%);
+  mask-image: linear-gradient(to right, black 0%, transparent 100%);
+} 
+.c-effect__geass-static-R{
+  position: fixed;
+  z-index: 89999;
+  width: 5%;
+  height: 100%;
+  left: 95%;
+  bottom: 0%;
+  margin: auto;
+  background-image: repeating-radial-gradient(circle at 100% 50%, black, red 0.00085px);
+  background-position: center;
+  animation: staticanimation 5s linear infinite;
+  -webkit-mask-image: linear-gradient(to left, black 0%, transparent 100%);
+  mask-image: linear-gradient(to left, black 0%, transparent 100%);
+} 
+
+@keyframes staticanimation {
+  from { background-size: 100% 100%; }
+  to {background-size: 200% 200%; }
+}
+
+
 
 /* -------------------------------------------------------------------------- */
 /*                                Spinzaku effect                             */

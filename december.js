@@ -3198,6 +3198,116 @@ class SpinzakuEffect {
 }
 
 
+class GeassEffect {
+    static command = '/geass';
+
+    static init() {
+
+        GeassEffect.state = {
+            // is_on : false,
+            is_enabled : true,
+            type: 'normal'
+        }
+        GeassEffect.container = document.createElement('div');
+        //GeassEffect.image = "https://cdn.discordapp.com/attachments/1041451184755572841/1049092178502234253/geass_test2.gif"
+        //GeassEffect.image = "https://cdn.discordapp.com/attachments/1041451184755572841/1049115280367951985/geass_test3.gif"
+        GeassEffect.image = "https://cdn.discordapp.com/attachments/1041451184755572841/1049121306655870986/geass_test4.gif";
+        GeassEffect.shizuru_image = 'https://cdn.discordapp.com/attachments/375406879553093633/659201454497595402/shiz_padoru2.png';
+        document.documentElement.appendChild(GeassEffect.container);
+        GeassEffect.element_video = document.getElementById("videowrap");
+        //GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .6)';
+        
+        //box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3);
+
+    }
+
+    static enable() { GeassEffect.state.is_enabled = true}
+    static disable() { GeassEffect.state.is_enabled = false}
+    static stop() {}
+    static addElement(element) { GeassEffect.container.appendChild(element); }
+
+    static handleCommand(message_parts = [], other_args = {}) {
+        if (message_parts.length == 0 && GeassEffect.state.is_enabled) {
+            GeassEffect._run_first_animation();
+        }
+    }
+    static _run_first_animation () {
+        // Effect
+        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .8)';
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('c-effect__geass-wrapper')
+
+        const staticB = document.createElement('div')
+        staticB.classList.add(`c-effect__geass-static-B`)
+        const staticT = document.createElement('div')
+        staticT.classList.add(`c-effect__geass-static-T`)
+        const staticL = document.createElement('div')
+        staticL.classList.add(`c-effect__geass-static-L`)
+        const staticR = document.createElement('div')
+        staticR.classList.add(`c-effect__geass-static-R`)
+
+        const geass_shizuru = document.createElement('img');
+        geass_shizuru.classList.add(`c-effect__geass_shizuru`);
+        geass_shizuru.src = GeassEffect.shizuru_image;
+
+        wrapper.appendChild(geass_shizuru);
+        GeassEffect.addElement(wrapper);
+        document.documentElement.appendChild(staticB);
+        document.documentElement.appendChild(staticT);
+        document.documentElement.appendChild(staticL);
+        document.documentElement.appendChild(staticR);
+        
+        // Second stage and rm
+        const geass_delay = 2001;
+        const geass_duration = 2000;
+        const total = geass_delay+geass_duration;
+        const rm_fn = () => {
+          GeassEffect.element_video.style.boxShadow = '';
+
+          staticB.parentElement.removeChild(staticB);
+          staticT.parentElement.removeChild(staticT);
+          staticL.parentElement.removeChild(staticL);
+          staticR.parentElement.removeChild(staticR);
+
+        }
+        setTimeout(() => GeassEffect._run_second_animation(wrapper, geass_shizuru), geass_delay);
+        setTimeout(rm_fn, total)
+    }
+
+    static _run_second_animation(wrapper, geass_shizuru) {
+        const inner = document.createElement('img')
+        inner.classList.add(`c-effect__geass`);
+        inner.src = GeassEffect.image;
+        wrapper.appendChild(inner);
+        //GeassEffect.addElement(inner);
+
+        const fn = () => {
+            inner.parentElement.removeChild(inner);
+            geass_shizuru.parentElement.removeChild(geass_shizuru);
+            inner.removeEventListener('animationend', fn);
+
+        };
+        inner.addEventListener('animationend', fn);
+
+    }
+    
+    static _run_text(){
+        if (GeassEffect.label !== "None") {
+            const labelText = document.createElement('P');
+            labelText.classList.add(`c-effect__geass-text`);
+            labelText.innerText = GeassEffect.label;
+            GeassEffect.addElement(labelText);
+
+            const fn = () => {
+                labelText.parentElement.removeChild(labelText);
+                labelText.removeEventListener('animationend', fn);
+            };
+            labelText.addEventListener('animationend', fn);
+        }
+    }
+}
+
+
 
 /**
  * Usage: /padoru <level>
@@ -4270,6 +4380,7 @@ class CustomTextTriggers {
       LoopyEffect,
       SpinzakuEffect,
       PunchEffect,
+      GeassEffect,
     ];
     if (CustomTextTriggers.has_init) {
       return;
