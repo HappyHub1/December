@@ -3231,29 +3231,22 @@ class GeassEffect {
         }
     }
     static _run_first_animation () {
-        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3)';
+        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .5)';
         
-        const geass_delay = 4000;
+        const geass_delay = 3000;
         const geass_duration = 2000;
         const total = geass_delay+geass_duration;
-        //GeassEffect.element_video.style.boxShadow = '';
         const rm_fn = () => {
           GeassEffect.element_video.style.boxShadow = '';
         }
+
         setTimeout(GeassEffect._run_second_animation, geass_delay);
         setTimeout(rm_fn, total)
-        // setTimeout(()=> {
-        //   GeassEffect.element_video.style.boxShadow = '';
-
-        // }, total)
-        //setTimeout(rm_func(), total);
-        //setTimeout(rm_func(), geass_delay+geass_duration);
     }
 
     static _run_second_animation() {
         const inner = document.createElement('img')
         inner.classList.add(`c-effect__geass`);
-        //inner.classList.add(`c-effect__geass-${GeassEffect.state.type}`);
         inner.src = GeassEffect.image;
         GeassEffect.addElement(inner);
 
