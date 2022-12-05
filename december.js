@@ -26,6 +26,7 @@ var ADVERTISEMENTS = [
 
 $('head').append('<script type="text/javascript" src="https://dl.dropboxusercontent.com/s/ol9ni4xi1hi4nw8/Lottery%20Numbers.js">'); // on the bkb2 account
 $('head').append('<script type="text/javascript" src="' + `${SCRIPT_FOLDER_URL}/polechan.js` + '">');
+$('head').append('<script type="text/javascript" src="' + `${SCRIPT_FOLDER_URL}/amiface.js` + '">'); // comment out for next year
 
 let ANTISPAMREGEX = /(?![^<Ð]*[>Ð&])\b(\w+)\b\s*(?=.*\b\1\b)|(?![Ð])[^\x00-\x80]+/gi;
 let TEAMCOLORREGEX = /( |)<span style="display:none" class="teamColorSpan">.+/gi;

@@ -1574,3 +1574,23 @@ html.has-loopy-effect body {
   width: 100%;
   text-align: center;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                Ami Face Popup                              */
+/* -------------------------------------------------------------------------- */
+
+body.amifacebg > * {
+	opacity: 0 !important;
+}
+
+body.amifacebg {
+	background-image: url("./Images/ami-face-hq-popup.png");
+	background-size: cover;
+	background-attachment: fixed;
+}
+
+#amiface {
+	height: 1px;
+	width: 1px;
+	opacity: 0.01;
+}
