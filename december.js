@@ -3212,6 +3212,7 @@ class GeassEffect {
         //GeassEffect.image = "https://cdn.discordapp.com/attachments/1041451184755572841/1049092178502234253/geass_test2.gif"
         //GeassEffect.image = "https://cdn.discordapp.com/attachments/1041451184755572841/1049115280367951985/geass_test3.gif"
         GeassEffect.image = "https://cdn.discordapp.com/attachments/1041451184755572841/1049121306655870986/geass_test4.gif";
+        GeassEffect.shizuru_image = 'https://cdn.discordapp.com/attachments/375406879553093633/659201454497595402/shiz_padoru2.png';
         document.documentElement.appendChild(GeassEffect.container);
         GeassEffect.element_video = document.getElementById("videowrap");
         //GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .6)';
@@ -3263,24 +3264,33 @@ class GeassEffect {
         const rm_fn = () => {
           GeassEffect.element_video.style.boxShadow = '';
 
+          staticB.parentElement.removeChild(staticB);
+          staticT.parentElement.removeChild(staticT);
+          staticL.parentElement.removeChild(staticL);
+          staticR.parentElement.removeChild(staticR);
+
         }
         setTimeout(() => GeassEffect._run_second_animation(wrapper, geass_shizuru), geass_delay);
         setTimeout(rm_fn, total)
     }
 
-    static _run_second_animation() {
+    static _run_second_animation(wrapper, geass_shizuru) {
         const inner = document.createElement('img')
         inner.classList.add(`c-effect__geass`);
         inner.src = GeassEffect.image;
-        GeassEffect.addElement(inner);
+        wrapper.appendChild(inner);
+        //GeassEffect.addElement(inner);
 
         const fn = () => {
             inner.parentElement.removeChild(inner);
+            geass_shizuru.parentElement.removeChild(geass_shizuru);
             inner.removeEventListener('animationend', fn);
+
         };
         inner.addEventListener('animationend', fn);
 
     }
+    
     static _run_text(){
         if (GeassEffect.label !== "None") {
             const labelText = document.createElement('P');
