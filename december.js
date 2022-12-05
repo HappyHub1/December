@@ -3231,7 +3231,7 @@ class GeassEffect {
         }
     }
     static _run_first_animation () {
-        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .5)';
+        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .8)';
         
         const geass_delay = 3000;
         const geass_duration = 2000;
