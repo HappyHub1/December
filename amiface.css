@@ -1,0 +1,15 @@
+* :not(body) {
+	opacity: 0 !important;
+}
+
+body {
+	background-image: url("./Images/ami-face-hq-popup.png");
+	background-size: cover;
+	background-attachment: fixed;
+}
+
+#amiface {
+	height: 1px;
+	width: 1px;
+	opacity: 0.01;
+}
