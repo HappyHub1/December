@@ -3230,17 +3230,16 @@ class GeassEffect {
             GeassEffect._run_first_animation();
         }
     }
-    static _run_first_animation () {
+    async _run_first_animation () {
         GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3)';
         
         const geass_delay = 4000;
         const geass_duration = 2000;
         setTimeout(GeassEffect._run_second_animation(), geass_delay);
-        const rm_func = () => {
-            GeassEffect.element_video.style.boxShadow = '';
-        }
         const total = geass_delay+geass_duration;
-        setTimeout(rm_func(), total);
+        await new Promise(resolve => setTimeout(resolve, total));
+        GeassEffect.element_video.style.boxShadow = '';
+        //setTimeout(rm_func(), total);
         //setTimeout(rm_func(), geass_delay+geass_duration);
     }
 
