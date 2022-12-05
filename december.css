@@ -1343,6 +1343,41 @@ html.has-loopy-effect body {
     filter: hue-rotate(360deg) blur(1px) saturate(1);
   }
 }
+/* -------------------------------------------------------------------------- */
+/*                                Geass effect                             */
+/* -------------------------------------------------------------------------- */
+.c-effect__geass{
+  /* //position: relative;   */
+  position: absolute;
+  height: auto;
+  scale: 70%;
+  z-index:20000;
+  animation-name: effect__geass;
+  animation-duration: 2s;
+  animation-timing-function: linear;
+  transform-origin: center;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.9;
+  display: flex;
+  justify-content: center;
+  top: 40%;
+  left: 40%;
+  /* top: 50%;
+  left: 50%; */
+
+  /* margin-left: auto;
+  margin-right: auto; */
+  /* margin-top: auto;
+  margin-bottom: auto; */
+}
+
+@keyframes effect__geass {
+  0% { scale: 70% }
+  50% {scale: 80%}
+  100% { scale: 200%; }
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                                Spinzaku effect                             */
