@@ -1585,7 +1585,7 @@ body.amifacebg > * {
 
 body.amifacebg {
 	background-image: url("./Images/ami-face-hq-popup.png");
-	background-size: cover;
+	background-size: 100% 100%;
 	background-attachment: fixed;
 }
 
