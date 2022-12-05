@@ -1440,9 +1440,11 @@ html.has-loopy-effect body {
 /*                                Punch element                               */
 /* -------------------------------------------------------------------------- */
 .c-punch-element {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
+
+  z-index: 100000;
 }
 .c-punch-element div {
   font-size: 40px;
