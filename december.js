@@ -3230,7 +3230,7 @@ class GeassEffect {
         }
     }
     static _run_first_animation () {
-        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .6)';
+        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .2)';
         
         const geass_delay = 4000;
         const geass_duration = 2000;
