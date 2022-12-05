@@ -3214,7 +3214,7 @@ class GeassEffect {
         GeassEffect.image = "https://cdn.discordapp.com/attachments/1041451184755572841/1049121306655870986/geass_test4.gif";
         document.documentElement.appendChild(GeassEffect.container);
         GeassEffect.element_video = document.getElementById("videowrap");
-        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3)';
+        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .8)';
         
         //box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3);
 
