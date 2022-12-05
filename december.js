@@ -3226,21 +3226,31 @@ class GeassEffect {
 
     static handleCommand(message_parts = [], other_args = {}) {
         if (message_parts.length == 0 && GeassEffect.state.is_enabled) {
-            GeassEffect._run_animation();
+            GeassEffect._run_first_animation();
         }
     }
-    static _run_animation () {
+    static _run_first_animation () {
+        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .6)';
+        
+        const geass_delay = 4000;
+        const geass_duration = 2000;
+        setTimeout(GeassEffect._run_second_animation(), geass_delay);
+        const rm_func = () => {
+            GeassEffect.element_video.style.boxShadow = '';
+        }
+        setTimeout(rm_func(), geass_delay+geass_duration)
+    }
+
+    static _run_second_animation() {
         const inner = document.createElement('img')
         inner.classList.add(`c-effect__geass`);
         //inner.classList.add(`c-effect__geass-${GeassEffect.state.type}`);
         inner.src = GeassEffect.image;
         GeassEffect.addElement(inner);
 
-        GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3)';
         const fn = () => {
             inner.parentElement.removeChild(inner);
             inner.removeEventListener('animationend', fn);
-            GeassEffect.element_video.style.boxShadow = '';
         };
         inner.addEventListener('animationend', fn);
 
