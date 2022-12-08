@@ -1346,8 +1346,9 @@ html.has-loopy-effect body {
 /* -------------------------------------------------------------------------- */
 /*                                Geass effect                             */
 /* -------------------------------------------------------------------------- */
+
 .c-effect__geass-wrapper{
-  position: absolute;
+  position: fixed;
   display: inline-block;
   width: 250px;
   height: 250px;
