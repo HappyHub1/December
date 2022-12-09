@@ -3217,7 +3217,7 @@ class GeassEffect {
         document.documentElement.appendChild(GeassEffect.container);
         GeassEffect.element_video = document.getElementById("videowrap");
         //GeassEffect.element_video.style.boxShadow = '0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .6)';
-        
+
         //box-shadow: 0 0 0 max(100vh, 100vw) rgba(0, 0, 0, .3);
 
     }
@@ -3257,7 +3257,7 @@ class GeassEffect {
         document.documentElement.appendChild(staticT);
         document.documentElement.appendChild(staticL);
         document.documentElement.appendChild(staticR);
-        
+
         // Second stage and rm
         const geass_delay = 2001;
         const geass_duration = 2000;
@@ -3291,7 +3291,7 @@ class GeassEffect {
         inner.addEventListener('animationend', fn);
 
     }
-    
+
     static _run_text(){
         if (GeassEffect.label !== "None") {
             const labelText = document.createElement('P');
@@ -4847,7 +4847,7 @@ class PunchEffect {
     };
   }
 
-  static start(character_index) {
+  static start(character_index, global_counter_id) {
     if (!PunchEffect.state.user_enabled) {
       return;
     }
@@ -4866,11 +4866,11 @@ class PunchEffect {
     image.src = character.image;
     image.style.width = character.width;
 
-    const text = document.createElement('div');
-    text.textContent = character.text;
+    const text_ele = document.createElement('div');
+    text_ele.innerHTML = `${character.text}<br> Punch counter loading...`;
 
     wrapper.appendChild(image);
-    wrapper.appendChild(text);
+    wrapper.appendChild(text_ele);
     document.documentElement.appendChild(wrapper);
 
     // Place the image randomly on the next frame and then move it at a fixed frequency
@@ -4893,6 +4893,24 @@ class PunchEffect {
     }
     image.addEventListener('load', move);
 
+    let counter_timeout = null;
+    async function updateCounter() {
+      clearTimeout(counter_timeout);
+      if (!wrapper.parentElement) {
+        return;
+      }
+
+      const count = await PunchEffect.getCount(global_counter_id);
+      if (count <= 0) {
+        text_ele.innerHTML = `${character.text}<br> Punch counter loading...`;
+      } else {
+        text_ele.innerHTML = `${character.text}<br> ${count} punches`;
+      }
+
+      setTimeout(updateCounter, 1000);
+    }
+    setTimeout(updateCounter, 500 + Math.random() * 700);
+
     // Remove the element after 20s
     let remove = () => {
       state.active_characters.delete(character.index);
@@ -4901,16 +4919,18 @@ class PunchEffect {
         wrapper.parentElement.removeChild(wrapper);
       }
     };
-    setTimeout(remove, 20_000);
+    setTimeout(remove, 10_000);
 
     // Remove the element after being clicked on the specified number of times
-    let click_count = 0;
+    // let click_count = 0;
     wrapper.addEventListener('click', () => {
-      click_count = click_count + 1;
-      if (click_count >= character.punches_required) {
-        remove();
-        return;
-      }
+      PunchEffect.incrementCount(global_counter_id);
+
+      // click_count = click_count + 1;
+      // if (click_count >= character.punches_required) {
+      //   remove();
+      //   return;
+      // }
 
       move();
     });
@@ -4935,17 +4955,68 @@ class PunchEffect {
     PunchEffect.stop();
   }
 
-  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
-    if (!message_parts[0]) {
+  static async createCounter(id) {
+    const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
+    const request = new Request({
+      url: url,
+      method: 'PUT',
+    });
+
+    try {
+      await window.fetch(request);
+    } catch (e) {
+      // Ignore errors for now
+    }
+  }
+
+  static async getCount(id) {
+    const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
+    const request = new Request({
+      url: url,
+      method: 'GET',
+    });
+
+    try {
+      const response = await window.fetch(request);
+      const json = await response.json();
+      return json?.data?.count || 0;
+    } catch (e) {
+      // Ignore errors for now
+    }
+  }
+
+  static async incrementCount(id) {
+    const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
+    const request = new Request({
+      url: url,
+      method: 'POST',
+    });
+
+    try {
+      await window.fetch(request);
+    } catch (e) {
+      // Ignore errors for now
+    }
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    const [command, counter_id] = message_parts;
+
+    if (!command) {
       return;
     }
 
-    if (message_parts[0] === 'off') {
+    if (command === 'off') {
       PunchEffect.stop();
       return;
     }
 
-    PunchEffect.start(message_parts[0]);
+    let did_send_the_message = other_args.did_send_the_message;
+    if (did_send_the_message) {
+      PunchEffect.createCounter(counter_id);
+    }
+
+    PunchEffect.start(command, counter_id);
   }
 }
 PunchEffect.command = '/punch';
