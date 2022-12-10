@@ -4872,7 +4872,7 @@ class PunchEffect {
     image.style.width = character.width;
 
     const text_ele = document.createElement('div');
-    text_ele.innerHTML = `${character.text}<br> Punch counter loading...`;
+    text_ele.innerHTML = `${character.text}<br> 0 punches...`;
 
     wrapper.appendChild(image);
     wrapper.appendChild(text_ele);
@@ -4899,6 +4899,14 @@ class PunchEffect {
     image.addEventListener('load', move);
 
     let counter_timeout = null;
+    function updateCounterTest(count) {
+      if (count <= 0) {
+        text_ele.innerHTML = `${character.text}<br> 0 punches`;
+      } else {
+        text_ele.innerHTML = `${character.text}<br> ${count} punches`;
+      }
+    }
+
     async function updateCounter() {
       clearTimeout(counter_timeout);
       if (!wrapper.parentElement) {
@@ -4906,13 +4914,8 @@ class PunchEffect {
       }
 
       const count = await PunchEffect.getCount(global_counter_id);
-      if (count <= 0) {
-        text_ele.innerHTML = `${character.text}<br> 0 punches`;
-      } else {
-        text_ele.innerHTML = `${character.text}<br> ${count} punches`;
-      }
-
-      setTimeout(updateCounter, 1000);
+      updateCounterTest(count);
+      counter_timeout = setTimeout(updateCounter, 1000);
     }
     setTimeout(updateCounter, 500 + Math.random() * 700);
 
@@ -4926,22 +4929,17 @@ class PunchEffect {
     };
     setTimeout(remove, length_ms);
 
-    // Remove the element after being clicked on the specified number of times
-    // let click_count = 0;
     let toggle_is_punched_timeout = null;
-    wrapper.addEventListener('click', () => {
+    wrapper.addEventListener('click', async () => {
       clearTimeout(toggle_is_punched_timeout);
       wrapper.classList.add('is-punched');
       toggle_is_punched_timeout = setTimeout(() => wrapper.classList.remove('is-punched'), 150);
 
       PunchEffect.playPunchSound();
-      PunchEffect.incrementCount(global_counter_id);
-
-      // click_count = click_count + 1;
-      // if (click_count >= character.punches_required) {
-      //   remove();
-      //   return;
-      // }
+      const new_count = await PunchEffect.incrementCount(global_counter_id);
+      updateCounterTest(new_count);
+      clearTimeout(counter_timeout);
+      counter_timeout = setTimeout(updateCounter, 1000);
 
       move();
     });
@@ -4966,21 +4964,6 @@ class PunchEffect {
     PunchEffect.stop();
   }
 
-  static async createCounter(id) {
-    const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
-    const request = new Request(url, {
-      method: 'PUT',
-    });
-
-    try {
-      const response = await window.fetch(request);
-      const json = await response.json();
-      console.log(json);
-    } catch (e) {
-      // Ignore errors for now
-    }
-  }
-
   static async getCount(id) {
     const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
     const request = new Request(url, {
@@ -5003,7 +4986,9 @@ class PunchEffect {
     });
 
     try {
-      await window.fetch(request);
+      const response = await window.fetch(request);
+      const json = await response.json();
+      return json?.data?.count || 0;
     } catch (e) {
       // Ignore errors for now
     }
@@ -5030,11 +5015,6 @@ class PunchEffect {
     if (command === 'off') {
       PunchEffect.stop();
       return;
-    }
-
-    let did_send_the_message = other_args.did_send_the_message;
-    if (did_send_the_message) {
-      PunchEffect.createCounter(counter_id);
     }
 
     const length_s_parsed = parseInt(length_s, 10) || 10;
