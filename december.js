@@ -4847,9 +4847,14 @@ class PunchEffect {
     };
   }
 
-  static start(character_index, global_counter_id) {
+  static start(character_index, global_counter_id, length_s = 10) {
     if (!PunchEffect.state.user_enabled) {
       return;
+    }
+
+    const length_ms = length_s * 1000;
+    if (length_ms > 60 * 1000) {
+      length_ms = 60 * 1000;
     }
 
     const state = PunchEffect.state;
@@ -4919,11 +4924,12 @@ class PunchEffect {
         wrapper.parentElement.removeChild(wrapper);
       }
     };
-    setTimeout(remove, 10_000);
+    setTimeout(remove, length_ms);
 
     // Remove the element after being clicked on the specified number of times
     // let click_count = 0;
     wrapper.addEventListener('click', () => {
+      PunchEffect.playPunchSound();
       PunchEffect.incrementCount(global_counter_id);
 
       // click_count = click_count + 1;
@@ -4957,13 +4963,14 @@ class PunchEffect {
 
   static async createCounter(id) {
     const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
-    const request = new Request({
-      url: url,
+    const request = new Request(url, {
       method: 'PUT',
     });
 
     try {
-      await window.fetch(request);
+      const response = await window.fetch(request);
+      const json = await response.json();
+      console.log(json);
     } catch (e) {
       // Ignore errors for now
     }
@@ -4971,8 +4978,7 @@ class PunchEffect {
 
   static async getCount(id) {
     const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
-    const request = new Request({
-      url: url,
+    const request = new Request(url, {
       method: 'GET',
     });
 
@@ -4987,8 +4993,7 @@ class PunchEffect {
 
   static async incrementCount(id) {
     const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
-    const request = new Request({
-      url: url,
+    const request = new Request(url, {
       method: 'POST',
     });
 
@@ -4999,9 +5004,20 @@ class PunchEffect {
     }
   }
 
-  static handleCommand(message_parts = [], other_args = {}) {
-    const [command, counter_id] = message_parts;
+  static playPunchSound() {
+    const sounds = [
+      `${SCRIPT_FOLDER_URL}/Media/hard-punch.mp3`,
+      `${SCRIPT_FOLDER_URL}/Media/quick-punch.mp3`,
+      `${SCRIPT_FOLDER_URL}/Media/weak-hit.mp3`,
+    ];
 
+    const random_sound = sounds[Math.floor(Math.random() * sounds.length)];
+    const sound = new Audio(random_sound);
+    sound.play();
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    const [command, counter_id, length_s = '10'] = message_parts;
     if (!command) {
       return;
     }
@@ -5016,7 +5032,8 @@ class PunchEffect {
       PunchEffect.createCounter(counter_id);
     }
 
-    PunchEffect.start(command, counter_id);
+    const length_ms = (parseInt(length_s, 10) || 10) * 1000;
+    PunchEffect.start(command, counter_id, length_ms);
   }
 }
 PunchEffect.command = '/punch';
