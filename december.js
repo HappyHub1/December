@@ -4852,7 +4852,7 @@ class PunchEffect {
       return;
     }
 
-    const length_ms = length_s * 1000;
+    let length_ms = length_s * 1000;
     if (length_ms > 60 * 1000) {
       length_ms = 60 * 1000;
     }
@@ -4907,7 +4907,7 @@ class PunchEffect {
 
       const count = await PunchEffect.getCount(global_counter_id);
       if (count <= 0) {
-        text_ele.innerHTML = `${character.text}<br> Punch counter loading...`;
+        text_ele.innerHTML = `${character.text}<br> 0 punches`;
       } else {
         text_ele.innerHTML = `${character.text}<br> ${count} punches`;
       }
@@ -4928,7 +4928,12 @@ class PunchEffect {
 
     // Remove the element after being clicked on the specified number of times
     // let click_count = 0;
+    let toggle_is_punched_timeout = null;
     wrapper.addEventListener('click', () => {
+      clearTimeout(toggle_is_punched_timeout);
+      wrapper.classList.add('is-punched');
+      toggle_is_punched_timeout = setTimeout(() => wrapper.classList.remove('is-punched'), 150);
+
       PunchEffect.playPunchSound();
       PunchEffect.incrementCount(global_counter_id);
 
@@ -5032,8 +5037,8 @@ class PunchEffect {
       PunchEffect.createCounter(counter_id);
     }
 
-    const length_ms = (parseInt(length_s, 10) || 10) * 1000;
-    PunchEffect.start(command, counter_id, length_ms);
+    const length_s_parsed = parseInt(length_s, 10) || 10;
+    PunchEffect.start(command, counter_id, length_s_parsed);
   }
 }
 PunchEffect.command = '/punch';

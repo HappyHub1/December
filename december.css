@@ -1404,7 +1404,7 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
   mask-image: linear-gradient(to top, black 0%, transparent 100%);
-} 
+}
 .c-effect__geass-static-T{
   position: fixed;
   z-index: 89999;
@@ -1418,7 +1418,7 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-} 
+}
 
 .c-effect__geass-static-L{
   position: fixed;
@@ -1433,7 +1433,7 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to right, black 0%, transparent 100%);
   mask-image: linear-gradient(to right, black 0%, transparent 100%);
-} 
+}
 .c-effect__geass-static-R{
   position: fixed;
   z-index: 89999;
@@ -1447,7 +1447,7 @@ html.has-loopy-effect body {
   animation: staticanimation 5s linear infinite;
   -webkit-mask-image: linear-gradient(to left, black 0%, transparent 100%);
   mask-image: linear-gradient(to left, black 0%, transparent 100%);
-} 
+}
 
 @keyframes staticanimation {
   from { background-size: 100% 100%; }
@@ -1557,7 +1557,29 @@ html.has-loopy-effect body {
   left: 0;
 
   z-index: 100000;
+  transition: filter 150ms ease-out;
 }
+.c-punch-element.is-punched {
+  filter: blur(4px) brightness(1.2) hue-rotate(15deg);
+}
+/* .c-punch-element:after {
+  content: "";
+  display: block;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  transition: all 0.2s ease-out;
+  filter: brightness(150%) contrast(2) hue-rotate(20deg);
+}
+.c-punch-element.is-punched:after {
+  opacity: 0.5;
+} */
+
+
 .c-punch-element div {
   font-size: 40px;
   font-weight: bold;
