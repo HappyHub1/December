@@ -5034,6 +5034,67 @@ PunchEffect.characters = {
   }
 };
 
+/**
+ * Usage: /soundboard media_basename
+ * Turn all sounds off: /soundboard off
+ * Media basenames are the filenames inside of Media/soundboard
+ */
+class SoundBoardEffect {
+  static init() {
+    SoundBoardEffect.state = {
+      active_sounds: new Map(),
+      user_enabled: true,
+    };
+  }
+
+  static play(media_basename) {
+    if (!SoundBoardEffect.state.user_enabled) {
+      return;
+    }
+
+    const random_id = Math.random().toString(36).substring(2, 15);
+    const sound_file = `${SCRIPT_FOLDER_URL}/Media/soundboard/${media_basename}.mp3`;
+    const sound = new Audio(sound_file);
+
+    SoundBoardEffect.state.active_sounds.set(random_id, sound);
+    sound.play();
+    sound.addEventListener('ended', () => {
+      SoundBoardEffect.state.active_sounds.delete(random_id);
+    });
+  }
+
+  static stopAll() {
+    const state = SoundBoardEffect.state;
+    for (const sound of state.active_sounds.values()) {
+      sound.stop();
+    }
+  }
+
+  static enable() {
+    SoundBoardEffect.state.user_enabled = true;
+  }
+
+  static disable() {
+    SoundBoardEffect.state.user_enabled = false;
+    SoundBoardEffect.stopAll();
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    const [media_basename] = message_parts;
+    if (!media_basename) {
+      return;
+    }
+
+    if (media_basename === 'off') {
+      SoundBoardEffect.stopAll();
+      return;
+    }
+
+    SoundBoardEffect.play(media_basename);
+  }
+}
+SoundBoardEffect.command = '/soundboard';
+
 function decodeEntities(string) {
   var textarea = document.createElement('textarea');
   textarea.innerHTML = string;
