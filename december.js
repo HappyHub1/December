@@ -5040,8 +5040,7 @@ PunchEffect.characters = {
  * Turn all sounds off: /soundboard off
  * Media basenames are the filenames inside of Media/soundboard
  *
- * Note this will not work right now. Autoplay is disabled on all browsers.
- * Looking for a way around this
+ * Note this will only work for people who have engaged with the site
  */
 class SoundBoardEffect {
   static init() {
