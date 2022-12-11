@@ -4382,6 +4382,7 @@ class CustomTextTriggers {
       SpinzakuEffect,
       PunchEffect,
       GeassEffect,
+      SoundBoardEffect,
     ];
     if (CustomTextTriggers.has_init) {
       return;
