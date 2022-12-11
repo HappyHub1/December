@@ -4382,6 +4382,7 @@ class CustomTextTriggers {
       SpinzakuEffect,
       PunchEffect,
       GeassEffect,
+      SoundBoardEffect,
     ];
     if (CustomTextTriggers.has_init) {
       return;
@@ -4872,7 +4873,7 @@ class PunchEffect {
     image.style.width = character.width;
 
     const text_ele = document.createElement('div');
-    text_ele.innerHTML = `${character.text}<br> Punch counter loading...`;
+    text_ele.innerHTML = `${character.text}<br> 0 punches...`;
 
     wrapper.appendChild(image);
     wrapper.appendChild(text_ele);
@@ -4899,6 +4900,14 @@ class PunchEffect {
     image.addEventListener('load', move);
 
     let counter_timeout = null;
+    function updateCounterTest(count) {
+      if (count <= 0) {
+        text_ele.innerHTML = `${character.text}<br> 0 punches`;
+      } else {
+        text_ele.innerHTML = `${character.text}<br> ${count} punches`;
+      }
+    }
+
     async function updateCounter() {
       clearTimeout(counter_timeout);
       if (!wrapper.parentElement) {
@@ -4906,13 +4915,8 @@ class PunchEffect {
       }
 
       const count = await PunchEffect.getCount(global_counter_id);
-      if (count <= 0) {
-        text_ele.innerHTML = `${character.text}<br> 0 punches`;
-      } else {
-        text_ele.innerHTML = `${character.text}<br> ${count} punches`;
-      }
-
-      setTimeout(updateCounter, 1000);
+      updateCounterTest(count);
+      counter_timeout = setTimeout(updateCounter, 1000);
     }
     setTimeout(updateCounter, 500 + Math.random() * 700);
 
@@ -4926,22 +4930,17 @@ class PunchEffect {
     };
     setTimeout(remove, length_ms);
 
-    // Remove the element after being clicked on the specified number of times
-    // let click_count = 0;
     let toggle_is_punched_timeout = null;
-    wrapper.addEventListener('click', () => {
+    wrapper.addEventListener('click', async () => {
       clearTimeout(toggle_is_punched_timeout);
       wrapper.classList.add('is-punched');
       toggle_is_punched_timeout = setTimeout(() => wrapper.classList.remove('is-punched'), 150);
 
       PunchEffect.playPunchSound();
-      PunchEffect.incrementCount(global_counter_id);
-
-      // click_count = click_count + 1;
-      // if (click_count >= character.punches_required) {
-      //   remove();
-      //   return;
-      // }
+      const new_count = await PunchEffect.incrementCount(global_counter_id);
+      updateCounterTest(new_count);
+      clearTimeout(counter_timeout);
+      counter_timeout = setTimeout(updateCounter, 1000);
 
       move();
     });
@@ -4966,21 +4965,6 @@ class PunchEffect {
     PunchEffect.stop();
   }
 
-  static async createCounter(id) {
-    const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
-    const request = new Request(url, {
-      method: 'PUT',
-    });
-
-    try {
-      const response = await window.fetch(request);
-      const json = await response.json();
-      console.log(json);
-    } catch (e) {
-      // Ignore errors for now
-    }
-  }
-
   static async getCount(id) {
     const url = `https://api.toradora-xmas-stream.com/counters/${id}`;
     const request = new Request(url, {
@@ -5003,7 +4987,9 @@ class PunchEffect {
     });
 
     try {
-      await window.fetch(request);
+      const response = await window.fetch(request);
+      const json = await response.json();
+      return json?.data?.count || 0;
     } catch (e) {
       // Ignore errors for now
     }
@@ -5032,11 +5018,6 @@ class PunchEffect {
       return;
     }
 
-    let did_send_the_message = other_args.did_send_the_message;
-    if (did_send_the_message) {
-      PunchEffect.createCounter(counter_id);
-    }
-
     const length_s_parsed = parseInt(length_s, 10) || 10;
     PunchEffect.start(command, counter_id, length_s_parsed);
   }
@@ -5053,6 +5034,70 @@ PunchEffect.characters = {
     punches_required: 3,
   }
 };
+
+/**
+ * Usage: /soundboard media_basename
+ * Turn all sounds off: /soundboard off
+ * Media basenames are the filenames inside of Media/soundboard
+ *
+ * Note this will not work right now. Autoplay is disabled on all browsers.
+ * Looking for a way around this
+ */
+class SoundBoardEffect {
+  static init() {
+    SoundBoardEffect.state = {
+      active_sounds: new Map(),
+      user_enabled: true,
+    };
+  }
+
+  static play(media_basename) {
+    if (!SoundBoardEffect.state.user_enabled) {
+      return;
+    }
+
+    const random_id = Math.random().toString(36).substring(2, 15);
+    const sound_file = `${SCRIPT_FOLDER_URL}/Media/soundboard/${media_basename}.mp3`;
+    const sound = new Audio(sound_file);
+
+    SoundBoardEffect.state.active_sounds.set(random_id, sound);
+    sound.play();
+    sound.addEventListener('ended', () => {
+      SoundBoardEffect.state.active_sounds.delete(random_id);
+    });
+  }
+
+  static stopAll() {
+    const state = SoundBoardEffect.state;
+    for (const sound of state.active_sounds.values()) {
+      sound.stop();
+    }
+  }
+
+  static enable() {
+    SoundBoardEffect.state.user_enabled = true;
+  }
+
+  static disable() {
+    SoundBoardEffect.state.user_enabled = false;
+    SoundBoardEffect.stopAll();
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    const [media_basename] = message_parts;
+    if (!media_basename) {
+      return;
+    }
+
+    if (media_basename === 'off') {
+      SoundBoardEffect.stopAll();
+      return;
+    }
+
+    SoundBoardEffect.play(media_basename);
+  }
+}
+SoundBoardEffect.command = '/soundboard';
 
 function decodeEntities(string) {
   var textarea = document.createElement('textarea');
