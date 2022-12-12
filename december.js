@@ -7,6 +7,11 @@ let SCRIPT_FOLDER_URL = document.currentScript.src.split('/');
 SCRIPT_FOLDER_URL.pop();
 SCRIPT_FOLDER_URL = SCRIPT_FOLDER_URL.join('/');
 
+/**
+ * seedrandom.js
+ */
+!function(f,a,c){var s,l=256,p="random",d=c.pow(l,6),g=c.pow(2,52),y=2*g,h=l-1;function n(n,t,r){function e(){for(var n=u.g(6),t=d,r=0;n<g;)n=(n+r)*l,t*=l,r=u.g(1);for(;y<=n;)n/=2,t/=2,r>>>=1;return(n+r)/t}var o=[],i=j(function n(t,r){var e,o=[],i=typeof t;if(r&&"object"==i)for(e in t)try{o.push(n(t[e],r-1))}catch(n){}return o.length?o:"string"==i?t:t+"\0"}((t=1==t?{entropy:!0}:t||{}).entropy?[n,S(a)]:null==n?function(){try{var n;return s&&(n=s.randomBytes)?n=n(l):(n=new Uint8Array(l),(f.crypto||f.msCrypto).getRandomValues(n)),S(n)}catch(n){var t=f.navigator,r=t&&t.plugins;return[+new Date,f,r,f.screen,S(a)]}}():n,3),o),u=new m(o);return e.int32=function(){return 0|u.g(4)},e.quick=function(){return u.g(4)/4294967296},e.double=e,j(S(u.S),a),(t.pass||r||function(n,t,r,e){return e&&(e.S&&v(e,u),n.state=function(){return v(u,{})}),r?(c[p]=n,t):n})(e,i,"global"in t?t.global:this==c,t.state)}function m(n){var t,r=n.length,u=this,e=0,o=u.i=u.j=0,i=u.S=[];for(r||(n=[r++]);e<l;)i[e]=e++;for(e=0;e<l;e++)i[e]=i[o=h&o+n[e%r]+(t=i[e])],i[o]=t;(u.g=function(n){for(var t,r=0,e=u.i,o=u.j,i=u.S;n--;)t=i[e=h&e+1],r=r*l+i[h&(i[e]=i[o=h&o+t])+(i[o]=t)];return u.i=e,u.j=o,r})(l)}function v(n,t){return t.i=n.i,t.j=n.j,t.S=n.S.slice(),t}function j(n,t){for(var r,e=n+"",o=0;o<e.length;)t[h&o]=h&(r^=19*t[h&o])+e.charCodeAt(o++);return S(t)}function S(n){return String.fromCharCode.apply(0,n)}if(j(c.random(),a),"object"==typeof module&&module.exports){module.exports=n;try{s=require("crypto")}catch(n){}}else"function"==typeof define&&define.amd?define(function(){return n}):c["seed"+p]=n}("undefined"!=typeof self?self:this,[],Math);
+
 var adPercent = 0.1;
 
 var Favicon_URL = `${SCRIPT_FOLDER_URL}/Images/tiger.png`;
@@ -4383,6 +4388,7 @@ class CustomTextTriggers {
       PunchEffect,
       GeassEffect,
       SoundBoardEffect,
+      WheelSpin,
     ];
     if (CustomTextTriggers.has_init) {
       return;
@@ -5097,6 +5103,157 @@ class SoundBoardEffect {
   }
 }
 SoundBoardEffect.command = '/soundboard';
+
+/**
+ * Usage: /wheel
+ * Turn all sounds off: /soundboard off
+ * Media basenames are the filenames inside of Media/soundboard
+ *
+ * Note this will only work for people who have engaged with the site
+ */
+class WheelSpin {
+  static init() {
+    WheelSpin.state = {
+      active_wheel: null,
+      user_enabled: true,
+    };
+  }
+
+  static start(seed, choices = []) {
+    if (!WheelSpin.state.user_enabled || WheelSpin.state.active_wheel) {
+      return;
+    }
+
+    const wheel = WheelSpin.createWheel(choices);
+    WheelSpin.state.active_wheel = wheel;
+    document.documentElement.appendChild(wheel);
+
+    const rng = new Math.seedrandom(seed);
+    const rotation = 5000 + rng() * 360;
+
+    setTimeout(() => {
+      if (!wheel.parentElement) {
+        return;
+      }
+
+      // wheel.style.setProperty('--spin-time', '5s');
+      wheel.style.setProperty('--rotation', `${rotation}deg`);
+    }, 1000);
+
+    wheel.addEventListener('transitionend', () => {
+      if (!wheel.parentElement) {
+        return;
+      }
+
+      setTimeout(() => {
+        WheelSpin.stop();
+      }, 2000);
+    });
+  }
+
+  static stop() {
+    const wheel = WheelSpin.state.active_wheel;
+    if (!wheel) {
+      return;
+    }
+
+    wheel.parentElement.removeChild(wheel);
+    WheelSpin.state.active_wheel = null;
+  }
+
+  static enable() {
+    WheelSpin.state.user_enabled = true;
+  }
+
+  static disable() {
+    WheelSpin.state.user_enabled = false;
+    WheelSpin.stop();
+  }
+
+  static createWheel(options) {
+    const spinner = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    spinner.setAttribute('viewBox', '0 0 100 100');
+
+    const total_slices = options.length;
+    const stroke_width = 1;
+    const center = 50;
+    const radius = 50 - stroke_width * 2;
+    for (let i = 0; i < total_slices; i++) {
+      const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('stroke', 'white');
+      path.setAttribute('stroke-width', stroke_width.toString());
+      if (i % 2 === 0) {
+        path.setAttribute('fill', '#3A8445');
+      } else {
+        path.setAttribute('fill', '#E60712');
+      }
+
+      const start_degrees = (360 / total_slices) * i;
+      const start_radians = ((2 * Math.PI) / total_slices) * i;
+      const end_radians = ((2 * Math.PI) / total_slices) * (i + 1);
+
+      const start_x = center + radius * Math.cos(start_radians);
+      const start_y = center - radius * Math.sin(start_radians);
+      const end_x = center + radius * Math.cos(end_radians);
+      const end_y = center - radius * Math.sin(end_radians);
+
+      path.setAttribute('d', [
+        `M ${start_x}, ${start_y}`,
+        `A ${radius}, ${radius}, 0, 0, 0, ${end_x} ${end_y}`,
+        `L ${center}, ${center}`,
+      ].join(' '));
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      const text_shift = 1;
+      const text_x = start_x - text_shift * Math.sin(start_radians);
+      const text_y = start_y - text_shift * Math.cos(start_radians);
+      text.setAttribute('x', text_x);
+      text.setAttribute('y', text_y);
+      text.setAttribute('text-anchor', 'end');
+      text.setAttribute('transform', `rotate(-${start_degrees}, ${text_x}, ${text_y})`);
+      text.style.fontFamily = 'Arial';
+      text.style.fontSize = '4px';
+      text.style.fill = '#fff';
+      text.textContent = options[i];
+
+      group.appendChild(path);
+      group.appendChild(text);
+      spinner.appendChild(group);
+    }
+
+    const wheel = document.createElement('div');
+    wheel.classList.add('c-wheel');
+
+    const wheel_stick = document.createElement('div');
+    wheel_stick.classList.add('c-wheel-stick');
+    wheel.appendChild(wheel_stick);
+
+    wheel.appendChild(spinner);
+    return wheel;
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    const [seed, ...raw_choices] = message_parts;
+    if (!seed || raw_choices.length <= 0) {
+      return;
+    }
+
+    if (seed === 'off') {
+      WheelSpin.stop();
+      return;
+    }
+
+    const original_string = raw_choices.join(' ');
+    const options = original_string.split(/\s*,\s*/);
+    if (options.length <= 1) {
+      return;
+    }
+
+    WheelSpin.start(seed, options);
+  }
+}
+WheelSpin.command = '/wheel';
 
 function decodeEntities(string) {
   var textarea = document.createElement('textarea');

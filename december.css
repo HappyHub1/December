@@ -1618,3 +1618,40 @@ body.amifacebg {
 	width: 1px;
 	opacity: 0.01;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                Wheel effect                                */
+/* -------------------------------------------------------------------------- */
+.c-wheel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 640px;
+
+  opacity: 0.8;
+
+  top: calc(50% - 320px);
+  left: calc(50% - 320px);
+
+  --rotation: 0deg;
+  --spin-time: 5s;
+}
+.c-wheel svg {
+  width: 100%;
+  transition: transform var(--spin-time) cubic-bezier(0.5, 1, 0.89, 1);
+  transform: rotate(var(--rotation));
+
+  z-index: 1;
+}
+.c-wheel .c-wheel-stick {
+  position: absolute;
+  width: 40px;
+  height: 8px;
+  background-color: #000;
+  border-radius: 3px 0 0 3px;
+
+  top: calc(50% - 4px);
+  right: 0;
+
+  z-index: 2;
+}
