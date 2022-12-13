@@ -5190,6 +5190,7 @@ class WheelSpin {
       }
 
       const start_degrees = (360 / total_slices) * i;
+      const end_degrees = (360 / total_slices) * (i + 1);
       const start_radians = ((2 * Math.PI) / total_slices) * i;
       const end_radians = ((2 * Math.PI) / total_slices) * (i + 1);
 
@@ -5205,13 +5206,21 @@ class WheelSpin {
       ].join(' '));
 
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      const text_shift = 1;
-      const text_x = start_x - text_shift * Math.sin(start_radians);
-      const text_y = start_y - text_shift * Math.cos(start_radians);
+      const text_radians = (start_radians + end_radians) / 2;
+      const text_degrees = (start_degrees + end_degrees) / 2;
+
+      const text_shift = -2;
+      const text_shift_x = text_shift * Math.cos(text_radians);
+      const text_shift_y = -text_shift * Math.sin(text_radians);
+
+      const text_x = center + radius * Math.cos(text_radians) + text_shift_x;
+      const text_y = center - radius * Math.sin(text_radians) + text_shift_y;
+
       text.setAttribute('x', text_x);
       text.setAttribute('y', text_y);
       text.setAttribute('text-anchor', 'end');
-      text.setAttribute('transform', `rotate(-${start_degrees}, ${text_x}, ${text_y})`);
+      text.setAttribute('alignment-baseline', 'middle');
+      text.setAttribute('transform', `rotate(-${text_degrees}, ${text_x}, ${text_y})`);
       text.style.fontFamily = 'Arial';
       text.style.fontSize = '4px';
       text.style.fill = '#fff';
