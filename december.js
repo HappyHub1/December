@@ -4842,8 +4842,8 @@ LoopyEffect.command = '/loopy';
 
 
 /**
- * Usage: /punch <character>
- * Characters: ami
+ * Usage: /punch <character> <counter id> <length in seconds>
+ * Characters: ami, nina
  * Turn force off: /punch off
  */
 class PunchEffect {
@@ -4879,7 +4879,7 @@ class PunchEffect {
     image.style.width = character.width;
 
     const text_ele = document.createElement('div');
-    text_ele.innerHTML = `${character.text}<br> 0 punches...`;
+    text_ele.innerHTML = `${character.text}<br> 0 ${character.action_plural}...`;
 
     wrapper.appendChild(image);
     wrapper.appendChild(text_ele);
@@ -4908,9 +4908,9 @@ class PunchEffect {
     let counter_timeout = null;
     function updateCounterTest(count) {
       if (count <= 0) {
-        text_ele.innerHTML = `${character.text}<br> 0 punches`;
+        text_ele.innerHTML = `${character.text}<br> 0 ${character.action_plural}`;
       } else {
-        text_ele.innerHTML = `${character.text}<br> ${count} punches`;
+        text_ele.innerHTML = `${character.text}<br> ${count} ${character.action_plural}`;
       }
     }
 
@@ -5035,10 +5035,19 @@ PunchEffect.characters = {
     image: `${SCRIPT_FOLDER_URL}/Images/ami-face-hq.png`,
     cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-fist.png`,
     text: 'Punch Ami!!!',
+    action_plural: 'punches',
     width: 480,
-    move_frequency_ms: 2500,
-    punches_required: 3,
-  }
+    move_frequency_ms: 2000,
+  },
+  nina: {
+    index: 'nina',
+    image: `${SCRIPT_FOLDER_URL}/Images/nina.jpg`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-table.png`,
+    text: 'REVENGE FOR THE TABLE!!!',
+    action_plural: 'punches',
+    width: 480,
+    move_frequency_ms: 2000,
+  },
 };
 
 /**
