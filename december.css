@@ -1560,6 +1560,7 @@ html.has-loopy-effect body {
   z-index: 100000;
   transition: filter 150ms ease-out;
   user-select: none;
+  opacity: 0.9;
 }
 .c-punch-element.is-punched {
   filter: blur(4px) brightness(1.2) hue-rotate(15deg);
