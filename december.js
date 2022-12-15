@@ -5057,6 +5057,15 @@ PunchEffect.characters = {
     width: 480,
     move_frequency_ms: 2000,
   },
+  rolo: {
+    index: 'rolo',
+    image: `${SCRIPT_FOLDER_URL}/Images/rolo.jpg`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-fist.png`,
+    text: 'SORRY REPLACEMENT FOR NUNNALLY',
+    action_plural: 'punches',
+    width: 480,
+    move_frequency_ms: 2000,
+  },
 };
 
 /**
