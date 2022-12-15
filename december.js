@@ -5167,7 +5167,7 @@ class WheelSpin {
 
       // wheel.style.setProperty('--spin-time', '5s');
       wheel.style.setProperty('--rotation', `${rotation}deg`);
-    }, 1000);
+    }, 2500);
 
     wheel.addEventListener('transitionend', () => {
       if (!wheel.parentElement) {
@@ -5176,7 +5176,7 @@ class WheelSpin {
 
       setTimeout(() => {
         WheelSpin.stop();
-      }, 2000);
+      }, 2500);
     });
   }
 
