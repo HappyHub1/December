@@ -3643,6 +3643,7 @@ class ChristmasWonderlandEffect {
 
     state.is_running = true;
 
+    document.documentElement.classList.add('has-effect-wonderland');
     state._root_element = document.createElement('div');
     state._root_element.classList.add('c-effect__christmas-wonderland');
 
@@ -3674,6 +3675,7 @@ class ChristmasWonderlandEffect {
     }
 
     state.is_running = false;
+    document.documentElement.classList.remove('has-effect-wonderland');
     document.body.removeChild(state._root_element);
     state._root_element = null;
   }
@@ -4876,7 +4878,7 @@ class PunchEffect {
 
     const image = document.createElement('img');
     image.src = character.image;
-    image.style.width = character.width;
+    image.style.width = `${character.width}px`;
 
     const text_ele = document.createElement('div');
     text_ele.innerHTML = `${character.text}<br> 0 ${character.action_plural}...`;
@@ -5048,6 +5050,24 @@ PunchEffect.characters = {
     width: 480,
     move_frequency_ms: 2000,
   },
+  satanya: {
+    index: 'satanya',
+    image: `${SCRIPT_FOLDER_URL}/Images/satanya.gif`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-pointer.png`,
+    text: 'BULLY HER!',
+    action_plural: 'bullies',
+    width: 480,
+    move_frequency_ms: 2000,
+  },
+  rolo: {
+    index: 'rolo',
+    image: `${SCRIPT_FOLDER_URL}/Images/rolo.jpg`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-fist.png`,
+    text: 'SORRY REPLACEMENT FOR NUNNALLY',
+    action_plural: 'punches',
+    width: 480,
+    move_frequency_ms: 2000,
+  },
 };
 
 /**
@@ -5147,7 +5167,7 @@ class WheelSpin {
 
       // wheel.style.setProperty('--spin-time', '5s');
       wheel.style.setProperty('--rotation', `${rotation}deg`);
-    }, 1000);
+    }, 2500);
 
     wheel.addEventListener('transitionend', () => {
       if (!wheel.parentElement) {
@@ -5156,7 +5176,7 @@ class WheelSpin {
 
       setTimeout(() => {
         WheelSpin.stop();
-      }, 2000);
+      }, 2500);
     });
   }
 
