@@ -5048,6 +5048,15 @@ PunchEffect.characters = {
     width: 480,
     move_frequency_ms: 2000,
   },
+  satanya: {
+    index: 'satanya',
+    image: `${SCRIPT_FOLDER_URL}/Images/satanya.gif`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-pointer.png`,
+    text: 'BULLY HER!',
+    action_plural: 'bullies',
+    width: 480,
+    move_frequency_ms: 2000,
+  },
 };
 
 /**
