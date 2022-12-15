@@ -116,6 +116,24 @@ Fuck Firefox */
     width: 100%;
     animation: 30s forwards linear shift-full-left;
 }
+.has-effect-wonderland .text-marquee {
+  text-shadow:
+      -1px -1px 0 #003c05,
+      1px -1px 0 #003c05,
+      -1px 1px 0 #003c05,
+      1px 1px 0 #003c05,
+      0 0 0.5em #0b662c,
+      0 0 1em #0b662c;
+}
+.has-effect-wonderland .text-marquee:nth-child(even) {
+  text-shadow:
+      -1px -1px 0 #7a0000,
+      1px -1px 0 #7a0000,
+      -1px 1px 0 #7a0000,
+      1px 1px 0 #7a0000,
+      0 0 0.5em #b0090c,
+      0 0 1em #b0090c;
+}
 
 @keyframes shift-full-left {
     100% {

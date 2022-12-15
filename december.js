@@ -3643,6 +3643,7 @@ class ChristmasWonderlandEffect {
 
     state.is_running = true;
 
+    document.documentElement.classList.add('has-effect-wonderland');
     state._root_element = document.createElement('div');
     state._root_element.classList.add('c-effect__christmas-wonderland');
 
@@ -3674,6 +3675,7 @@ class ChristmasWonderlandEffect {
     }
 
     state.is_running = false;
+    document.documentElement.classList.remove('has-effect-wonderland');
     document.body.removeChild(state._root_element);
     state._root_element = null;
   }
