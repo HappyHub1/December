@@ -4878,7 +4878,7 @@ class PunchEffect {
 
     const image = document.createElement('img');
     image.src = character.image;
-    image.style.width = character.width;
+    image.style.width = `${character.width}px`;
 
     const text_ele = document.createElement('div');
     text_ele.innerHTML = `${character.text}<br> 0 ${character.action_plural}...`;
