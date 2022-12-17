@@ -3375,7 +3375,6 @@ class PadoruEffect {
     PadoruEffect.state.enabled = true;
   }
 
-
   static addElement(element) {
     PadoruEffect.container.appendChild(element);
   }
@@ -3456,7 +3455,133 @@ class PadoruEffect {
     };
     setTimeout(create_fn, PadoruEffect.state.level_info.spawn_rate);
   }
+}
 
+/**
+ * Usage: /padoru <level>
+ */
+class OrangeEffect {
+  ///////////////////////////////////////////
+  // Static variables
+  ///////////////////////////////////////////
+
+
+  ///////////////////////////////////////////
+  // "Public" Static methods
+  ///////////////////////////////////////////
+  static init() {
+    OrangeEffect.command = '/orange';
+    OrangeEffect.animations = ['type1', 'type2', 'type3', 'type4'];
+    OrangeEffect.levels = [
+      { spawn_rate: 1000, spawn_limit: 6 },
+      { spawn_rate: 1000, spawn_limit: 10 },
+      { spawn_rate: 1000, spawn_limit: 20 },
+      { spawn_rate: 500, spawn_limit: 40 },
+      { spawn_rate: 500, spawn_limit: 60 },
+    ];
+
+    OrangeEffect.state = {
+      is_on: false,
+      enabled: true,
+      level_info: OrangeEffect.levels[0],
+      timeout: null,
+    };
+    OrangeEffect.container = document.createElement('div');
+    document.documentElement.appendChild(OrangeEffect.container);
+  }
+
+  static stop() {
+    OrangeEffect.state.is_on = false;
+  }
+
+  static disable() {
+    OrangeEffect.state.enabled = false;
+  }
+
+  static enable() {
+    OrangeEffect.state.enabled = true;
+  }
+
+  static addElement(element) {
+    OrangeEffect.container.appendChild(element);
+  }
+
+  static handleCommand(message_parts = [], _other_args = {}) { // for compatibility
+    if (message_parts[0] === 'off') {
+      OrangeEffect.stop();
+      return;
+    }
+
+    let level = parseInt(message_parts[0] || '1', 10);
+    if (isNaN(level) || level < 1) {
+      level = 1;
+    }
+
+    // Update the currently used snowing level
+    let level_index = level - 1;
+    if (level_index < 0 || level_index > OrangeEffect.levels.length) {
+      level_index = 0;
+    }
+    OrangeEffect.state.level_info = OrangeEffect.levels[level_index];
+
+    // Only start the padoru animation if it is not already started
+    if (OrangeEffect.state.is_on) {
+      return;
+    }
+    OrangeEffect.state.is_on = true;
+    OrangeEffect._runAnimation();
+  }
+
+  ///////////////////////////////////////////
+  // "Timer" Static methods
+  ///////////////////////////////////////////
+  static createPadoru() {
+    if (!OrangeEffect.state.enabled || !OrangeEffect.state.is_on) {
+      return;
+    }
+
+    const animation_type = CustomTextTriggers.randomElement(OrangeEffect.animations);
+    const random_percent = (Math.random() * 100).toFixed(4);
+
+    const outer = document.createElement('div');
+    outer.classList.add('c-effect__padoru-outer');
+    outer.classList.add(animation_type);
+    outer.style.left = `${random_percent}%`;
+
+    const shake_container = document.createElement('div');
+    shake_container.classList.add('c-effect__padoru-shake');
+
+    const inner = document.createElement('div');
+    inner.classList.add('c-effect__padoru');
+    inner.textContent = '🍊';
+    inner.style.fontSize = `${Math.random() * 16 + 16}px`;
+
+    shake_container.appendChild(inner);
+    outer.appendChild(shake_container);
+    OrangeEffect.addElement(outer);
+    const fn = () => {
+      outer.parentElement.removeChild(outer);
+      outer.removeEventListener('animationend', fn);
+    };
+    outer.addEventListener('animationend', fn);
+  }
+
+  static _runAnimation() {
+    const create_fn = () => {
+      if (!OrangeEffect.state.is_on) {
+        return;
+      }
+
+      const max_padoru = OrangeEffect.state.level_info.spawn_limit;
+      const total = Math.floor(1 + Math.random() * (max_padoru - 1));
+      for (let i = 0; i < total; i++) {
+        OrangeEffect.createPadoru();
+      }
+
+      setTimeout(create_fn, OrangeEffect.state.level_info.spawn_rate);
+    };
+    setTimeout(create_fn, OrangeEffect.state.level_info.spawn_rate);
+  }
 }
 
 class ErabeEffect {
@@ -4170,6 +4295,7 @@ SnowEffect.snow_levels = {
   whiteout: { min: 15, max: 50 },
 
   danger: { min: 5, max: 10 },
+  do_not_use_this: { min: 3, max: 5 },
 };
 SnowEffect.vertex_shader_src = `
     attribute vec2 a_position;
@@ -4391,6 +4517,8 @@ class CustomTextTriggers {
       GeassEffect,
       SoundBoardEffect,
       WheelSpin,
+      TlNote,
+      OrangeEffect,
     ];
     if (CustomTextTriggers.has_init) {
       return;
@@ -5167,7 +5295,7 @@ class WheelSpin {
 
       // wheel.style.setProperty('--spin-time', '5s');
       wheel.style.setProperty('--rotation', `${rotation}deg`);
-    }, 2500);
+    }, 2000);
 
     wheel.addEventListener('transitionend', () => {
       if (!wheel.parentElement) {
@@ -5176,7 +5304,7 @@ class WheelSpin {
 
       setTimeout(() => {
         WheelSpin.stop();
-      }, 2500);
+      }, 2000);
     });
   }
 
@@ -5292,6 +5420,96 @@ class WheelSpin {
   }
 }
 WheelSpin.command = '/wheel';
+
+/**
+ * Usage: /wheel
+ * Turn all sounds off: /soundboard off
+ * Media basenames are the filenames inside of Media/soundboard
+ *
+ * Note this will only work for people who have engaged with the site
+ */
+class TlNote {
+  static init() {
+    TlNote.state = {
+      active_note: null,
+      user_enabled: true,
+    };
+  }
+
+  static start(note_txt) {
+    if (!TlNote.state.user_enabled) {
+      return;
+    }
+
+    if (TlNote.state.active_note) {
+      // Remove the old one to start a new one
+      TlNote.stop();
+    }
+
+    const note_ele = TlNote.createNote(note_txt);
+    TlNote.state.active_note = note_ele;
+    document.documentElement.appendChild(note_ele);
+
+    let min_time_on_screen = 5000;
+    // average words per second
+    const average_wps = 200 / 60;
+    const words = note_txt.split(/\s+/);
+    const word_count = words.length;
+    const time_to_read_ms = (word_count / average_wps) * 1000;
+
+    const time_on_screen = Math.max(min_time_on_screen, time_to_read_ms);
+    setTimeout(() => {
+      if (!note_ele.parentElement) {
+        return;
+      }
+
+      TlNote.stop();
+    }, time_on_screen);
+  }
+
+  static stop() {
+    const note = TlNote.state.active_note;
+    if (!note) {
+      return;
+    }
+
+    note.parentElement.removeChild(note);
+    TlNote.state.active_note = null;
+  }
+
+  static enable() {
+    TlNote.state.user_enabled = true;
+  }
+
+  static disable() {
+    TlNote.state.user_enabled = false;
+    TlNote.stop();
+  }
+
+  static createNote(note_txt) {
+    note_txt = `TL Note: ${note_txt}`;
+    const note_ele = document.createElement('div');
+    note_ele.classList.add('c-tl-note');
+    note_ele.textContent = note_txt;
+    return note_ele;
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    const raw_note = message_parts;
+    if (raw_note.length <= 0) {
+      return;
+    }
+
+    if (raw_note.length === 1 && raw_note[0] === 'off') {
+      TlNote.stop();
+      return;
+    }
+
+    const original_string = raw_note.join(' ');
+    TlNote.start(original_string);
+  }
+}
+TlNote.command = '/tlnote';
 
 function decodeEntities(string) {
   var textarea = document.createElement('textarea');
