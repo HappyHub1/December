@@ -3375,7 +3375,6 @@ class PadoruEffect {
     PadoruEffect.state.enabled = true;
   }
 
-
   static addElement(element) {
     PadoruEffect.container.appendChild(element);
   }
@@ -3456,7 +3455,133 @@ class PadoruEffect {
     };
     setTimeout(create_fn, PadoruEffect.state.level_info.spawn_rate);
   }
+}
 
+/**
+ * Usage: /padoru <level>
+ */
+class OrangeEffect {
+  ///////////////////////////////////////////
+  // Static variables
+  ///////////////////////////////////////////
+
+
+  ///////////////////////////////////////////
+  // "Public" Static methods
+  ///////////////////////////////////////////
+  static init() {
+    OrangeEffect.command = '/orange';
+    OrangeEffect.animations = ['type1', 'type2', 'type3', 'type4'];
+    OrangeEffect.levels = [
+      { spawn_rate: 1000, spawn_limit: 6 },
+      { spawn_rate: 1000, spawn_limit: 10 },
+      { spawn_rate: 1000, spawn_limit: 20 },
+      { spawn_rate: 500, spawn_limit: 40 },
+      { spawn_rate: 500, spawn_limit: 60 },
+    ];
+
+    OrangeEffect.state = {
+      is_on: false,
+      enabled: true,
+      level_info: OrangeEffect.levels[0],
+      timeout: null,
+    };
+    OrangeEffect.container = document.createElement('div');
+    document.documentElement.appendChild(OrangeEffect.container);
+  }
+
+  static stop() {
+    OrangeEffect.state.is_on = false;
+  }
+
+  static disable() {
+    OrangeEffect.state.enabled = false;
+  }
+
+  static enable() {
+    OrangeEffect.state.enabled = true;
+  }
+
+  static addElement(element) {
+    OrangeEffect.container.appendChild(element);
+  }
+
+  static handleCommand(message_parts = [], _other_args = {}) { // for compatibility
+    if (message_parts[0] === 'off') {
+      OrangeEffect.stop();
+      return;
+    }
+
+    let level = parseInt(message_parts[0] || '1', 10);
+    if (isNaN(level) || level < 1) {
+      level = 1;
+    }
+
+    // Update the currently used snowing level
+    let level_index = level - 1;
+    if (level_index < 0 || level_index > OrangeEffect.levels.length) {
+      level_index = 0;
+    }
+    OrangeEffect.state.level_info = OrangeEffect.levels[level_index];
+
+    // Only start the padoru animation if it is not already started
+    if (OrangeEffect.state.is_on) {
+      return;
+    }
+    OrangeEffect.state.is_on = true;
+    OrangeEffect._runAnimation();
+  }
+
+  ///////////////////////////////////////////
+  // "Timer" Static methods
+  ///////////////////////////////////////////
+  static createPadoru() {
+    if (!OrangeEffect.state.enabled || !OrangeEffect.state.is_on) {
+      return;
+    }
+
+    const animation_type = CustomTextTriggers.randomElement(OrangeEffect.animations);
+    const random_percent = (Math.random() * 100).toFixed(4);
+
+    const outer = document.createElement('div');
+    outer.classList.add('c-effect__padoru-outer');
+    outer.classList.add(animation_type);
+    outer.style.left = `${random_percent}%`;
+
+    const shake_container = document.createElement('div');
+    shake_container.classList.add('c-effect__padoru-shake');
+
+    const inner = document.createElement('div');
+    inner.classList.add('c-effect__padoru');
+    inner.textContent = '🍊';
+    inner.style.fontSize = `${Math.random() * 16 + 16}px`;
+
+    shake_container.appendChild(inner);
+    outer.appendChild(shake_container);
+    OrangeEffect.addElement(outer);
+    const fn = () => {
+      outer.parentElement.removeChild(outer);
+      outer.removeEventListener('animationend', fn);
+    };
+    outer.addEventListener('animationend', fn);
+  }
+
+  static _runAnimation() {
+    const create_fn = () => {
+      if (!OrangeEffect.state.is_on) {
+        return;
+      }
+
+      const max_padoru = OrangeEffect.state.level_info.spawn_limit;
+      const total = Math.floor(1 + Math.random() * (max_padoru - 1));
+      for (let i = 0; i < total; i++) {
+        OrangeEffect.createPadoru();
+      }
+
+      setTimeout(create_fn, OrangeEffect.state.level_info.spawn_rate);
+    };
+    setTimeout(create_fn, OrangeEffect.state.level_info.spawn_rate);
+  }
 }
 
 class ErabeEffect {
@@ -4392,6 +4517,7 @@ class CustomTextTriggers {
       SoundBoardEffect,
       WheelSpin,
       TlNote,
+      OrangeEffect,
     ];
     if (CustomTextTriggers.has_init) {
       return;
