@@ -4295,6 +4295,7 @@ SnowEffect.snow_levels = {
   whiteout: { min: 15, max: 50 },
 
   danger: { min: 5, max: 10 },
+  do_not_use_this: { min: 3, max: 5 },
 };
 SnowEffect.vertex_shader_src = `
     attribute vec2 a_position;
