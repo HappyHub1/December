@@ -4391,6 +4391,7 @@ class CustomTextTriggers {
       GeassEffect,
       SoundBoardEffect,
       WheelSpin,
+      TlNote,
     ];
     if (CustomTextTriggers.has_init) {
       return;
@@ -5167,7 +5168,7 @@ class WheelSpin {
 
       // wheel.style.setProperty('--spin-time', '5s');
       wheel.style.setProperty('--rotation', `${rotation}deg`);
-    }, 2500);
+    }, 2000);
 
     wheel.addEventListener('transitionend', () => {
       if (!wheel.parentElement) {
@@ -5176,7 +5177,7 @@ class WheelSpin {
 
       setTimeout(() => {
         WheelSpin.stop();
-      }, 2500);
+      }, 2000);
     });
   }
 
@@ -5292,6 +5293,96 @@ class WheelSpin {
   }
 }
 WheelSpin.command = '/wheel';
+
+/**
+ * Usage: /wheel
+ * Turn all sounds off: /soundboard off
+ * Media basenames are the filenames inside of Media/soundboard
+ *
+ * Note this will only work for people who have engaged with the site
+ */
+class TlNote {
+  static init() {
+    TlNote.state = {
+      active_note: null,
+      user_enabled: true,
+    };
+  }
+
+  static start(note_txt) {
+    if (!TlNote.state.user_enabled) {
+      return;
+    }
+
+    if (TlNote.state.active_note) {
+      // Remove the old one to start a new one
+      TlNote.stop();
+    }
+
+    const note_ele = TlNote.createNote(note_txt);
+    TlNote.state.active_note = note_ele;
+    document.documentElement.appendChild(note_ele);
+
+    let min_time_on_screen = 5000;
+    // average words per second
+    const average_wps = 200 / 60;
+    const words = note_txt.split(/\s+/);
+    const word_count = words.length;
+    const time_to_read_ms = (word_count / average_wps) * 1000;
+
+    const time_on_screen = Math.max(min_time_on_screen, time_to_read_ms);
+    setTimeout(() => {
+      if (!note_ele.parentElement) {
+        return;
+      }
+
+      TlNote.stop();
+    }, time_on_screen);
+  }
+
+  static stop() {
+    const note = TlNote.state.active_note;
+    if (!note) {
+      return;
+    }
+
+    note.parentElement.removeChild(note);
+    TlNote.state.active_note = null;
+  }
+
+  static enable() {
+    TlNote.state.user_enabled = true;
+  }
+
+  static disable() {
+    TlNote.state.user_enabled = false;
+    TlNote.stop();
+  }
+
+  static createNote(note_txt) {
+    note_txt = `TL Note: ${note_txt}`;
+    const note_ele = document.createElement('div');
+    note_ele.classList.add('c-tl-note');
+    note_ele.textContent = note_txt;
+    return note_ele;
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    const raw_note = message_parts;
+    if (raw_note.length <= 0) {
+      return;
+    }
+
+    if (raw_note.length === 1 && raw_note[0] === 'off') {
+      TlNote.stop();
+      return;
+    }
+
+    const original_string = raw_note.join(' ');
+    TlNote.start(original_string);
+  }
+}
+TlNote.command = '/tlnote';
 
 function decodeEntities(string) {
   var textarea = document.createElement('textarea');

@@ -1674,3 +1674,24 @@ body.amifacebg {
 
   z-index: 2;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                   TL Note                                  */
+/* -------------------------------------------------------------------------- */
+.c-tl-note {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+
+  font-size: 32px;
+  font-family: Arial;
+  text-align: center;
+
+  color: yellow;
+  text-shadow:
+    -1px -1px 0 rgba(0, 0, 0, 0.8),
+    1px -1px 0 rgba(0, 0, 0, 0.8),
+    -1px 1px 0 rgba(0, 0, 0, 0.8),
+    1px 1px 0 rgba(0, 0, 0, 0.8);
+}
