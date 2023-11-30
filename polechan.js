@@ -4,7 +4,7 @@ var PoleSmallKickPositions = [753.5,760.8,761.65,762.55,763.3,765.3,768,769.5,77
 var PoleBigKickPositions = [780.1,795.5];
 var PoleUnlimitedKickWorksPositions = [789];
 
-if (document.getElementById("currenttitle").textContent.indexOf("Toradora! E02: Ryuuji and Taiga") > -1) {
+if (document.getElementById("currenttitle").textContent.indexOf("[tsukarimasen] Toradora! - 02 (BD 1280x720).mp4") > -1) {
     StartKicking();
 }
 
