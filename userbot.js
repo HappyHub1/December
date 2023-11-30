@@ -6,7 +6,7 @@ var aMessagesDefault = [["Timestamp", "Username", "Message","Team Icon","Shadowe
 var aMessages = getOrDefault(CHANNEL.name + "_MSGS", aMessagesDefault.slice(0));
 var aUserCountDefault = [["Timestamp", "Usercount"]];
 var aUserCount = getOrDefault(CHANNEL.name + "_USERCOUNT", aUserCountDefault.slice(0));
-var aPlaylistDefault = [["Timestamp", "Title", "Duration", "Seconds", "Type", "Link"]];
+var aPlaylistDefault = [["Timestamp", "Title", "Duration", "Seconds", "Type", "Link", "Added By"]];
 var aPlaylist = getOrDefault(CHANNEL.name + "_PLAYLIST", aPlaylistDefault.slice(0));
 var aPollsDefault = [["Timestamp", "Started by", "Title", "Options", "Counts"]];
 var aPolls = getOrDefault(CHANNEL.name + "_POLLS", aPollsDefault.slice(0));
@@ -171,7 +171,7 @@ function removeMediaSocket() {
 }
 
 function mediaSocket(data) {
-	aPlaylist[aPlaylist.length] = [new Date().getTime(), data.title, "`" + data.duration, data.seconds, data.type, data.id];
+	aPlaylist[aPlaylist.length] = [new Date().getTime(), data.title, "`" + data.duration, data.seconds, data.type, data.id, document.getElementsByClassName("queue_active")[0].getAttribute("title").replace("Added by: ", "")];
 	if (aPlaylist.length > playlistLength || downloadPlaylist) {
 		downloadPlaylist = false;
 		var filename = CHANNEL.name + "-PLAYLIST-" + new Date() + ".csv";
