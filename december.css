@@ -265,6 +265,7 @@ footer {padding-bottom:5px}
 .teamaoyama::before{background:url('./Images/aoyama.png');}
 .teammommy::before{background:url('./Images/mommy.png');}
 .teamonoeesan::before{background:url('./Images/onoeesan.png');}
+.teampengin::before{background:url('./Images/pengin.png');}
 .chat-msg-_North .username:not([class*="team"])::before {
 background:url('./Images/kagami.ico');
 }

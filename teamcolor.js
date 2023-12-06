@@ -1,6 +1,6 @@
 //_North's pixel script
 //var teamList_4cc = ["konata","kagami","tsukasa","miyuki","akira","minami","sojiro","nanako","yui","misao","patricia","yutaka"];
-var teamList_4cc = ["taiga","ami","minori","inko","haruta","kihara","kitamura","sensei","mom","ryuuji"];
+var teamList_4cc = ["taiga","ami","minori","inko","haruta","kihara","kitamura","sensei","mom","ryuuji","pengin"];
 
 
 function setTeamList(listOfTeams){
