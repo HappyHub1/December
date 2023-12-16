@@ -5196,6 +5196,15 @@ PunchEffect.characters = {
     width: 480,
     move_frequency_ms: 2000,
   },
+  rossiu: {
+    index: 'rossiu',
+    image: `${SCRIPT_FOLDER_URL}/Images/rossiu-face.jpg`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-fist.png`,
+    text: 'PUNCH HIM!!!',
+    action_plural: 'punches',
+    width: 480,
+    move_frequency_ms: 2000,
+  },
 };
 
 /**
