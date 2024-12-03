@@ -127,6 +127,7 @@ var EMBEDVID = getOrDefault(CHANNEL.name + "_EMBEDVID", true);
 var AUTOVID = getOrDefault(CHANNEL.name + "_AUTOVID", true);
 var LOOPWEBM = getOrDefault(CHANNEL.name + "_LOOPWEBM", true);
 var ANTISPAM = getOrDefault(CHANNEL.name + "_ANTISPAM", false);
+var HDFILTER = false;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1702,6 +1703,20 @@ $(document).keydown(function (event) {
 
   return false;
 });
+
+//HD "filter
+var HDFILTER = false;
+HDfilter = $('<button id="HDFilter-btn" class="btn btn-sm btn-default" title="This low resolution GARBAGE is killing my eyes">HD~</button>')
+  .appendTo("#playercontrols")
+ .on("click", function () {
+  HDFILTER = !HDFILTER;
+  setOpt(CHANNEL.name + "_HDFILTER", HDFILTER);
+  HDFILTER ? (document.styleSheets[0].insertRule('.embed-responsive::after{content:"Sex2";background:url("https://raw.githubusercontent.com/Dreadzone345/4k-image/refs/heads/main/pngtree-4k-ultra-hd-icon-badges-png-image_6345247.png");z-index:2;position:absolute;font-size:0px;width:100%;height:100%;pointer-events:none;opacity:.5;blur:1.5rem;', 1)) : (document.styleSheets[0].deleteRule(1));
+  HDFILTER ? HDfilter.addClass('btn-success') : HDfilter.removeClass('btn-success');
+  HDFILTER ? HDfilter.attr("title", "Anime was meant to be 60fps 4K upscaled") : HDfilter.attr("title", "This low resolution GARBAGE is killing my eyes") ;
+});
+
+
 
 var NICORIPOFF = getOrDefault(CHANNEL.name + "_NICORIPOFF", false);
 var SHADOWED = false;
