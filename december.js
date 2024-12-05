@@ -127,7 +127,7 @@ var EMBEDVID = getOrDefault(CHANNEL.name + "_EMBEDVID", true);
 var AUTOVID = getOrDefault(CHANNEL.name + "_AUTOVID", true);
 var LOOPWEBM = getOrDefault(CHANNEL.name + "_LOOPWEBM", true);
 var ANTISPAM = getOrDefault(CHANNEL.name + "_ANTISPAM", false);
-var HDFILTER = false;
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2927,8 +2927,8 @@ class PresentsEffect {
   ///////////////////////////////////////////
   static init() {
     PresentsEffect.command = '/presents';
-    PresentsEffect.padoru_img = 'https://cdn.discordapp.com/attachments/375406879553093633/659201454497595402/shiz_padoru2.png';
-    PresentsEffect.present_img = "https://cdn.discordapp.com/attachments/1041451184755572841/1043740739013718066/present_200.png";
+    PresentsEffect.padoru_img = 'https://balancer.toradora-xmas-stream.com/public_videos/memes/shiz_padoru2.png';
+    PresentsEffect.present_img = "https://balancer.toradora-xmas-stream.com/public_videos/memes/present_200.png";
     PresentsEffect.presents_url = "https://yue.toradora-xmas-stream.com/present_pic_urls.js";
     PresentsEffect.presents_duration_s = 30;
     PresentsEffect.present_animations = ['type1', 'type2', 'type3', 'type4', 'type5', 'type6']
