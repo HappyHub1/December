@@ -1339,64 +1339,225 @@ html.is-arcade-theme #motdrow {
 /* -------------------------------------------------------------------------- */
 /*                                Loopy effect                                */
 /* -------------------------------------------------------------------------- */
-html.has-loopy-effect {
-  filter: url('#loopywave');
+/* -------------------------------------------------------------------------- */
+/*                                Loopy effect                                */
+/* -------------------------------------------------------------------------- */
+.c-loopy-container {
+  position: relative;
   transform-style: preserve-3d;
-  backface-visibility: hidden;
-  will-change: filter, transform;
+  backface-visibility: visible;
+  perspective: 1000px;
+  z-index: 1;
+  transition: all 0.5s ease-out;
+}
+
+html.has-loopy-effect {
+  animation: loopyWarp 12s infinite ease-in-out;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: all 3s ease-in-out;
+}
+
+/* For chaos mode, use shorter transitions */
+html.has-loopy-effect-chaos {
+  transition: --loopy-random-1 0.5s ease-in-out,
+              --loopy-random-2 0.5s ease-in-out,
+              --loopy-random-3 0.5s ease-in-out,
+              --loopy-random-4 0.5s ease-in-out,
+              --loopy-random-5 0.5s ease-in-out;
 }
 
 html.has-loopy-effect body {
-  animation: loopyEffect 8s forwards infinite linear;
+  animation: loopyDistort 8s infinite ease-in-out;
+  transform-origin: center center;
 }
 
-/* Milder pulsing effect for chaos mode */
+html.has-loopy-effect .c-loopy-container {
+  animation: loopyContainer 8s infinite ease-in-out;
+}
+
+/* Modify the chaos mode animation to be less extreme and preserve visibility */
 html.has-loopy-effect-chaos * {
-  animation: loopyPulse 3s infinite ease-in-out;
+  /* Remove the previous animation */
+  animation: none;
+  /* Keep elements visible */
+  backface-visibility: visible !important;
+  transform-style: preserve-3d;
+  /* Ensure elements stay above background */
+  z-index: 1;
 }
 
-@keyframes loopyEffect {
+/* Apply chaos effect to the body instead of all elements */
+html.has-loopy-effect-chaos body {
+  animation: loopyChaos 3s infinite ease-in-out;
+  /* Constrain the perspective to prevent elements from going too far */
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+@keyframes loopyContainer {
   0%, 100% {
-    filter: hue-rotate(0deg) blur(0px) saturate(1) contrast(100%);
-    transform: scale(1) skew(0deg);
+    transform:
+      perspective(1000px)
+      rotateX(calc(var(--loopy-random-1) * 3deg))
+      rotateY(calc(var(--loopy-random-2) * 3deg))
+      translateZ(calc(var(--loopy-random-3) * 10px))
+      scale(calc(0.98 + var(--loopy-random-4) * 0.04));
+    filter:
+      hue-rotate(calc(var(--loopy-random-5) * 30deg))
+      saturate(calc(100% + var(--loopy-random-1) * 50%));
+  }
+  50% {
+    transform:
+      perspective(1000px)
+      rotateX(calc(var(--loopy-random-2) * -3deg))
+      rotateY(calc(var(--loopy-random-1) * -3deg))
+      translateZ(calc(var(--loopy-random-3) * -10px))
+      scale(calc(1.02 + var(--loopy-random-4) * 0.04));
+    filter:
+      hue-rotate(calc(var(--loopy-random-5) * -30deg))
+      saturate(calc(100% + var(--loopy-random-2) * 50%));
+  }
+}
+
+/* Add to the existing loopyWarp animation */
+@keyframes loopyWarp {
+  0%, 100% {
+    filter:
+      contrast(calc(100% + var(--loopy-random-1) * 20%))
+      blur(calc(var(--loopy-random-3) * 0.5px)); /* Subtle blur */
+    transform:
+      scale(calc(1 + var(--loopy-random-3) * 0.02))
+      skew(calc(var(--loopy-random-4) * 1deg));
+  }
+  50% {
+    filter:
+      contrast(calc(100% + var(--loopy-random-2) * 20%))
+      blur(calc(var(--loopy-random-4) * 0.8px)); /* Slightly stronger blur */
+    transform:
+      scale(calc(1 - var(--loopy-random-3) * 0.02))
+      skew(calc(var(--loopy-random-4) * -1deg));
+  }
+}
+
+@keyframes loopyDistort {
+  0%, 100% {
+    transform: perspective(800px)
+              rotateX(calc(var(--loopy-random-1) * 2deg))
+              rotateY(calc(var(--loopy-random-2) * 2deg))
+              translateZ(calc(var(--loopy-random-3) * 20px));
   }
   25% {
-    filter: hue-rotate(90deg) blur(1px) saturate(1.5) contrast(120%);
-    transform: scale(1.02) skew(1deg);
+    transform: perspective(800px)
+              rotateX(calc(3deg + var(--loopy-random-1) * 2deg))
+              rotateY(calc(-3deg + var(--loopy-random-2) * 2deg))
+              translateZ(calc(50px + var(--loopy-random-3) * 20px));
   }
   50% {
-    filter: hue-rotate(180deg) blur(2px) saturate(2) contrast(140%);
-    transform: scale(1.04) skew(-1deg);
+    transform: perspective(800px)
+              rotateX(calc(-3deg - var(--loopy-random-1) * 2deg))
+              rotateY(calc(3deg - var(--loopy-random-2) * 2deg))
+              translateZ(calc(-30px - var(--loopy-random-3) * 20px));
   }
   75% {
-    filter: hue-rotate(270deg) blur(1px) saturate(1.5) contrast(120%);
-    transform: scale(1.02) skew(1deg);
+    transform: perspective(800px)
+              rotateX(calc(3deg + var(--loopy-random-1) * 2deg))
+              rotateY(calc(-3deg + var(--loopy-random-2) * 2deg))
+              translateZ(calc(50px + var(--loopy-random-3) * 20px));
   }
 }
 
-@keyframes loopyPulse {
+/* Chaos mode with enhanced effects */
+html.has-loopy-effect-chaos .c-loopy-container {
+  animation: loopyContainerChaos 4s infinite ease-in-out;
+}
+
+/* Add to the existing loopyContainerChaos animation */
+@keyframes loopyContainerChaos {
   0%, 100% {
-    transform: scale(1);
+    transform:
+      perspective(800px)
+      rotateX(calc(var(--loopy-random-1) * 5deg))
+      rotateY(calc(var(--loopy-random-2) * 5deg))
+      translateZ(calc(var(--loopy-random-3) * 20px))
+      scale(calc(0.95 + var(--loopy-random-4) * 0.1));
+    filter:
+      hue-rotate(calc(var(--loopy-random-5) * 360deg))
+      saturate(calc(100% + var(--loopy-random-1) * 100%))
+      blur(calc(var(--loopy-random-3) * 1px)); /* More intense blur for chaos */
   }
   50% {
-    transform: scale(1.01) translateY(-2px);
+    transform:
+      perspective(800px)
+      rotateX(calc(var(--loopy-random-2) * -5deg))
+      rotateY(calc(var(--loopy-random-1) * -5deg))
+      translateZ(calc(var(--loopy-random-3) * -20px))
+      scale(calc(1.05 + var(--loopy-random-4) * 0.1));
+    filter:
+      hue-rotate(calc(var(--loopy-random-5) * -360deg))
+      saturate(calc(100% + var(--loopy-random-2) * 100%))
+      blur(calc(var(--loopy-random-4) * 1.5px)); /* Stronger blur at peak */
   }
 }
 
-/* Milder rainbow text effect for chaos mode */
+/* Add to the existing loopyChaos animation */
+@keyframes loopyChaos {
+  0%, 100% {
+    filter:
+      hue-rotate(calc(var(--loopy-random-1) * 360deg))
+      contrast(calc(100% + var(--loopy-random-2) * 30%))
+      blur(calc(var(--loopy-random-5) * 2px)); /* Strong chaos blur */
+    transform: scale(calc(1 + var(--loopy-random-1) * 0.03))
+              translateZ(calc(var(--loopy-random-2) * 10px))
+              rotate(calc(var(--loopy-random-3) * 2deg));
+  }
+  33% {
+    filter:
+      hue-rotate(calc(120deg + var(--loopy-random-1) * 360deg))
+      contrast(130%)
+      blur(calc(var(--loopy-random-4) * 1.5px));
+    transform: scale(calc(1.02 + var(--loopy-random-1) * 0.03))
+              translateZ(calc(10px + var(--loopy-random-2) * 10px))
+              rotateX(calc(2deg + var(--loopy-random-3) * 2deg))
+              rotateY(1deg);
+  }
+  66% {
+    filter:
+      hue-rotate(calc(240deg + var(--loopy-random-1) * 360deg))
+      contrast(120%)
+      blur(calc(var(--loopy-random-3) * 1px));
+    transform: scale(calc(0.98 - var(--loopy-random-1) * 0.03))
+              translateZ(calc(-10px - var(--loopy-random-2) * 10px))
+              rotateX(calc(-2deg - var(--loopy-random-3) * 2deg))
+              rotateY(-1deg);
+  }
+}
+
+/* Enhanced rainbow text effect for chaos mode */
 html.has-loopy-effect-chaos p,
 html.has-loopy-effect-chaos span,
 html.has-loopy-effect-chaos div {
-  animation: rainbowText 3s infinite linear;
+  animation: loopyRainbow 3s infinite linear;
+  transform-style: preserve-3d;
 }
 
-@keyframes rainbowText {
-  0% { text-shadow: 1px 1px 0 rgba(255, 0, 0, 0.5); }
-  20% { text-shadow: 1px 1px 0 rgba(255, 153, 0, 0.5); }
-  40% { text-shadow: 1px 1px 0 rgba(255, 255, 0, 0.5); }
-  60% { text-shadow: 1px 1px 0 rgba(0, 255, 0, 0.5); }
-  80% { text-shadow: 1px 1px 0 rgba(0, 0, 255, 0.5); }
-  100% { text-shadow: 1px 1px 0 rgba(255, 0, 0, 0.5); }
+@keyframes loopyRainbow {
+  0% {
+    text-shadow: 2px 2px 0 rgba(255,0,0,0.7),
+                -2px -2px 0 rgba(0,255,255,0.7);
+  }
+  33% {
+    text-shadow: -2px 2px 0 rgba(0,255,0,0.7),
+                 2px -2px 0 rgba(255,0,255,0.7);
+  }
+  66% {
+    text-shadow: 2px -2px 0 rgba(0,0,255,0.7),
+                -2px 2px 0 rgba(255,255,0,0.7);
+  }
+  100% {
+    text-shadow: 2px 2px 0 rgba(255,0,0,0.7),
+                -2px -2px 0 rgba(0,255,255,0.7);
+  }
 }
 
 /* -------------------------------------------------------------------------- */
