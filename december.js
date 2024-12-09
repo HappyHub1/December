@@ -247,13 +247,24 @@ function motdLocation(a) {
 }
 
 function logoInsert(a) {
-  if (a != "no") {
-    link = (a != "user") ? TopUserLogo[a][1] : UCONF.logourl;
-    ht = (a != "user") ? TopUserLogo[a][2] : UCONF.logoht;
-    azukirow.css('min-height', ht + 'px').css('background-image', 'url(' + link + ')');
-  } else if (a === "no") {
+  if (a === "no") {
     azukirow.css('min-height', '5px').css('background-image', '');
+    return;
   }
+
+  if (a === "user") {
+    azukirow.css('min-height', UCONF.logoht + 'px').css('background-image', 'url(' + UCONF.logourl + ')');
+    return;
+  }
+
+  // Check if TopUserLogo exists and has the requested index
+  if (!TopUserLogo || !TopUserLogo[a] || !TopUserLogo[a][1] || !TopUserLogo[a][2]) {
+    console.warn('Invalid logo configuration - falling back to no logo');
+    azukirow.css('min-height', '5px').css('background-image', '');
+    return;
+  }
+
+  azukirow.css('min-height', TopUserLogo[a][2] + 'px').css('background-image', 'url(' + TopUserLogo[a][1] + ')');
 }
 
 function headerMode(a) {
@@ -4917,28 +4928,49 @@ ArcadeTheme.command = '/arcade_theme';
 /**
  * Usage: /loopy
  * Turn off: /loopy off
+ * Chaos: /loopy chaos
  */
 class LoopyEffect {
   static init() {
     LoopyEffect.state = {
       is_running: false,
       user_enabled: true,
+      chaos_mode: false
     };
 
     const svg_holder = document.createElement('div');
     svg_holder.innerHTML = `
             <svg width="100%" height="100%" style="position: absolute; height: 0;">
                 <defs>
-                    <filter id="loopywave" filterUnits="userSpaceOnUse" x="0" y="0">
-                        <feTurbulence id="loopywave-animation" numOctaves="1" seed="1" baseFrequency="0 0.0645034"></feTurbulence>
-                        <feDisplacementMap scale="10" in="SourceGraphic"></feDisplacementMap>
+                    <filter id="loopywave" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%">
+                        <!-- Base turbulence for normal mode -->
+                        <feTurbulence id="turbulence1" type="fractalNoise" numOctaves="2" seed="1" baseFrequency="0.01 0.01">
+                            <animate attributeName="baseFrequency"
+                                dur="20s"
+                                keyTimes="0;0.25;0.5;0.75;1"
+                                values="0.01 0.01;0.02 0.03;0.03 0.01;0.01 0.02;0.01 0.01"
+                                repeatCount="indefinite"/>
+                        </feTurbulence>
+                        <feDisplacementMap in="SourceGraphic" scale="15"/>
+
+                        <!-- Additional effects for chaos mode -->
+                        <feColorMatrix type="hueRotate" values="0">
+                            <animate attributeName="values"
+                                dur="10s"
+                                values="0;180;360;180;0"
+                                repeatCount="indefinite"/>
+                        </feColorMatrix>
+
+                        <!-- Subtle blur for smoothing -->
+                        <feGaussianBlur stdDeviation="0.5"/>
+
+                        <!-- Preserve colors better -->
+                        <feComponentTransfer>
+                            <feFuncR type="linear" slope="1.1"/>
+                            <feFuncG type="linear" slope="1.1"/>
+                            <feFuncB type="linear" slope="1.1"/>
+                        </feComponentTransfer>
                     </filter>
-                    <animate xlink:href="#loopywave-animation"
-                        attributeName="baseFrequency"
-                        dur="3s"
-                        keyTimes="0;0.5;1"
-                        values="0.0 0.04;0.0 0.07;0.0 0.04"
-                        repeatCount="indefinite"></animate>
                 </defs>
             </svg>
         `;
@@ -4946,14 +4978,18 @@ class LoopyEffect {
     document.documentElement.appendChild(svg_holder);
   }
 
-  static start() {
+  static start(chaos = false) {
     const state = LoopyEffect.state;
     if (state.is_running || !state.user_enabled) {
       return;
     }
     state.is_running = true;
+    state.chaos_mode = chaos;
 
     document.documentElement.classList.add('has-loopy-effect');
+    if (chaos) {
+      document.documentElement.classList.add('has-loopy-effect-chaos');
+    }
   }
 
   static stop() {
@@ -4963,25 +4999,19 @@ class LoopyEffect {
     }
 
     document.documentElement.classList.remove('has-loopy-effect');
+    document.documentElement.classList.remove('has-loopy-effect-chaos');
     state.is_running = false;
+    state.chaos_mode = false;
   }
 
-  static enable() {
-    LoopyEffect.state.user_enabled = true;
-  }
-
-  static disable() {
-    LoopyEffect.state.user_enabled = false;
-    LoopyEffect.stop();
-  }
-
-  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
+  static handleCommand(message_parts = [], other_args = {}) {
     if (message_parts[0] === 'off') {
       LoopyEffect.stop();
       return;
     }
 
-    LoopyEffect.start();
+    const chaos = message_parts[0] === 'chaos';
+    LoopyEffect.start(chaos);
   }
 }
 LoopyEffect.command = '/loopy';

@@ -1341,27 +1341,64 @@ html.is-arcade-theme #motdrow {
 /* -------------------------------------------------------------------------- */
 html.has-loopy-effect {
   filter: url('#loopywave');
-}
-
-/* Disable the svg effect for firefox */
-@-moz-document url-prefix() {
-  html.has-loopy-effect {
-    filter: none;
-  }
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: filter, transform;
 }
 
 html.has-loopy-effect body {
-  animation: loopyEffect 4s forwards infinite linear;
+  animation: loopyEffect 8s forwards infinite linear;
+}
+
+/* Milder pulsing effect for chaos mode */
+html.has-loopy-effect-chaos * {
+  animation: loopyPulse 3s infinite ease-in-out;
 }
 
 @keyframes loopyEffect {
   0%, 100% {
-    filter: hue-rotate(0) blur(0px) saturate(0);
+    filter: hue-rotate(0deg) blur(0px) saturate(1) contrast(100%);
+    transform: scale(1) skew(0deg);
+  }
+  25% {
+    filter: hue-rotate(90deg) blur(1px) saturate(1.5) contrast(120%);
+    transform: scale(1.02) skew(1deg);
   }
   50% {
-    filter: hue-rotate(360deg) blur(1px) saturate(1);
+    filter: hue-rotate(180deg) blur(2px) saturate(2) contrast(140%);
+    transform: scale(1.04) skew(-1deg);
+  }
+  75% {
+    filter: hue-rotate(270deg) blur(1px) saturate(1.5) contrast(120%);
+    transform: scale(1.02) skew(1deg);
   }
 }
+
+@keyframes loopyPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.01) translateY(-2px);
+  }
+}
+
+/* Milder rainbow text effect for chaos mode */
+html.has-loopy-effect-chaos p,
+html.has-loopy-effect-chaos span,
+html.has-loopy-effect-chaos div {
+  animation: rainbowText 3s infinite linear;
+}
+
+@keyframes rainbowText {
+  0% { text-shadow: 1px 1px 0 rgba(255, 0, 0, 0.5); }
+  20% { text-shadow: 1px 1px 0 rgba(255, 153, 0, 0.5); }
+  40% { text-shadow: 1px 1px 0 rgba(255, 255, 0, 0.5); }
+  60% { text-shadow: 1px 1px 0 rgba(0, 255, 0, 0.5); }
+  80% { text-shadow: 1px 1px 0 rgba(0, 0, 255, 0.5); }
+  100% { text-shadow: 1px 1px 0 rgba(255, 0, 0, 0.5); }
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                Geass effect                             */
 /* -------------------------------------------------------------------------- */
