@@ -5272,6 +5272,15 @@ PunchEffect.characters = {
     width: 480,
     move_frequency_ms: 2000,
   },
+  shoe: {
+    index: 'shoe',
+    image: `${SCRIPT_FOLDER_URL}/Images/shoe.jpg`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/shoe-cursor.png`,
+    text: 'KICK THE SHOE!!!',
+    action_plural: 'kicks',
+    width: 480,
+    move_frequency_ms: 2000,
+  }
 };
 
 /**
