@@ -4935,70 +4935,90 @@ class LoopyEffect {
     LoopyEffect.state = {
       is_running: false,
       user_enabled: true,
-      chaos_mode: false
+      chaos_mode: false,
+      updateInterval: null,
+      container: null
     };
+  }
 
-    const svg_holder = document.createElement('div');
-    svg_holder.classList.add('c-loopy-filter-container');
-    svg_holder.innerHTML = `
-            <svg width="100%" height="100%" style="position: absolute; height: 0;">
-                <defs>
-                    <filter id="loopywave" filterUnits="userSpaceOnUse" x="-20%" y="-20%" width="140%" height="140%">
-                        <!-- Base turbulence for normal mode -->
-                        <feTurbulence id="turbulence1" type="fractalNoise" numOctaves="2" seed="1" baseFrequency="0.01 0.01">
-                            <animate attributeName="baseFrequency"
-                                dur="20s"
-                                keyTimes="0;0.25;0.5;0.75;1"
-                                values="0.01 0.01;0.02 0.03;0.03 0.01;0.01 0.02;0.01 0.01"
-                                repeatCount="indefinite"/>
-                        </feTurbulence>
-                        <feDisplacementMap in="SourceGraphic" scale="15"/>
+  static setupContainer() {
+    // Create container if it doesn't exist
+    if (!LoopyEffect.state.container) {
+      const container = document.createElement('div');
+      container.classList.add('c-loopy-container');
 
-                        <!-- Additional effects for chaos mode -->
-                        <feColorMatrix type="hueRotate" values="0">
-                            <animate attributeName="values"
-                                dur="10s"
-                                values="0;180;360;180;0"
-                                repeatCount="indefinite"/>
-                        </feColorMatrix>
+      // Move all body children into container
+      while (document.body.firstChild) {
+        container.appendChild(document.body.firstChild);
+      }
+      document.body.appendChild(container);
 
-                        <!-- Subtle blur for smoothing -->
-                        <feGaussianBlur stdDeviation="0.5"/>
+      LoopyEffect.state.container = container;
+    }
+  }
 
-                        <!-- Preserve colors better -->
-                        <feComponentTransfer>
-                            <feFuncR type="linear" slope="1.1"/>
-                            <feFuncG type="linear" slope="1.1"/>
-                            <feFuncB type="linear" slope="1.1"/>
-                        </feComponentTransfer>
-                    </filter>
-                </defs>
-            </svg>
-        `;
+  static updateRandomValues() {
+    const root = document.documentElement;
+    // Update values less frequently for smoothness
+    const updateValues = () => {
+      const updateFrequency = 3000;
 
-    document.documentElement.appendChild(svg_holder);
+      // Smooth transition between values using lerp
+      const lerp = (start, end, t) => start * (1 - t) + end * t;
+      const t = 0.1; // Lower = smoother transitions
+
+      const oldVals = {
+        r1: parseFloat(root.style.getPropertyValue('--loopy-random-1')) || 0,
+        r2: parseFloat(root.style.getPropertyValue('--loopy-random-2')) || 0,
+        r3: parseFloat(root.style.getPropertyValue('--loopy-random-3')) || 0,
+        r4: parseFloat(root.style.getPropertyValue('--loopy-random-4')) || 0,
+        r5: parseFloat(root.style.getPropertyValue('--loopy-random-5')) || 0
+      };
+
+      // Update each value smoothly
+      root.style.setProperty('--loopy-random-1', lerp(oldVals.r1, Math.random(), t));
+      root.style.setProperty('--loopy-random-2', lerp(oldVals.r2, Math.random(), t));
+      root.style.setProperty('--loopy-random-3', lerp(oldVals.r3, Math.random(), t));
+      root.style.setProperty('--loopy-random-4', lerp(oldVals.r4, Math.random(), t));
+      root.style.setProperty('--loopy-random-5', lerp(oldVals.r5, Math.random(), t));
+
+      if (LoopyEffect.state.is_running) {
+        LoopyEffect.state.updateInterval = setTimeout(updateValues, updateFrequency);
+      }
+    };
+    updateValues();
   }
 
   static start(chaos = false) {
     const state = LoopyEffect.state;
-    if (state.is_running || !state.user_enabled) {
-      return;
-    }
+    if (state.is_running || !state.user_enabled) return;
+
     state.is_running = true;
     state.chaos_mode = chaos;
 
+    // Setup initial random values
+    const root = document.documentElement;
+    root.style.setProperty('--loopy-random-1', Math.random());
+    root.style.setProperty('--loopy-random-2', Math.random());
+    root.style.setProperty('--loopy-random-3', Math.random());
+    root.style.setProperty('--loopy-random-4', Math.random());
+    root.style.setProperty('--loopy-random-5', Math.random());
+
+    LoopyEffect.setupContainer();
     document.documentElement.classList.add('has-loopy-effect');
     if (chaos) {
       document.documentElement.classList.add('has-loopy-effect-chaos');
     }
+    LoopyEffect.updateRandomValues();
   }
 
   static stop() {
     const state = LoopyEffect.state;
-    if (!state.is_running) {
-      return;
-    }
+    if (!state.is_running) return;
 
+    if (state.updateInterval) {
+      clearTimeout(state.updateInterval);
+    }
     document.documentElement.classList.remove('has-loopy-effect');
     document.documentElement.classList.remove('has-loopy-effect-chaos');
     state.is_running = false;
