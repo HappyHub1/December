@@ -1346,6 +1346,15 @@ html.has-loopy-effect {
   will-change: filter, transform;
 }
 
+/* Add this new section for SVG filter container */
+html.c-loopy-filter-container {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 html.has-loopy-effect body {
   animation: loopyEffect 8s forwards infinite linear;
 }
