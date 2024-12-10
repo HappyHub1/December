@@ -5024,6 +5024,15 @@ class LoopyEffect {
     state.is_running = false;
     state.chaos_mode = false;
   }
+  
+  static enable() {
+    LoopyEffect.state.user_enabled = true;
+  }
+
+  static disable() {
+    LoopyEffect.state.user_enabled = false;
+    LoopyEffect.stop();
+  }  
 
   static handleCommand(message_parts = [], other_args = {}) {
     if (message_parts[0] === 'off') {
