@@ -307,6 +307,7 @@ span.glyphicon.glyphicon-time {
   text-transform: uppercase;
   color: darkred;
   position: fixed;
+  z-index: 999;
 
   padding: 8px 16px;
   width: 420px;
@@ -2035,6 +2036,7 @@ body.amifacebg {
   top: 0;
   left: 0;
   width: 640px;
+  z-index: 999;
 
   opacity: 0.8;
 
