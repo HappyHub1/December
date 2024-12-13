@@ -4618,6 +4618,143 @@ GhostBanriEffect.DEFAULT_INFECTION_RATE = 0.5;
 GhostBanriEffect.TIME_BETWEEN_ACTIVATIONS_S = 30;
 GhostBanriEffect.BANRI_IMG = `${SCRIPT_FOLDER_URL}/Images/ghost-banri.png`;
 
+/**
+ * Usage: /idol
+ * Turn off: /idol off
+ */
+class IdolEffect {
+  static init() {
+    IdolEffect.state = {
+      user_enabled: true,
+      is_running: false,
+      spotlights: [],
+      sparkles: [],
+      animation_frame: null
+    };
+
+    IdolEffect.colors = [
+      'rgba(255, 182, 193, 0.4)', // Pink
+      'rgba(135, 206, 235, 0.4)', // Sky blue
+      'rgba(255, 255, 153, 0.4)'  // Light yellow
+    ];
+  }
+
+  static start() {
+    const state = IdolEffect.state;
+    if (state.is_running || !state.user_enabled) {
+      return;
+    }
+
+    state.is_running = true;
+    document.documentElement.classList.add('has-idol-effect');
+
+    // Create container for effects
+    const container = document.createElement('div');
+    container.classList.add('c-idol-container');
+    document.body.appendChild(container);
+    state.container = container;
+
+    // Add disco ball
+    const discoBall = document.createElement('div');
+    discoBall.classList.add('c-idol-discoball');
+    container.appendChild(discoBall);
+    state.discoBall = discoBall;
+
+    // Create spotlights (increased from 3 to 5)
+    for (let i = 0; i < 5; i++) {
+      const spotlight = document.createElement('div');
+      spotlight.classList.add('c-idol-spotlight');
+      spotlight.style.setProperty('--spotlight-color', IdolEffect.colors[i % IdolEffect.colors.length]);
+      spotlight.style.setProperty('--spotlight-delay', `${i * -1.5}s`);
+      spotlight.style.left = `${Math.random() * 100}%`;
+      container.appendChild(spotlight);
+      state.spotlights.push(spotlight);
+    }
+
+    // Start sparkle animation with increased frequency
+    IdolEffect.animateSparkles();
+
+    // Add content pulse
+    document.body.classList.add('c-idol-content-pulse');
+  }
+
+  static stop() {
+    const state = IdolEffect.state;
+    if (!state.is_running) {
+      return;
+    }
+
+    state.is_running = false;
+    document.documentElement.classList.remove('has-idol-effect');
+    document.body.classList.remove('c-idol-content-pulse');
+
+    if (state.container && state.container.parentElement) {
+      state.container.parentElement.removeChild(state.container);
+    }
+
+    if (state.animation_frame) {
+      cancelAnimationFrame(state.animation_frame);
+    }
+
+    state.spotlights = [];
+    state.sparkles = [];
+  }
+
+  static animateSparkles() {
+    const state = IdolEffect.state;
+    if (!state.is_running) return;
+
+    // Create new sparkles (increased probability and count)
+    if (Math.random() < 0.5) { // Increased from 0.3
+      for (let i = 0; i < 3; i++) { // Create multiple sparkles at once
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('c-idol-sparkle');
+        sparkle.style.left = `${Math.random() * 100}%`;
+        // Randomize size for variety
+        const size = 4 + Math.random() * 4;
+        sparkle.style.width = `${size}px`;
+        sparkle.style.height = `${size}px`;
+        state.container.appendChild(sparkle);
+        state.sparkles.push({
+          element: sparkle,
+          life: 0
+        });
+      }
+    }
+
+    // Update existing sparkles
+    state.sparkles = state.sparkles.filter(sparkle => {
+      sparkle.life += 1;
+      if (sparkle.life > 100) {
+        sparkle.element.remove();
+        return false;
+      }
+      return true;
+    });
+
+    state.animation_frame = requestAnimationFrame(() => IdolEffect.animateSparkles());
+  }
+
+  static enable() {
+    IdolEffect.state.user_enabled = true;
+  }
+
+  static disable() {
+    IdolEffect.state.user_enabled = false;
+    IdolEffect.stop();
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    if (message_parts[0] === 'off') {
+      IdolEffect.stop();
+      return;
+    }
+
+    IdolEffect.start();
+  }
+}
+IdolEffect.command = '/idol';
+
 
 
 /**
