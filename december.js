@@ -3597,7 +3597,6 @@ class OrangeEffect {
       if (!OrangeEffect.state.is_on) {
         return;
       }
-
       const max_padoru = OrangeEffect.state.level_info.spawn_limit;
       const total = Math.floor(1 + Math.random() * (max_padoru - 1));
       for (let i = 0; i < total; i++) {
@@ -4046,12 +4045,218 @@ class SnowEffect {
       // gl vars
       _a_position: null,
       _u_resolution: null,
+      _u_time: null, // New uniform for time-based animation
 
       _width: window.innerWidth,
       _height: window.innerHeight,
       _snowflakes: [],
       _requested_animation_frame: null,
+
+      // New performance optimizations
+      _vertex_buffer: null,
+      _instance_buffer: null,
+      _worker: null,
+      _last_frame_time: 0,
     };
+
+    // Initialize Web Worker if supported
+    if (window.Worker) {
+      SnowEffect.initWorker();
+    }
+  }
+
+  static initWorker() {
+    // Create a blob URL for the worker code
+    const workerCode = `
+      let snowflakes = [];
+
+      // Constants for natural movement
+      const MIN_SIZE = 1.5;
+      const MAX_SIZE = 4;
+      const MIN_X_SPEED = 0.5;
+      const MAX_X_SPEED = 3;
+      const MIN_Y_SPEED = 0.5;
+      const MAX_Y_SPEED = 2;
+
+      function random(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      self.onmessage = function(e) {
+        if (e.data.type === 'update') {
+          const {width, height, snow_level, deltaTime} = e.data;
+          updateSnowflakes(width, height, snow_level, deltaTime);
+          self.postMessage({snowflakes});
+        }
+      };
+
+      function updateSnowflakes(width, height, snow_level, deltaTime) {
+        // Add new snowflakes
+        const min_new = width / snow_level.max;
+        const max_new = width / snow_level.min;
+        const number_of_new_flakes = Math.floor(min_new + Math.random() * (max_new - min_new));
+
+        for (let i = 0; i < number_of_new_flakes; i++) {
+          snowflakes.push(createSnowflake(width));
+        }
+
+        // Update positions
+        snowflakes = snowflakes.filter(flake => {
+          // Apply velocity with deltaTime scaling
+          flake.x += flake.velocity.x * deltaTime * 60; // Scale for 60fps
+          flake.y += flake.velocity.y * deltaTime * 60;
+
+          // Remove if off screen
+          return !(flake.y > height || flake.x > width || flake.x < -flake.size);
+        });
+      }
+
+      function createSnowflake(width) {
+        const size = random(MIN_SIZE, MAX_SIZE);
+        let x_vel = random(MIN_X_SPEED, MAX_X_SPEED);
+        if (Math.random() > 0.5) x_vel = -x_vel;
+
+        return {
+          x: Math.random() * width,
+          y: -size * 2, // Start above screen
+          size: size,
+          velocity: {
+            x: x_vel,
+            y: random(MIN_Y_SPEED, MAX_Y_SPEED)
+          }
+        };
+      }
+    `;
+
+    const blob = new Blob([workerCode], {type: 'application/javascript'});
+    const workerUrl = URL.createObjectURL(blob);
+    SnowEffect.state._worker = new Worker(workerUrl);
+  }
+
+  static buildCircleVertices(cx, cy, radius) {
+    // For instancing, we just need a simple quad made of 2 triangles
+    // since we'll be scaling it via the instance attributes
+    return [
+      // First triangle
+      cx - radius, cy - radius,  // Top left
+      cx + radius, cy - radius,  // Top right
+      cx - radius, cy + radius,  // Bottom left
+
+      // Second triangle
+      cx + radius, cy - radius,  // Top right
+      cx + radius, cy + radius,  // Bottom right
+      cx - radius, cy + radius,  // Bottom left
+    ];
+  }
+
+  static buildSnowAndUseProgram() {
+    const state = SnowEffect.state;
+    const gl = state._gl;
+
+    // Updated vertex shader to handle instancing
+    const vertexShader = `
+      attribute vec2 a_position;
+      attribute vec3 a_instance; // x, y, size
+      uniform vec2 u_resolution;
+      uniform float u_time;
+
+      void main() {
+        // Apply size and position offset for instancing
+        vec2 position = (a_position * a_instance.z) + a_instance.xy;
+
+        // Add subtle wave motion based on time
+        position.x += sin(u_time * 0.001 + position.y * 0.1) * 2.0;
+
+        // Convert to clip space
+        vec2 zeroToOne = position / u_resolution;
+        vec2 zeroToTwo = zeroToOne * 2.0;
+        vec2 clipSpace = zeroToTwo - 1.0;
+
+        gl_Position = vec4(clipSpace.x, -clipSpace.y, 0, 1);
+        gl_PointSize = a_instance.z * 1.5; // Reduced from 2.0 to 1.5
+      }
+    `;
+
+    // setup GLSL program
+    state._program = buildGlProgram(gl, vertexShader, SnowEffect.fragment_shader_src);
+    gl.useProgram(state._program);
+
+    // Get attribute and uniform locations
+    state._a_position = gl.getAttribLocation(state._program, 'a_position');
+    state._a_instance = gl.getAttribLocation(state._program, 'a_instance');
+    state._u_resolution = gl.getUniformLocation(state._program, 'u_resolution');
+    state._u_time = gl.getUniformLocation(state._program, 'u_time');
+
+    // Create buffers
+    state._vertex_buffer = gl.createBuffer();
+    state._instance_buffer = gl.createBuffer();
+
+    // Set up basic snowflake shape vertices
+    const vertices = SnowEffect.buildCircleVertices(0, 0, 1);
+    gl.bindBuffer(gl.ARRAY_BUFFER, state._vertex_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+  }
+
+  static handleFrame(timestamp) {
+    const state = SnowEffect.state;
+    if (!state._gl) return;
+
+    const deltaTime = (timestamp - state._last_frame_time) / 1000;
+    state._last_frame_time = timestamp;
+
+    // Update via worker
+    if (state._worker) {
+      state._worker.postMessage({
+        type: 'update',
+        width: state._width,
+        height: state._height,
+        snow_level: state.snow_level,
+        deltaTime
+      });
+    }
+
+    // Clear and prepare WebGL context
+    const gl = state._gl;
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Update time uniform
+    gl.uniform1f(state._u_time, timestamp);
+
+    // Draw snowflakes using instancing
+    SnowEffect.drawSnowflakes();
+
+    state._requested_animation_frame = requestAnimationFrame((t) => SnowEffect.handleFrame(t));
+  }
+
+  static drawSnowflakes() {
+    const state = SnowEffect.state;
+    const gl = state._gl;
+
+    // Prepare instance data
+    const instanceData = new Float32Array(state._snowflakes.length * 3);
+    state._snowflakes.forEach((flake, i) => {
+      instanceData[i * 3] = flake.x;
+      instanceData[i * 3 + 1] = flake.y;
+      instanceData[i * 3 + 2] = flake.size;
+    });
+
+    // Update instance buffer
+    gl.bindBuffer(gl.ARRAY_BUFFER, state._instance_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, instanceData, gl.DYNAMIC_DRAW);
+
+    // Set up attributes for instanced rendering
+    gl.bindBuffer(gl.ARRAY_BUFFER, state._vertex_buffer);
+    gl.vertexAttribPointer(state._a_position, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(state._a_position);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, state._instance_buffer);
+    gl.vertexAttribPointer(state._a_instance, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(state._a_instance);
+    gl.vertexAttribDivisor(state._a_instance, 1);
+
+    // Draw all snowflakes in one call
+    gl.drawArraysInstanced(gl.POINTS, 0, 1, state._snowflakes.length);
   }
 
   static start(snow_level = 'medium') {
@@ -4077,6 +4282,16 @@ class SnowEffect {
     state._gl = state._canvas.getContext('webgl');
     state._gl.enable(state._gl.BLEND);
     state._gl.blendFunc(state._gl.SRC_ALPHA, state._gl.ONE_MINUS_SRC_ALPHA);
+
+    // Enable instanced arrays extension
+    const ext = state._gl.getExtension('ANGLE_instanced_arrays');
+    if (!ext) {
+      console.warn('WebGL instancing not supported - falling back to normal rendering');
+    } else {
+      state._gl.vertexAttribDivisor = ext.vertexAttribDivisorANGLE.bind(ext);
+      state._gl.drawArraysInstanced = ext.drawArraysInstancedANGLE.bind(ext);
+    }
+
     SnowEffect.buildSnowAndUseProgram();
 
     // 0 timeout to allow the CSSOM to update the size of the canvas appropriately
@@ -4085,21 +4300,13 @@ class SnowEffect {
     // If the window resizes, just start all over again for simplicity
     SnowEffect._resizeHandler = () => SnowEffect.initAndReset();
     window.addEventListener('resize', SnowEffect._resizeHandler);
-  }
 
-  static buildSnowAndUseProgram() {
-    const state = SnowEffect.state;
-
-    // setup GLSL program
-    state._program = buildGlProgram(
-      state._gl,
-      SnowEffect.vertex_shader_src,
-      SnowEffect.fragment_shader_src);
-    state._gl.useProgram(state._program);
-
-    state._a_position = state._gl.getAttribLocation(state._program, 'a_position');
-    state._u_resolution = state._gl.getUniformLocation(state._program, 'u_resolution');
-    state._vertex_buffer = state._gl.createBuffer();
+    // Set up worker message handler
+    if (state._worker) {
+      state._worker.onmessage = (e) => {
+        state._snowflakes = e.data.snowflakes;
+      };
+    }
   }
 
   static stop() {
@@ -4159,125 +4366,18 @@ class SnowEffect {
     }
   }
 
-  static handleFrame() {
-    const state = SnowEffect.state;
-    if (!state._gl) {
+  static handleCommand(message_parts = [], other_args = {}) { // other args is for compatability
+    if (message_parts[0] === 'off') {
+      SnowEffect.stop();
       return;
     }
 
-    state._gl.clearColor(0, 0, 0, 0);
-    state._gl.clear(state._gl.COLOR_BUFFER_BIT);
-
-    // Add new snowflakes
-    const min_new = state._width / state.snow_level.max;
-    const max_new = state._width / state.snow_level.min;
-    const number_of_new_flakes = getRandomInt(min_new, max_new);
-    for (let i = 0; i < number_of_new_flakes; i++) {
-      state._snowflakes.push(SnowEffect.createSnowflake());
+    let level = message_parts[0] || 'medium';
+    if (!SnowEffect.snow_levels[level]) {
+      level = 'medium';
     }
 
-    // Move all the flakes and get their vertices
-    const all_vertices = [];
-    for (const snowflake of state._snowflakes) {
-      snowflake.x += snowflake.velocity.x;
-      snowflake.y += snowflake.velocity.y;
-
-      all_vertices.push(...SnowEffect.buildCircleVertices(snowflake.x, snowflake.y, snowflake.size));
-    }
-    SnowEffect.drawSnowTriangles(all_vertices);
-
-    // Remove particles below the screen
-    state._snowflakes = state._snowflakes.filter((snowflake) => {
-      const top_y = snowflake.y + (snowflake.size / 2);
-      if (top_y > state._height) {
-        return false;
-      }
-
-      const top_x = snowflake.x - (snowflake.size / 2);
-      if (top_x > state._width) {
-        return false;
-      }
-
-      return true;
-    });
-
-    state._requested_animation_frame = requestAnimationFrame(() => SnowEffect.handleFrame());
-  }
-
-  static buildCircleVertices(cx, cy, radius) {
-    const vertices = [];
-    let total_triangles = Math.max(Math.floor(SnowEffect.TRIANGLES_PER_PX_WIDTH * radius), 5);
-    if (radius <= 1) {
-      total_triangles = 3;
-    } else if (radius <= 2) {
-      total_triangles = 4;
-    }
-
-    const pi_frac = (2 * Math.PI) / total_triangles;
-    for (let i = 0; i < total_triangles; i++) {
-      vertices.push(cx, cy);
-      vertices.push(
-        Math.cos(i * pi_frac) * radius + cx,
-        Math.sin(i * pi_frac) * radius + cy);
-      vertices.push(
-        Math.cos((i + 1) * pi_frac) * radius + cx,
-        Math.sin((i + 1) * pi_frac) * radius + cy);
-    }
-
-    return vertices;
-  }
-
-  static drawSnowTriangles(snow_vertices) {
-    const state = SnowEffect.state;
-
-    // Put the snow vertices in the vertex buffer
-    state._gl.bindBuffer(state._gl.ARRAY_BUFFER, state._vertex_buffer);
-    state._gl.bufferData(state._gl.ARRAY_BUFFER, new Float32Array(snow_vertices), state._gl.STATIC_DRAW);
-
-    // Load the vertices into a_position
-    {
-      const size = 2;
-      const type = state._gl.FLOAT;
-      const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      state._gl.bindBuffer(state._gl.ARRAY_BUFFER, state._vertex_buffer);
-      state._gl.vertexAttribPointer(
-        state._a_position,
-        size,
-        type,
-        normalize,
-        stride,
-        offset);
-      state._gl.enableVertexAttribArray(state._a_position);
-    }
-
-    {
-      const offset = 0;
-      const vertex_total = snow_vertices.length / 2;
-      state._gl.drawArrays(state._gl.TRIANGLES, offset, vertex_total);
-    }
-  }
-
-  static createSnowflake() {
-    const state = SnowEffect.state;
-    const x = Math.random() * state._width;
-    const size = getRandomFloat(SnowEffect.min_size / 2, SnowEffect.max_size / 2);
-
-    let x_vel = getRandomFloat(SnowEffect.min_x_speed, SnowEffect.max_x_speed);
-    if (Math.random() > 0.5) {
-      x_vel = -x_vel;
-    }
-
-    return {
-      x,
-      y: -size,
-      size,
-      velocity: {
-        x: x_vel,
-        y: getRandomFloat(SnowEffect.min_y_speed, SnowEffect.max_y_speed),
-      }
-    };
+    SnowEffect.start(level);
   }
 
   static isSnowflakeOffscreen(snowflake) {
@@ -4340,11 +4440,21 @@ SnowEffect.vertex_shader_src = `
     }
 `;
 SnowEffect.fragment_shader_src = `
-    precision mediump float;
+  precision mediump float;
 
-    void main() {
-        gl_FragColor = vec4(1, 1, 1, 0.8);
-    }
+  void main() {
+    // Calculate distance from center of quad
+    vec2 coord = gl_PointCoord - vec2(0.5, 0.5);
+    float dist = length(coord);
+
+    // Create soft circle with feathered edges
+    float alpha = 1.0 - smoothstep(0.45, 0.5, dist);
+
+    // Add some internal detail to make it look more like a snowflake
+    float detail = 0.8 + 0.2 * (sin(coord.x * 15.0) * sin(coord.y * 15.0));
+
+    gl_FragColor = vec4(1.0, 1.0, 1.0, alpha * detail * 0.8);
+  }
 `;
 SnowEffect.TRIANGLES_PER_PX_WIDTH = 10 / 10;
 
@@ -5024,7 +5134,7 @@ class LoopyEffect {
     state.is_running = false;
     state.chaos_mode = false;
   }
-  
+
   static enable() {
     LoopyEffect.state.user_enabled = true;
   }
@@ -5032,7 +5142,7 @@ class LoopyEffect {
   static disable() {
     LoopyEffect.state.user_enabled = false;
     LoopyEffect.stop();
-  }  
+  }
 
   static handleCommand(message_parts = [], other_args = {}) {
     if (message_parts[0] === 'off') {
@@ -5658,3 +5768,4 @@ setTimeout(function () { // insurance
     replaceEmbedWithAudio({ type: "cu" });
   }
 }, 250);
+
