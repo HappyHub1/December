@@ -4632,10 +4632,22 @@ class IdolEffect {
       animation_frame: null
     };
 
+    // Main spotlight colors
     IdolEffect.colors = [
-      'rgba(255, 182, 193, 0.4)', // Pink
-      'rgba(135, 206, 235, 0.4)', // Sky blue
-      'rgba(255, 255, 153, 0.4)'  // Light yellow
+      'rgba(255, 20, 147, 0.7)',   // Hot pink
+      'rgba(0, 191, 255, 0.7)',    // Deep sky blue
+      'rgba(255, 215, 0, 0.7)',    // Gold
+      'rgba(138, 43, 226, 0.7)',   // Purple
+      'rgba(50, 205, 50, 0.7)'     // Lime green
+    ];
+
+    // Add fade colors that are slightly more transparent
+    IdolEffect.fadeColors = [
+      'rgba(255, 20, 147, 0.2)',   // Hot pink fade
+      'rgba(0, 191, 255, 0.2)',    // Deep sky blue fade
+      'rgba(255, 215, 0, 0.2)',    // Gold fade
+      'rgba(138, 43, 226, 0.2)',   // Purple fade
+      'rgba(50, 205, 50, 0.2)'     // Lime green fade
     ];
   }
 
@@ -4660,11 +4672,12 @@ class IdolEffect {
     container.appendChild(discoBall);
     state.discoBall = discoBall;
 
-    // Create spotlights (increased from 3 to 5)
+    // Create spotlights with both colors
     for (let i = 0; i < 5; i++) {
       const spotlight = document.createElement('div');
       spotlight.classList.add('c-idol-spotlight');
       spotlight.style.setProperty('--spotlight-color', IdolEffect.colors[i % IdolEffect.colors.length]);
+      spotlight.style.setProperty('--spotlight-color-fade', IdolEffect.fadeColors[i % IdolEffect.fadeColors.length]);
       spotlight.style.setProperty('--spotlight-delay', `${i * -1.5}s`);
       spotlight.style.left = `${Math.random() * 100}%`;
       container.appendChild(spotlight);
@@ -4793,6 +4806,7 @@ class CustomTextTriggers {
       WheelSpin,
       TlNote,
       OrangeEffect,
+      IdolEffect,
     ];
     if (CustomTextTriggers.has_init) {
       return;
