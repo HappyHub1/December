@@ -4629,7 +4629,12 @@ class IdolEffect {
       is_running: false,
       spotlights: [],
       sparkles: [],
-      animation_frame: null
+      animation_frame: null,
+      containers: {
+        spotlight: null,
+        sparkle: null,
+        discoball: null
+      }
     };
 
     // Main spotlight colors
@@ -4660,17 +4665,26 @@ class IdolEffect {
     state.is_running = true;
     document.documentElement.classList.add('has-idol-effect');
 
-    // Create container for effects
-    const container = document.createElement('div');
-    container.classList.add('c-idol-container');
-    document.body.appendChild(container);
-    state.container = container;
+    // Create containers
+    const spotlightContainer = document.createElement('div');
+    spotlightContainer.classList.add('c-idol-spotlight-container');
+    document.body.appendChild(spotlightContainer);
+    state.containers.spotlight = spotlightContainer;
+
+    const sparkleContainer = document.createElement('div');
+    sparkleContainer.classList.add('c-idol-sparkle-container');
+    document.body.appendChild(sparkleContainer);
+    state.containers.sparkle = sparkleContainer;
+
+    const discoballContainer = document.createElement('div');
+    discoballContainer.classList.add('c-idol-discoball-container');
+    document.body.appendChild(discoballContainer);
+    state.containers.discoball = discoballContainer;
 
     // Add disco ball
     const discoBall = document.createElement('div');
     discoBall.classList.add('c-idol-discoball');
-    container.appendChild(discoBall);
-    state.discoBall = discoBall;
+    discoballContainer.appendChild(discoBall);
 
     // Create spotlights with both colors
     for (let i = 0; i < 5; i++) {
@@ -4680,15 +4694,12 @@ class IdolEffect {
       spotlight.style.setProperty('--spotlight-color-fade', IdolEffect.fadeColors[i % IdolEffect.fadeColors.length]);
       spotlight.style.setProperty('--spotlight-delay', `${i * -1.5}s`);
       spotlight.style.left = `${Math.random() * 100}%`;
-      container.appendChild(spotlight);
+      spotlightContainer.appendChild(spotlight);
       state.spotlights.push(spotlight);
     }
 
-    // Start sparkle animation with increased frequency
+    // Start sparkle animation
     IdolEffect.animateSparkles();
-
-    // Add content pulse
-    document.body.classList.add('c-idol-content-pulse');
   }
 
   static stop() {
@@ -4699,11 +4710,18 @@ class IdolEffect {
 
     state.is_running = false;
     document.documentElement.classList.remove('has-idol-effect');
-    document.body.classList.remove('c-idol-content-pulse');
 
-    if (state.container && state.container.parentElement) {
-      state.container.parentElement.removeChild(state.container);
-    }
+    // Remove all containers
+    Object.values(state.containers).forEach(container => {
+      if (container && container.parentElement) {
+        container.parentElement.removeChild(container);
+      }
+    });
+    state.containers = {
+      spotlight: null,
+      sparkle: null,
+      discoball: null
+    };
 
     if (state.animation_frame) {
       cancelAnimationFrame(state.animation_frame);
@@ -4717,9 +4735,9 @@ class IdolEffect {
     const state = IdolEffect.state;
     if (!state.is_running) return;
 
-    // Create new sparkles (increased probability and count)
-    if (Math.random() < 0.5) { // Increased from 0.3
-      for (let i = 0; i < 3; i++) { // Create multiple sparkles at once
+    // Create new sparkles
+    if (Math.random() < 0.5) {
+      for (let i = 0; i < 3; i++) {
         const sparkle = document.createElement('div');
         sparkle.classList.add('c-idol-sparkle');
         sparkle.style.left = `${Math.random() * 100}%`;
@@ -4727,7 +4745,7 @@ class IdolEffect {
         const size = 4 + Math.random() * 4;
         sparkle.style.width = `${size}px`;
         sparkle.style.height = `${size}px`;
-        state.container.appendChild(sparkle);
+        state.containers.sparkle.appendChild(sparkle);
         state.sparkles.push({
           element: sparkle,
           life: 0
