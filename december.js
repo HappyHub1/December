@@ -5252,7 +5252,7 @@ class LoopyEffect {
 
   static start(chaos = false) {
     const state = LoopyEffect.state;
-    if (state.is_running || !state.userenabled) return;
+    if (state.is_running || !state.user_enabled) return;
 
     state.is_running = true;
     state.chaos_mode = chaos;
