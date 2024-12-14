@@ -1406,7 +1406,7 @@ html.has-loopy-effect-chaos body {
       scale(calc(0.98 + var(--loopy-random-4) * 0.04));
     filter:
       hue-rotate(calc(var(--loopy-random-5) * 30deg))
-      saturate(calc(100% + var(--loopy-random-1) * 50%));
+      saturate(calc(100% + var(--loopy-random-1) * 50%)));
   }
   50% {
     transform:
@@ -1417,7 +1417,7 @@ html.has-loopy-effect-chaos body {
       scale(calc(1.02 + var(--loopy-random-4) * 0.04));
     filter:
       hue-rotate(calc(var(--loopy-random-5) * -30deg))
-      saturate(calc(100% + var(--loopy-random-2) * 50%));
+      saturate(calc(100% + var(--loopy-random-2) * 50%)));
   }
 }
 
@@ -1530,7 +1530,7 @@ html.has-loopy-effect-chaos .c-loopy-container {
     transform: scale(calc(0.98 - var(--loopy-random-1) * 0.03))
               translateZ(calc(-10px - var(--loopy-random-2) * 10px))
               rotateX(calc(-2deg - var(--loopy-random-3) * 2deg))
-              rotateY(-1deg);
+              rotateY(-1deg));
   }
 }
 
@@ -1784,17 +1784,19 @@ html.has-loopy-effect-chaos div {
 .c-idol-spotlight {
   position: absolute;
   top: -20%;
-  width: 120px;
+  width: 150px;
   height: 200%;
   background: linear-gradient(to bottom,
     var(--spotlight-color),
-    rgba(255,255,255,0.1) 50%,
-    transparent
+    var(--spotlight-color-fade) 70%,
+    transparent 95%
   );
   filter: blur(15px);
   transform-origin: top;
   animation: idol-spotlight-sweep 7s infinite ease-in-out;
   animation-delay: var(--spotlight-delay);
+  opacity: 0.95;
+  mix-blend-mode: hard-light;
 }
 
 .c-idol-sparkle {
@@ -1893,8 +1895,8 @@ html.has-loopy-effect-chaos div {
 /* Make spotlights more dramatic */
 .c-idol-spotlight {
   width: 150px; /* Wider beams */
-  opacity: 0.8; /* More visible */
-  mix-blend-mode: screen; /* Better color blending */
+  opacity: 0.9; /* More visible */
+  mix-blend-mode: hard-light; /* Better color blending */
 }
 
 /* Add more sparkles */
@@ -1910,23 +1912,23 @@ html.has-loopy-effect-chaos div {
 @keyframes idol-spotlight-sweep {
   0% {
     transform: rotate(-45deg) translateX(-100%);
-    opacity: 0.7;
+    opacity: 0.95;
   }
   25% {
     transform: rotate(0deg) translateX(0);
-    opacity: 0.9;
+    opacity: 1;
   }
   50% {
     transform: rotate(45deg) translateX(100%);
-    opacity: 0.7;
+    opacity: 0.95;
   }
   75% {
     transform: rotate(0deg) translateX(0);
-    opacity: 0.9;
+    opacity: 1;
   }
   100% {
     transform: rotate(-45deg) translateX(-100%);
-    opacity: 0.7;
+    opacity: 0.95;
   }
 }
 
