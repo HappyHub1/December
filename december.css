@@ -1406,7 +1406,7 @@ html.has-loopy-effect-chaos body {
       scale(calc(0.98 + var(--loopy-random-4) * 0.04));
     filter:
       hue-rotate(calc(var(--loopy-random-5) * 30deg))
-      saturate(calc(100% + var(--loopy-random-1) * 50%)));
+      saturate(calc(100% + var(--loopy-random-1) * 50%));
   }
   50% {
     transform:
@@ -1417,7 +1417,7 @@ html.has-loopy-effect-chaos body {
       scale(calc(1.02 + var(--loopy-random-4) * 0.04));
     filter:
       hue-rotate(calc(var(--loopy-random-5) * -30deg))
-      saturate(calc(100% + var(--loopy-random-2) * 50%)));
+      saturate(calc(100% + var(--loopy-random-2) * 50%));
   }
 }
 
@@ -1530,7 +1530,7 @@ html.has-loopy-effect-chaos .c-loopy-container {
     transform: scale(calc(0.98 - var(--loopy-random-1) * 0.03))
               translateZ(calc(-10px - var(--loopy-random-2) * 10px))
               rotateX(calc(-2deg - var(--loopy-random-3) * 2deg))
-              rotateY(-1deg));
+              rotateY(-1deg);
   }
 }
 

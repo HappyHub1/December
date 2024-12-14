@@ -4806,6 +4806,7 @@ class CustomTextTriggers {
       WheelSpin,
       TlNote,
       OrangeEffect,
+      IdolEffect,
     ];
     if (CustomTextTriggers.has_init) {
       return;
