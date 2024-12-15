@@ -5563,8 +5563,17 @@ PunchEffect.characters = {
   shoe: {
     index: 'shoe',
     image: `${SCRIPT_FOLDER_URL}/Images/shoe.jpg`,
-    cursor: `${SCRIPT_FOLDER_URL}/Images/shoe-cursor.png`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-shoe.png`,
     text: 'KICK THE SHOE!!!',
+    action_plural: 'kicks',
+    width: 480,
+    move_frequency_ms: 2000,
+  },
+  hitlershoe: {
+    index: 'hitlershoe',
+    image: `${SCRIPT_FOLDER_URL}/Images/hitler-shoe.png`,
+    cursor: `${SCRIPT_FOLDER_URL}/Images/cursor-shoe.png`,
+    text: 'HIT-ler SHOE!!!',
     action_plural: 'kicks',
     width: 480,
     move_frequency_ms: 2000,
