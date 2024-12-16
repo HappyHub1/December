@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loopy Effect Test</title>
+    <title>Snow Effect Test</title>
 
     <!-- Load the december.css file -->
     <link rel="stylesheet" href="../december.css">
@@ -52,10 +52,9 @@
 </head>
 <body>
     <div class="test-content">
-        <h1>Loopy Effect Test</h1>
+        <h1>Snow Effect Test</h1>
         <p>Click the buttons below to toggle the effect</p>
         <button onclick="startEffect()">Start Effect</button>
-        <button onclick="startEffect(true)">Start Effect (Chaos)</button>
         <button onclick="stopEffect()">Stop Effect</button>
     </div>
 
@@ -107,7 +106,7 @@
 
         // Functions to toggle the effect
         function startEffect(chaos = false) {
-            SnowEffect.start('canada');
+            SnowEffect.handleCommand(['whiteout']);
         }
 
         function stopEffect() {

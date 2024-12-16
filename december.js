@@ -4404,23 +4404,28 @@ SnowEffect.min_y_speed = 1;
 SnowEffect.max_y_speed = 4;
 SnowEffect.snow_levels = {
   // The rate at which snow falls. High numbers means less snow
+  // Its width / (snow min or snow max). For min max new flakes
 
-  // Low levels. Multiple aliases
-  low: { min: 12500, max: 20000 },
-  dust: { min: 12500, max: 20000 },
-  light: { min: 12500, max: 20000 },
+  // Light snow - around 1-2 flakes per update
+  low: { min: 1200, max: 2000 },
+  dust: { min: 1200, max: 2000 },
+  light: { min: 1200, max: 2000 },
 
-  // Medium or normal aliases
-  medium: { min: 3000, max: 7500 },
-  normal: { min: 3000, max: 7500 },
+  // Medium - around 2-4 flakes per update
+  medium: { min: 600, max: 1200 },
+  normal: { min: 600, max: 1200 },
 
-  high: { min: 1000, max: 3500 },
-  blizzard: { min: 500, max: 5000 },
-  prime95: { min: 75, max: 900 },
-  space_heater: { min: 30, max: 400 },
-  whiteout: { min: 15, max: 50 },
+  // Heavier snow
+  high: { min: 300, max: 600 },
+  blizzard: { min: 150, max: 300 },
 
-  danger: { min: 5, max: 10 },
+  // Extreme modes
+  prime95: { min: 75, max: 150 },
+  space_heater: { min: 30, max: 75 },
+  whiteout: { min: 15, max: 30 },
+
+  // Danger zone
+  danger: { min: 5, max: 15 },
   bigdanger: { min: 3, max: 5 },
   canada: { min: 2, max: 2 },
 };
