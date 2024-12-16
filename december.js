@@ -4094,7 +4094,7 @@ class SnowEffect {
         // Add new snowflakes
         const min_new = width / snow_level.max;
         const max_new = width / snow_level.min;
-        const number_of_new_flakes = Math.floor(min_new + Math.random() * (max_new - min_new));
+        const number_of_new_flakes = Math.floor(min_new + Math.random() * (max_new - min_new + 1));
 
         for (let i = 0; i < number_of_new_flakes; i++) {
           snowflakes.push(createSnowflake(width));
