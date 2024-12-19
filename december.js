@@ -4830,6 +4830,7 @@ class CustomTextTriggers {
       TlNote,
       OrangeEffect,
       IdolEffect,
+      HeartbeatEffect
     ];
     if (CustomTextTriggers.has_init) {
       return;
@@ -5897,6 +5898,102 @@ class TlNote {
   }
 }
 TlNote.command = '/tlnote';
+
+class HeartbeatEffect {
+  static init() {
+    HeartbeatEffect.state = {
+      is_running: false,
+      user_enabled: true,
+      wrapper: null,
+      heartbeat: null,
+      timeout: null
+    };
+  }
+
+  static start(duration_s = 10) {
+    if (!HeartbeatEffect.state.user_enabled || HeartbeatEffect.state.is_running) return;
+
+    HeartbeatEffect.state.is_running = true;
+
+    // Create the container for our effects
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('c-effect__heartbeat-damage');
+    document.documentElement.appendChild(wrapper);
+    HeartbeatEffect.state.wrapper = wrapper;
+
+    // Create the vignette overlay
+    const vignette = document.createElement('div');
+    vignette.classList.add('c-effect__heartbeat-vignette');
+    wrapper.appendChild(vignette);
+
+    // Create and play heartbeat audio
+    const heartbeat = new Audio(`${SCRIPT_FOLDER_URL}/Media/heartbeat.mp3`);
+    heartbeat.loop = true;
+    heartbeat.volume = 0.3;
+    HeartbeatEffect.state.heartbeat = heartbeat;
+
+    // Play audio after a small delay to avoid potential race conditions
+    setTimeout(() => {
+      if (HeartbeatEffect.state.heartbeat === heartbeat) {
+        heartbeat.play().catch(() => {
+          // Ignore play errors - they're usually due to user not interacting with page yet
+        });
+      }
+    }, 50);
+
+    // Remove after duration
+    HeartbeatEffect.state.timeout = setTimeout(() => {
+      HeartbeatEffect.stop();
+    }, duration_s * 1000);
+  }
+
+  static stop() {
+    if (!HeartbeatEffect.state.is_running) return;
+
+    // Clear any pending timeout
+    if (HeartbeatEffect.state.timeout) {
+      clearTimeout(HeartbeatEffect.state.timeout);
+      HeartbeatEffect.state.timeout = null;
+    }
+
+    // Remove wrapper if it exists
+    if (HeartbeatEffect.state.wrapper?.parentElement) {
+      HeartbeatEffect.state.wrapper.parentElement.removeChild(HeartbeatEffect.state.wrapper);
+      HeartbeatEffect.state.wrapper = null;
+    }
+
+    // Stop audio if it exists
+    if (HeartbeatEffect.state.heartbeat) {
+      HeartbeatEffect.state.heartbeat.pause();
+      HeartbeatEffect.state.heartbeat.remove();
+      HeartbeatEffect.state.heartbeat = null;
+    }
+
+    HeartbeatEffect.state.is_running = false;
+  }
+
+  static enable() {
+    HeartbeatEffect.state.user_enabled = true;
+  }
+
+  static disable() {
+    HeartbeatEffect.state.user_enabled = false;
+    HeartbeatEffect.stop();
+  }
+
+  static handleCommand(message_parts = [], other_args = {}) {
+    const [duration_s = '10'] = message_parts;
+
+    if (duration_s === 'off') {
+      HeartbeatEffect.stop();
+      return;
+    }
+
+    const parsed_duration = parseInt(duration_s, 10) || 10;
+    HeartbeatEffect.start(parsed_duration);
+  }
+}
+HeartbeatEffect.command = '/heartbeat';
 
 function decodeEntities(string) {
   var textarea = document.createElement('textarea');
