@@ -3395,6 +3395,7 @@ class PadoruEffect {
 
   static disable() {
     PadoruEffect.state.enabled = false;
+    PadoruEffect.stop();
   }
 
   static enable() {
@@ -3522,6 +3523,7 @@ class OrangeEffect {
 
   static disable() {
     OrangeEffect.state.enabled = false;
+    OrangeEffect.stop();
   }
 
   static enable() {

@@ -440,7 +440,6 @@ span.glyphicon.glyphicon-time {
   transform-origin: center;
   width: 56px;
   height: 56px;
-  z-index: var(--z-effects);
   user-select: none;
   pointer-events: none;
   opacity: 0.80;
@@ -453,6 +452,7 @@ span.glyphicon.glyphicon-time {
   top: -56px;
   left: 0;
   animation: effect__padoru-fall 12s linear forwards;
+  z-index: var(--z-effects);
 }
 .type2 .c-effect__padoru-shake { animation-duration: 6s; }
 .type3 .c-effect__padoru-shake { animation-duration: 7s; }
