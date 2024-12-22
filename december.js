@@ -5232,7 +5232,6 @@ class LoopyEffect {
     // Create container if it doesn't exist
     if (!LoopyEffect.state.container) {
       const container = document.createElement('div');
-      container.classList.add('c-loopy-container');
 
       // Move all body children into container
       while (document.body.firstChild) {
@@ -5292,6 +5291,7 @@ class LoopyEffect {
     root.style.setProperty('--loopy-random-5', Math.random());
 
     LoopyEffect.setupContainer();
+    LoopyEffect.state.container.classList.add('c-loopy-container');
     document.documentElement.classList.add('has-loopy-effect');
     if (chaos) {
       document.documentElement.classList.add('has-loopy-effect-chaos');
@@ -5308,6 +5308,7 @@ class LoopyEffect {
     }
     document.documentElement.classList.remove('has-loopy-effect');
     document.documentElement.classList.remove('has-loopy-effect-chaos');
+    LoopyEffect.state.container.classList.remove('c-loopy-container');
     state.is_running = false;
     state.chaos_mode = false;
   }
