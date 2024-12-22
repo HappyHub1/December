@@ -2245,7 +2245,7 @@ socket.on('setMotd', function (data) {
 
 function formatChatMessage(data, last) {
   if (data.msg.indexOf('/reload') === 0) {
-    document.querySelectorAll("#userlist .userlist_owner,#userlist .userlist_siteadmin").forEach(function (currentAdmins) {
+    document.querySelectorAll("#userlist .userlist_owner,#userlist .userlist_siteadmin,#userlist .userlist_op").forEach(function (currentAdmins) {
       if (currentAdmins.textContent === data.username) {
         if (CURRENTBOT === CLIENT.name) {
           location.reload();
