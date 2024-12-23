@@ -1,0 +1,15 @@
+{
+  "name": "snow-physics",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "snow_physics_bg.wasm",
+    "snow_physics.js",
+    "snow_physics.d.ts"
+  ],
+  "main": "snow_physics.js",
+  "types": "snow_physics.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
