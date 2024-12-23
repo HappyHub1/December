@@ -4051,88 +4051,35 @@ class SnowEffect {
 
       _width: window.innerWidth,
       _height: window.innerHeight,
-      _snowflakes: [],
+      // Flat array of snowflake data
+      // (x, y, size)
+      _snowflake_data: [],
+      _snowflake_system_inst: null,
+      _SnowSystem: null,
       _requested_animation_frame: null,
 
       // New performance optimizations
       _vertex_buffer: null,
       _instance_buffer: null,
-      _worker: null,
       _last_frame_time: 0,
     };
 
-    // Initialize Web Worker if supported
-    if (window.Worker) {
-      SnowEffect.initWorker();
-    }
+    SnowEffect.initSnowWasm();
   }
 
-  static initWorker() {
-    // Create a blob URL for the worker code
-    const workerCode = `
-      let snowflakes = [];
+  // Example usage in december.js
+  static async initSnowWasm() {
+    try {
+      // Import and initialize the WASM module
+      const wasm = await import('./snow_wasm/pkg/snow_physics.js');
+      await wasm.default(); // Initialize the WASM module
 
-      // Constants for natural movement
-      const MIN_SIZE = 1.5;
-      const MAX_SIZE = 4;
-      const MIN_X_SPEED = 0.5;
-      const MAX_X_SPEED = 3;
-      const MIN_Y_SPEED = 0.5;
-      const MAX_Y_SPEED = 2;
+      // Store the SnowSystem constructor in state for later use
+      SnowEffect.state._SnowSystem = wasm.SnowSystem;
 
-      function random(min, max) {
-        return Math.random() * (max - min) + min;
-      }
-
-      self.onmessage = function(e) {
-        if (e.data.type === 'update') {
-          const {width, height, snow_level, deltaTime} = e.data;
-          updateSnowflakes(width, height, snow_level, deltaTime);
-          self.postMessage({snowflakes});
-        }
-      };
-
-      function updateSnowflakes(width, height, snow_level, deltaTime) {
-        // Add new snowflakes
-        const min_new = width / snow_level.max;
-        const max_new = width / snow_level.min;
-        const number_of_new_flakes = Math.floor(min_new + Math.random() * (max_new - min_new));
-
-        for (let i = 0; i < number_of_new_flakes; i++) {
-          snowflakes.push(createSnowflake(width));
-        }
-
-        // Update positions
-        snowflakes = snowflakes.filter(flake => {
-          // Apply velocity with deltaTime scaling
-          flake.x += flake.velocity.x * deltaTime * 60; // Scale for 60fps
-          flake.y += flake.velocity.y * deltaTime * 60;
-
-          // Remove if off screen
-          return !(flake.y > height || flake.x > width || flake.x < -flake.size);
-        });
-      }
-
-      function createSnowflake(width) {
-        const size = random(MIN_SIZE, MAX_SIZE);
-        let x_vel = random(MIN_X_SPEED, MAX_X_SPEED);
-        if (Math.random() > 0.5) x_vel = -x_vel;
-
-        return {
-          x: Math.random() * width,
-          y: -size * 2, // Start above screen
-          size: size,
-          velocity: {
-            x: x_vel,
-            y: random(MIN_Y_SPEED, MAX_Y_SPEED)
-          }
-        };
-      }
-    `;
-
-    const blob = new Blob([workerCode], {type: 'application/javascript'});
-    const workerUrl = URL.createObjectURL(blob);
-    SnowEffect.state._worker = new Worker(workerUrl);
+    } catch (err) {
+      console.error("Failed to initialize Snow WASM:", err);
+    }
   }
 
   static buildCircleVertices(cx, cy, radius) {
@@ -4206,16 +4153,8 @@ class SnowEffect {
     const deltaTime = (timestamp - state._last_frame_time) / 1000;
     state._last_frame_time = timestamp;
 
-    // Update via worker
-    if (state._worker) {
-      state._worker.postMessage({
-        type: 'update',
-        width: state._width,
-        height: state._height,
-        snow_level: state.snow_level,
-        deltaTime
-      });
-    }
+    state._snowflake_system_inst.update(deltaTime);
+    state._snowflake_data = state._snowflake_system_inst.get_snowflakes();
 
     // Clear and prepare WebGL context
     const gl = state._gl;
@@ -4235,13 +4174,11 @@ class SnowEffect {
     const state = SnowEffect.state;
     const gl = state._gl;
 
+    // Number of snowflakes is array length / 3 since each snowflake has x,y,size
+    const numSnowflakes = state._snowflake_data.length / 3;
+
     // Prepare instance data
-    const instanceData = new Float32Array(state._snowflakes.length * 3);
-    state._snowflakes.forEach((flake, i) => {
-      instanceData[i * 3] = flake.x;
-      instanceData[i * 3 + 1] = flake.y;
-      instanceData[i * 3 + 2] = flake.size;
-    });
+    const instanceData = new Float32Array(state._snowflake_data);
 
     // Update instance buffer
     gl.bindBuffer(gl.ARRAY_BUFFER, state._instance_buffer);
@@ -4258,7 +4195,7 @@ class SnowEffect {
     gl.vertexAttribDivisor(state._a_instance, 1);
 
     // Draw all snowflakes in one call
-    gl.drawArraysInstanced(gl.POINTS, 0, 1, state._snowflakes.length);
+    gl.drawArraysInstanced(gl.POINTS, 0, 1, numSnowflakes);
   }
 
   static start(snow_level = 'medium') {
@@ -4275,6 +4212,13 @@ class SnowEffect {
     if (state.is_running) {
       return;
     }
+
+    state._snowflake_system_inst = new state._SnowSystem(
+      window.innerWidth,
+      window.innerHeight,
+      state.snow_level.min,
+      state.snow_level.max
+    );
 
     state.is_running = true;
     state._canvas = document.createElement('canvas');
@@ -4302,13 +4246,6 @@ class SnowEffect {
     // If the window resizes, just start all over again for simplicity
     SnowEffect._resizeHandler = () => SnowEffect.initAndReset();
     window.addEventListener('resize', SnowEffect._resizeHandler);
-
-    // Set up worker message handler
-    if (state._worker) {
-      state._worker.onmessage = (e) => {
-        state._snowflakes = e.data.snowflakes;
-      };
-    }
   }
 
   static stop() {
@@ -4361,7 +4298,13 @@ class SnowEffect {
     state._gl.viewport(0, 0, state._width, state._height);
     state._gl.uniform2f(state._u_resolution, state._width, state._height);
 
-    state._snowflakes = [];
+    state._snowflake_system_inst.clear();
+    state._snowflake_system_inst = new state._SnowSystem(
+      window.innerWidth,
+      window.innerHeight,
+      state.snow_level.min,
+      state.snow_level.max
+    );
 
     if (!state._requested_animation_frame) {
       state._requested_animation_frame = requestAnimationFrame(() => SnowEffect.handleFrame());
@@ -4430,6 +4373,7 @@ SnowEffect.snow_levels = {
   danger: { min: 5, max: 15 },
   bigdanger: { min: 3, max: 5 },
   canada: { min: 2, max: 2 },
+  death: { min: 0.1, max: 0.5 },
 };
 SnowEffect.vertex_shader_src = `
     attribute vec2 a_position;
