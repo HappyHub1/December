@@ -4071,7 +4071,7 @@ class SnowEffect {
   static async initSnowWasm() {
     try {
       // Import and initialize the WASM module
-      const wasm = await import('./snow_wasm/pkg/snow_physics.js');
+      const wasm = await import(SCRIPT_FOLDER_URL + '/snow_wasm/pkg/snow_physics.js');
       await wasm.default(); // Initialize the WASM module
 
       // Store the SnowSystem constructor in state for later use
