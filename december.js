@@ -5170,6 +5170,7 @@ class LoopyEffect {
       updateInterval: null,
       container: null
     };
+    LoopyEffect.setupContainer();
   }
 
   static setupContainer() {
@@ -5234,7 +5235,6 @@ class LoopyEffect {
     root.style.setProperty('--loopy-random-4', Math.random());
     root.style.setProperty('--loopy-random-5', Math.random());
 
-    LoopyEffect.setupContainer();
     LoopyEffect.state.container.classList.add('c-loopy-container');
     document.documentElement.classList.add('has-loopy-effect');
     if (chaos) {
