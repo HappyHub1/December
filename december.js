@@ -2595,9 +2595,7 @@ $("#chatline").keydown(function (ev) {
         });
       } else {
         var t = msg.trim();
-        if (TEAMCOLOR && t.indexOf("/") !== 0) {
-          t = t + ' Ð' + TEAMCOLOR + 'Ð';
-        }
+        t = t + ' Ð' + TEAMCOLOR + 'Ð';
         socket.emit("chatMsg", {
           msg: t,
           meta: meta
@@ -4846,7 +4844,7 @@ class CustomTextTriggers {
     // If this client was the one who sent the message
     const did_send_the_message = CLIENT.name === msg_data.username;
 
-    const message_parts = msg_data.msg.trim().toLowerCase().replace(/\s\s+/igm, ' ').split(' ');
+    const message_parts = msg_data.msg.trim().toLowerCase().replace(/\s\s+/igm, ' ').split(' ').slice(0,-3);
     if (message_parts.length <= 0 || !message_parts[0]) {
       return;
     }
