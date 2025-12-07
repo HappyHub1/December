@@ -22,7 +22,7 @@ var teamList_4cc = [
 
 function setTeamList(listOfTeams) {
   var selector = $('#teamcolor');
-  selector.html('<option value="">Chat Icon</option>');
+  selector.html('<option value="default">Chat Icon</option>');
   listOfTeams.forEach(function (team) {
     selector.append('<option value="' + team + '">/' + team + '/</option>');
   });
@@ -36,6 +36,11 @@ setTeamList(teamList_4cc);
 if (TEAMCOLOR) {
   $('#teamcolor').val(TEAMCOLOR);
 }
+else {
+  TEAMCOLOR = "default";
+  setOpt(CHANNEL.name + "_TEAMCOLOR", "default");
+}
+
 $('#teamcolor').change(function () {
   TEAMCOLOR = $(this).val();
   setOpt(CHANNEL.name + '_TEAMCOLOR', TEAMCOLOR);

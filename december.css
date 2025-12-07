@@ -276,7 +276,7 @@ footer {padding-bottom:5px}
 .teammommy::before{background:url('./Images/mommy.png');}
 .teamonoeesan::before{background:url('./Images/onoeesan.png');}
 .teampengin::before{background:url('./Images/pengin.png');}
-.chat-msg-_North .username:not([class*="team"])::before {
+.chat-msg-_North .username:is([class*="teamdefault"])::before, .chat-msg-_North .username:not([class*="team"])::before {
 background:url('./Images/kagami.ico');
 }
 .chat-msg-ShizuruAnon .username::before {
@@ -285,7 +285,7 @@ background:url('./Images/shiz_icon.png');
 .chat-msg-tsukarin .username::before, .chat-msg-tsukat .username::before {
 background:url('./Images/wafu_icon.png');
 }
-.chat-msg-Happy .username:not([class*="team"])::before {
+.chat-msg-Happy .username:is([class*="teamdefault"])::before, .chat-msg-Happy .username:is([class*="team"])::before {
 background:url('./Images/miku-padoru.png');
 }
 .username::before{
