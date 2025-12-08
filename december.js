@@ -4778,10 +4778,6 @@ class CustomTextTriggers {
       IdolEffect,
       HeartbeatEffect
     ];
-    if (CustomTextTriggers.has_init) {
-      return;
-    }
-    CustomTextTriggers.has_init = false;
 
     // Setup the effect lookup
     CustomTextTriggers.effect_lookup = new Map();
