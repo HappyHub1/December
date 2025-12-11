@@ -29,6 +29,7 @@
 #qualitymenu .header-drop-link {padding-left: 8px;}
 #qualitymenu .header-drop-link:hover {text-decoration:none;color:#fff;background-color:#2a9fd6}
 #leftpane-inner {margin-left:-10px !important;}
+#usercount > .profile-box {display:none !important;}
 
 #addfromurl, #searchcontrol, #customembed, #playlistmanager {
     background-color: #272B30 !important;
