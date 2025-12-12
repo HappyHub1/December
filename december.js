@@ -2485,9 +2485,9 @@ if (CLIENT.rank > 3) {
       } else {
         adSpam = false;
       }
-      if (data.msg.indexOf("BANEVADING LIKE A VERTY") > -1) {
+      /*if (data.msg.indexOf("BANEVADING LIKE A VERTY") > -1) {
         socket.emit("chatMsg", { msg: "/ipban " + data.username });
-      }
+      }*/
     }
   });
   socket.on("errorMsg", function () {
