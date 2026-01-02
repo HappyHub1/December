@@ -5567,7 +5567,7 @@ class SoundBoardEffect {
   static stopAll() {
     const state = SoundBoardEffect.state;
     for (const sound of state.active_sounds.values()) {
-      sound.stop();
+      sound.muted = true;
     }
   }
 
