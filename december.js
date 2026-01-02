@@ -4507,7 +4507,7 @@ class GhostBanriEffect {
       GhostBanriEffect.banri_timeout = null;
     }
 
-    if (!state.user_enabled) {
+    if (!state.user_enabled || !state.is_running) {
       return;
     }
 
@@ -4559,7 +4559,7 @@ class GhostBanriEffect {
     }
 
     GhostBanriEffect.deactivate_timeout = setTimeout(() => {
-      GhostBanriEffect.disable();
+      GhostBanriEffect.stop();
     }, state.length_minutes * 60 * 1000);
   }
 }
