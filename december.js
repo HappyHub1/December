@@ -2355,6 +2355,13 @@ function formatChatMessage(data, last) {
 
   CustomTextTriggers.handleChatMessage(data);
 
+  // Hide effect commands (/snow, /padoru, ...) from viewers below mod rank.
+  // The effect has already fired above. Returning here, before last.name is
+  // set, keeps the name grouping right for the mod's next visible message.
+  if (CLIENT.rank < 2 && CustomTextTriggers.isEffectCommand(data)) {
+    return $("<div/>").hide();
+  }
+
   if (ANTISPAM && PLAYER.mediaLength > 600 && data.meta.addClass !== "server-whisper") {
     data.msg = data.msg.replace(TEAMCOLORREGEX, "").replace(ANTISPAMREGEX, "").trim();
     if (data.msg.length === 0) {
@@ -4805,6 +4812,18 @@ class CustomTextTriggers {
 
   }
 
+  // True when msg_data is an effect command that actually fires, i.e. its
+  // first word is a registered command and the sender is allowed to run it.
+  // A non-mod's attempt returns false so it still shows (and gets kicked).
+  static isEffectCommand(msg_data) {
+    if (!msg_data || typeof msg_data.msg !== 'string' || !CustomTextTriggers.effect_lookup) {
+      return false;
+    }
+    const first_word = msg_data.msg.trim().split(/\s+/)[0].toLowerCase();
+    return CustomTextTriggers.effect_lookup.has(first_word)
+      && CustomTextTriggers.isMod(msg_data.username);
+  }
+
   static isMod(username) {
     try {
       let is_mod = false;
@@ -5996,3 +6015,275 @@ setTimeout(function () { // insurance
   }
 }, 250);
 
+
+/**
+ * FakeVotes: moderators can pad the displayed counts on the active poll.
+ *
+ * Usage (rank >= Moderator only):
+ *   /fakevote <option#> <amount>   e.g. /fakevote 2 50   or   /fakevote 1 -5
+ *   /fakevote reset                clear all fake votes on the active poll
+ *
+ * How it stays in sync across viewers:
+ *   CyTube polls live on the server, so this only changes what the client
+ *   draws. The shared state travels through chat. The moderator's client
+ *   rewrites the command before it is sent into an absolute snapshot,
+ *   "/fakevote sync <pollTimestamp> <off1>,<off2>,...". Every client running
+ *   this script reads that snapshot, hides the message, and adds the offsets
+ *   to whatever real counts the server sends for that poll.
+ *
+ *   - Sender check: the server keeps meta.modflair only if it matches the
+ *     sender's real rank and that rank is >= 2, so it can't be forged. It is
+ *     also stored in the chat buffer, so the check works for replayed
+ *     messages even after the mod has left.
+ *   - Late joiners: the server replays the last 15 chat messages before it
+ *     sends the active poll. Each snapshot is complete, so a late joiner only
+ *     needs the newest one to be among those 15. If chat has moved on, the
+ *     mod who sent the snapshot re-sends it when someone joins (as long as
+ *     that mod is still in the channel).
+ *   - Poll scoping: each snapshot names its poll by timestamp, so offsets
+ *     never carry over to the next poll.
+ */
+class FakeVotes {
+  static COMMAND = '/fakevote';
+  static MIN_RANK = 2; // Rank.Moderator
+  // CyTube replays only the last 15 chat messages to people who join. Once
+  // our snapshot is about to fall out of that window, the mod who sent it
+  // re-sends it the next time someone joins.
+  static RESEND_AFTER_MSGS = 10;
+
+  static init() {
+    if (window.__fakeVotesInstalled) {
+      return;
+    }
+    window.__fakeVotesInstalled = true;
+
+    FakeVotes.state = {
+      poll_ts: null,      // timestamp of the active poll (as the server sent it)
+      real: null,         // last real update frame for the active poll
+      offsets: new Map(), // poll timestamp -> [offset per option]
+      last_sync: null,    // { poll_ts, msg, sender } of the newest snapshot
+      msgs_since_sync: 0, // chat messages seen since that snapshot
+    };
+
+    const orig_new_poll = Callbacks.newPoll;
+    const orig_update_poll = Callbacks.updatePoll;
+    const orig_close_poll = Callbacks.closePoll;
+    const orig_chat_msg = Callbacks.chatMsg;
+    FakeVotes._orig_update_poll = orig_update_poll;
+
+    // Callbacks are looked up by name on every socket event, so replacing
+    // them works. CyTube's own handlers are registered before channel JS
+    // runs, so changing data.counts here also changes what later
+    // socket.on("updatePoll") listeners (e.g. ArcadeTheme) receive.
+    Callbacks.newPoll = function (data) {
+      const real = FakeVotes.cloneFrame(data);
+      FakeVotes.applyOffsets(data);
+      // CyTube's newPoll calls Callbacks.closePoll() first, which clears our
+      // state, so record the new poll only after it returns
+      const ret = orig_new_poll(data);
+      FakeVotes.state.poll_ts = real.timestamp;
+      FakeVotes.state.real = real;
+      FakeVotes.pruneOffsets();
+      return ret;
+    };
+
+    Callbacks.updatePoll = function (data) {
+      // Update frames carry the poll timestamp too
+      if (data.timestamp !== FakeVotes.state.poll_ts) {
+        FakeVotes.state.poll_ts = data.timestamp;
+      }
+      FakeVotes.state.real = FakeVotes.cloneFrame(data);
+      FakeVotes.applyOffsets(data);
+      return orig_update_poll(data);
+    };
+
+    Callbacks.closePoll = function (data) {
+      // The closed poll keeps showing its last (padded) numbers
+      FakeVotes.state.poll_ts = null;
+      FakeVotes.state.real = null;
+      return orig_close_poll(data);
+    };
+
+    Callbacks.chatMsg = function (data) {
+      if (FakeVotes.handleChatMessage(data)) {
+        return; // fake vote control message, don't render it
+      }
+      FakeVotes.state.msgs_since_sync++;
+      return orig_chat_msg(data);
+    };
+
+    // Turn the mod's typed command into an absolute snapshot before it is sent
+    const orig_emit = socket.emit;
+    socket.emit = function (event, payload) {
+      if (event === 'chatMsg' && payload && typeof payload.msg === 'string'
+        && FakeVotes.isCommand(payload.msg)) {
+        const rewritten = FakeVotes.buildOutgoing(payload.msg);
+        if (rewritten === null) {
+          return socket; // invalid or no poll; already told the user locally
+        }
+        payload = Object.assign({}, payload, {
+          msg: rewritten,
+          meta: Object.assign({}, payload.meta, { modflair: CLIENT.rank }),
+        });
+        return orig_emit.call(this, event, payload);
+      }
+      return orig_emit.apply(this, arguments);
+    };
+
+    socket.on('addUser', function () {
+      const st = FakeVotes.state;
+      const last = st.last_sync;
+      if (!last || last.sender !== CLIENT.name || last.poll_ts !== st.poll_ts
+        || st.msgs_since_sync < FakeVotes.RESEND_AFTER_MSGS) {
+        return;
+      }
+      const offsets = st.offsets.get(last.poll_ts) || [];
+      if (!offsets.some(o => o !== 0)) {
+        return; // nothing to carry over
+      }
+      st.msgs_since_sync = 0; // don't fire again for a burst of joins
+      orig_emit.call(socket, 'chatMsg', { msg: last.msg, meta: { modflair: CLIENT.rank } });
+    });
+  }
+
+  static isCommand(msg) {
+    const first = msg.trim().split(/\s+/)[0].toLowerCase();
+    return first === FakeVotes.COMMAND;
+  }
+
+  /* ---------- outgoing ---------- */
+
+  static buildOutgoing(msg) {
+    if (CLIENT.rank < FakeVotes.MIN_RANK) {
+      FakeVotes.localNotice('Only moderators can use /fakevote.');
+      return null;
+    }
+    const st = FakeVotes.state;
+    if (st.poll_ts === null || !st.real) {
+      FakeVotes.localNotice('No active poll.');
+      return null;
+    }
+
+    const n = st.real.counts.length;
+    const offsets = FakeVotes.getOffsets(st.poll_ts, n).slice();
+    const args = msg.trim().split(/\s+/).slice(1);
+
+    if (args[0] && args[0].toLowerCase() === 'reset') {
+      offsets.fill(0);
+    } else {
+      const option = parseInt(args[0], 10);
+      const amount = parseInt(args[1], 10);
+      if (!(option >= 1 && option <= n) || isNaN(amount)) {
+        FakeVotes.localNotice('Usage: /fakevote <option 1-' + n + '> <amount>  |  /fakevote reset');
+        return null;
+      }
+      offsets[option - 1] += amount;
+    }
+
+    return FakeVotes.COMMAND + ' sync ' + st.poll_ts + ' ' + offsets.join(',');
+  }
+
+  /* ---------- incoming ---------- */
+
+  // Returns true if the message was a fake vote message (so it is hidden)
+  static handleChatMessage(data) {
+    if (!data || typeof data.msg !== 'string' || !FakeVotes.isCommand(data.msg)) {
+      return false;
+    }
+
+    const rank = (data.meta && data.meta.modflair) || 0;
+    if (rank < FakeVotes.MIN_RANK) {
+      // A non-mod typing /fakevote: let it show in chat as normal text
+      return false;
+    }
+
+    const m = data.msg.trim().match(/^\S+\s+sync\s+(\d+)\s+(-?\d+(?:,-?\d+)*)$/i);
+    if (!m) {
+      return true; // malformed mod command: hide it, do nothing
+    }
+
+    const poll_ts = parseInt(m[1], 10);
+    const offsets = m[2].split(',').map(x => parseInt(x, 10) || 0);
+    FakeVotes.state.offsets.set(poll_ts, offsets);
+    FakeVotes.state.last_sync = { poll_ts, msg: data.msg.trim(), sender: data.username };
+    FakeVotes.state.msgs_since_sync = 0;
+
+    if (poll_ts === FakeVotes.state.poll_ts) {
+      FakeVotes.rerender();
+    }
+
+    if (data.username === CLIENT.name) {
+      FakeVotes.localNotice('Fake votes now: ' + offsets.map((o, i) => '#' + (i + 1) + ' ' + (o >= 0 ? '+' : '') + o).join('  '));
+    }
+    return true;
+  }
+
+  /* ---------- helpers ---------- */
+
+  static getOffsets(poll_ts, n) {
+    const stored = FakeVotes.state.offsets.get(poll_ts) || [];
+    const out = new Array(n).fill(0);
+    for (let i = 0; i < n; i++) {
+      out[i] = stored[i] || 0;
+    }
+    return out;
+  }
+
+  static pruneOffsets() {
+    // Keep only the active poll's offsets (plus anything newer than it,
+    // which can't happen but is harmless)
+    for (const ts of Array.from(FakeVotes.state.offsets.keys())) {
+      if (ts < FakeVotes.state.poll_ts) {
+        FakeVotes.state.offsets.delete(ts);
+      }
+    }
+  }
+
+  static cloneFrame(data) {
+    return Object.assign({}, data, { counts: data.counts.slice() });
+  }
+
+  // Mutates data.counts in place. Handles hidden-result polls:
+  //   "?"  (viewer can't see results) -> unchanged
+  //   "7?" (mod viewing hidden poll)  -> "57?"
+  static applyOffsets(data) {
+    const offsets = FakeVotes.getOffsets(data.timestamp, data.counts.length);
+    for (let i = 0; i < data.counts.length; i++) {
+      const c = data.counts[i];
+      if (typeof c === 'number') {
+        data.counts[i] = Math.max(0, c + offsets[i]);
+      } else if (typeof c === 'string') {
+        const hm = c.match(/^(\d+)\?$/);
+        if (hm) {
+          data.counts[i] = Math.max(0, parseInt(hm[1], 10) + offsets[i]) + '?';
+        }
+      }
+    }
+    return data;
+  }
+
+  // Redraw the active poll from the last real frame plus current offsets
+  static rerender() {
+    const st = FakeVotes.state;
+    if (!st.real) {
+      return;
+    }
+    const frame = FakeVotes.applyOffsets(FakeVotes.cloneFrame(st.real));
+    FakeVotes._orig_update_poll(frame);
+    if (typeof ArcadeTheme !== 'undefined' && ArcadeTheme.handlePollUpdate) {
+      try { ArcadeTheme.handlePollUpdate(frame); } catch (e) { }
+    }
+  }
+
+  static localNotice(text) {
+    try {
+      $('<div/>').addClass('server-whisper').text('[fakevote] ' + text)
+        .appendTo($('#messagebuffer'));
+      if (typeof scrollChat === 'function') {
+        scrollChat();
+      }
+    } catch (e) { }
+  }
+}
+
+FakeVotes.init();
