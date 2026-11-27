@@ -2355,6 +2355,13 @@ function formatChatMessage(data, last) {
 
   CustomTextTriggers.handleChatMessage(data);
 
+  // Hide effect commands (/snow, /padoru, ...) from viewers below mod rank.
+  // The effect has already fired above. Returning here, before last.name is
+  // set, keeps the name grouping right for the mod's next visible message.
+  if (CLIENT.rank < 2 && CustomTextTriggers.isEffectCommand(data)) {
+    return $("<div/>").hide();
+  }
+
   if (ANTISPAM && PLAYER.mediaLength > 600 && data.meta.addClass !== "server-whisper") {
     data.msg = data.msg.replace(TEAMCOLORREGEX, "").replace(ANTISPAMREGEX, "").trim();
     if (data.msg.length === 0) {
@@ -4803,6 +4810,18 @@ class CustomTextTriggers {
     // testing
     //CustomTextTriggers.effect_lookup.get('/padoru').handle([], {});
 
+  }
+
+  // True when msg_data is an effect command that actually fires, i.e. its
+  // first word is a registered command and the sender is allowed to run it.
+  // A non-mod's attempt returns false so it still shows (and gets kicked).
+  static isEffectCommand(msg_data) {
+    if (!msg_data || typeof msg_data.msg !== 'string' || !CustomTextTriggers.effect_lookup) {
+      return false;
+    }
+    const first_word = msg_data.msg.trim().split(/\s+/)[0].toLowerCase();
+    return CustomTextTriggers.effect_lookup.has(first_word)
+      && CustomTextTriggers.isMod(msg_data.username);
   }
 
   static isMod(username) {
